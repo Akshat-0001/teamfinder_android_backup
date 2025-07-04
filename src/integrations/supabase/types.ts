@@ -9,7 +9,170 @@ export type Json =
 export type Database = {
   public: {
     Tables: {
-      [_ in never]: never
+      profiles: {
+        Row: {
+          avatar_url: string | null
+          bio: string | null
+          created_at: string
+          email: string
+          full_name: string
+          id: string
+          interests: string[] | null
+          skills: string[] | null
+          university: string | null
+          updated_at: string
+          user_id: string
+        }
+        Insert: {
+          avatar_url?: string | null
+          bio?: string | null
+          created_at?: string
+          email: string
+          full_name: string
+          id?: string
+          interests?: string[] | null
+          skills?: string[] | null
+          university?: string | null
+          updated_at?: string
+          user_id: string
+        }
+        Update: {
+          avatar_url?: string | null
+          bio?: string | null
+          created_at?: string
+          email?: string
+          full_name?: string
+          id?: string
+          interests?: string[] | null
+          skills?: string[] | null
+          university?: string | null
+          updated_at?: string
+          user_id?: string
+        }
+        Relationships: []
+      }
+      team_applicants: {
+        Row: {
+          applied_at: string
+          id: string
+          status: string
+          team_id: string
+          user_id: string
+        }
+        Insert: {
+          applied_at?: string
+          id?: string
+          status?: string
+          team_id: string
+          user_id: string
+        }
+        Update: {
+          applied_at?: string
+          id?: string
+          status?: string
+          team_id?: string
+          user_id?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "team_applicants_team_id_fkey"
+            columns: ["team_id"]
+            isOneToOne: false
+            referencedRelation: "teams"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "team_applicants_user_id_fkey"
+            columns: ["user_id"]
+            isOneToOne: false
+            referencedRelation: "profiles"
+            referencedColumns: ["user_id"]
+          },
+        ]
+      }
+      team_chat: {
+        Row: {
+          created_at: string
+          id: string
+          message: string
+          sender_id: string
+          team_id: string
+        }
+        Insert: {
+          created_at?: string
+          id?: string
+          message: string
+          sender_id: string
+          team_id: string
+        }
+        Update: {
+          created_at?: string
+          id?: string
+          message?: string
+          sender_id?: string
+          team_id?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "team_chat_sender_id_fkey"
+            columns: ["sender_id"]
+            isOneToOne: false
+            referencedRelation: "profiles"
+            referencedColumns: ["user_id"]
+          },
+          {
+            foreignKeyName: "team_chat_team_id_fkey"
+            columns: ["team_id"]
+            isOneToOne: false
+            referencedRelation: "teams"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      teams: {
+        Row: {
+          category: string
+          created_at: string
+          created_by: string
+          description: string
+          id: string
+          required_skills: string[] | null
+          team_size: number
+          title: string
+          updated_at: string
+        }
+        Insert: {
+          category: string
+          created_at?: string
+          created_by: string
+          description: string
+          id?: string
+          required_skills?: string[] | null
+          team_size?: number
+          title: string
+          updated_at?: string
+        }
+        Update: {
+          category?: string
+          created_at?: string
+          created_by?: string
+          description?: string
+          id?: string
+          required_skills?: string[] | null
+          team_size?: number
+          title?: string
+          updated_at?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "teams_created_by_fkey"
+            columns: ["created_by"]
+            isOneToOne: false
+            referencedRelation: "profiles"
+            referencedColumns: ["user_id"]
+          },
+        ]
+      }
     }
     Views: {
       [_ in never]: never

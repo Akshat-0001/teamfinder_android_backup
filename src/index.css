@@ -8,89 +8,81 @@ All colors MUST be HSL.
 
 @layer base {
   :root {
+    /* Light theme - mobile optimized */
     --background: 0 0% 100%;
-    --foreground: 222.2 84% 4.9%;
+    --foreground: 260 15% 15%;
 
     --card: 0 0% 100%;
-    --card-foreground: 222.2 84% 4.9%;
+    --card-foreground: 260 15% 15%;
 
     --popover: 0 0% 100%;
-    --popover-foreground: 222.2 84% 4.9%;
+    --popover-foreground: 260 15% 15%;
 
-    --primary: 222.2 47.4% 11.2%;
-    --primary-foreground: 210 40% 98%;
+    --primary: 262 83% 58%;
+    --primary-foreground: 0 0% 98%;
 
-    --secondary: 210 40% 96.1%;
-    --secondary-foreground: 222.2 47.4% 11.2%;
+    --secondary: 174 74% 74%;
+    --secondary-foreground: 260 15% 15%;
 
-    --muted: 210 40% 96.1%;
-    --muted-foreground: 215.4 16.3% 46.9%;
+    --muted: 240 5% 96%;
+    --muted-foreground: 260 10% 50%;
 
-    --accent: 210 40% 96.1%;
-    --accent-foreground: 222.2 47.4% 11.2%;
+    --accent: 174 74% 74%;
+    --accent-foreground: 260 15% 15%;
 
-    --destructive: 0 84.2% 60.2%;
-    --destructive-foreground: 210 40% 98%;
+    --destructive: 0 84% 60%;
+    --destructive-foreground: 0 0% 98%;
 
-    --border: 214.3 31.8% 91.4%;
-    --input: 214.3 31.8% 91.4%;
-    --ring: 222.2 84% 4.9%;
+    --border: 240 6% 90%;
+    --input: 240 6% 90%;
+    --ring: 262 83% 58%;
 
-    --radius: 0.5rem;
+    --radius: 1rem;
 
-    --sidebar-background: 0 0% 98%;
-
-    --sidebar-foreground: 240 5.3% 26.1%;
-
-    --sidebar-primary: 240 5.9% 10%;
-
-    --sidebar-primary-foreground: 0 0% 98%;
-
-    --sidebar-accent: 240 4.8% 95.9%;
-
-    --sidebar-accent-foreground: 240 5.9% 10%;
-
-    --sidebar-border: 220 13% 91%;
-
-    --sidebar-ring: 217.2 91.2% 59.8%;
+    /* TeamFinder specific colors */
+    --gradient-primary: linear-gradient(135deg, hsl(262 83% 58%), hsl(282 83% 65%));
+    --gradient-secondary: linear-gradient(135deg, hsl(174 74% 74%), hsl(194 74% 74%));
+    --glass-bg: hsla(260, 15%, 15%, 0.05);
+    --shadow-primary: 0 10px 30px -10px hsla(262, 83%, 58%, 0.3);
+    --shadow-card: 0 4px 20px -4px hsla(260, 15%, 15%, 0.1);
   }
 
   .dark {
-    --background: 222.2 84% 4.9%;
-    --foreground: 210 40% 98%;
+    /* Dark theme - mobile optimized TeamFinder colors */
+    --background: 260 15% 8%;
+    --foreground: 0 0% 98%;
 
-    --card: 222.2 84% 4.9%;
-    --card-foreground: 210 40% 98%;
+    --card: 260 15% 12%;
+    --card-foreground: 0 0% 98%;
 
-    --popover: 222.2 84% 4.9%;
-    --popover-foreground: 210 40% 98%;
+    --popover: 260 15% 12%;
+    --popover-foreground: 0 0% 98%;
 
-    --primary: 210 40% 98%;
-    --primary-foreground: 222.2 47.4% 11.2%;
+    --primary: 282 83% 65%;
+    --primary-foreground: 260 15% 8%;
 
-    --secondary: 217.2 32.6% 17.5%;
-    --secondary-foreground: 210 40% 98%;
+    --secondary: 174 74% 64%;
+    --secondary-foreground: 260 15% 8%;
 
-    --muted: 217.2 32.6% 17.5%;
-    --muted-foreground: 215 20.2% 65.1%;
+    --muted: 260 15% 18%;
+    --muted-foreground: 260 10% 70%;
 
-    --accent: 217.2 32.6% 17.5%;
-    --accent-foreground: 210 40% 98%;
+    --accent: 174 74% 64%;
+    --accent-foreground: 260 15% 8%;
 
-    --destructive: 0 62.8% 30.6%;
-    --destructive-foreground: 210 40% 98%;
+    --destructive: 0 84% 60%;
+    --destructive-foreground: 0 0% 98%;
 
-    --border: 217.2 32.6% 17.5%;
-    --input: 217.2 32.6% 17.5%;
-    --ring: 212.7 26.8% 83.9%;
-    --sidebar-background: 240 5.9% 10%;
-    --sidebar-foreground: 240 4.8% 95.9%;
-    --sidebar-primary: 224.3 76.3% 48%;
-    --sidebar-primary-foreground: 0 0% 100%;
-    --sidebar-accent: 240 3.7% 15.9%;
-    --sidebar-accent-foreground: 240 4.8% 95.9%;
-    --sidebar-border: 240 3.7% 15.9%;
-    --sidebar-ring: 217.2 91.2% 59.8%;
+    --border: 260 15% 18%;
+    --input: 260 15% 18%;
+    --ring: 282 83% 65%;
+
+    /* TeamFinder dark specific colors */
+    --gradient-primary: linear-gradient(135deg, hsl(282 83% 65%), hsl(302 83% 70%));
+    --gradient-secondary: linear-gradient(135deg, hsl(174 74% 64%), hsl(194 74% 64%));
+    --glass-bg: hsla(0, 0%, 100%, 0.05);
+    --shadow-primary: 0 10px 30px -10px hsla(282, 83%, 65%, 0.4);
+    --shadow-card: 0 4px 20px -4px hsla(0, 0%, 0%, 0.3);
   }
 }
 
@@ -101,5 +93,75 @@ All colors MUST be HSL.
 
   body {
     @apply bg-background text-foreground;
+    font-family: 'Inter', system-ui, -apple-system, sans-serif;
+  }
+
+  html {
+    scroll-behavior: smooth;
+  }
+}
+
+@layer components {
+  /* Mobile-first glassmorphism effects */
+  .glass {
+    @apply bg-white/5 backdrop-blur-lg border border-white/10;
+  }
+  
+  .glass-card {
+    @apply bg-card/80 backdrop-blur-lg border border-border/50 shadow-lg;
+  }
+
+  /* Gradient buttons */
+  .btn-gradient {
+    background: var(--gradient-primary);
+    @apply text-primary-foreground font-medium rounded-xl shadow-lg transition-all duration-200 active:scale-95;
+  }
+
+  .btn-gradient:hover {
+    box-shadow: var(--shadow-primary);
+  }
+
+  /* Mobile-optimized animations */
+  .fade-in {
+    @apply opacity-0 translate-y-4 transition-all duration-300 ease-out;
+  }
+
+  .fade-in.show {
+    @apply opacity-100 translate-y-0;
+  }
+
+  .slide-up {
+    @apply transform translate-y-full transition-transform duration-300 ease-out;
+  }
+
+  .slide-up.show {
+    @apply translate-y-0;
+  }
+
+  /* Team category badges */
+  .category-badge {
+    @apply inline-flex items-center px-3 py-1 rounded-full text-xs font-medium;
+  }
+
+  .category-hackathon {
+    @apply bg-primary/10 text-primary border border-primary/20;
+  }
+
+  .category-project {
+    @apply bg-secondary/10 text-secondary border border-secondary/20;
+  }
+
+  .category-research {
+    @apply bg-accent/10 text-accent border border-accent/20;
+  }
+
+  /* Skill tags */
+  .skill-tag {
+    @apply inline-flex items-center px-2 py-1 rounded-md text-xs font-medium bg-muted text-muted-foreground;
+  }
+
+  /* Mobile touch targets */
+  .touch-target {
+    @apply min-h-[44px] min-w-[44px] flex items-center justify-center;
   }
 }
