@@ -1,6 +1,8 @@
 import { Outlet, Link, useLocation, useNavigate } from 'react-router-dom';
 import { useAuth } from '@/hooks/useAuth';
 import { Button } from '@/components/ui/button';
+import FloatingActionButton from '@/components/FloatingActionButton';
+import PageTransition from '@/components/PageTransition';
 import { 
   Home, 
   User, 
@@ -54,8 +56,13 @@ const Layout = () => {
 
       {/* Main Content */}
       <main className="flex-1">
-        <Outlet />
+        <PageTransition>
+          <Outlet />
+        </PageTransition>
       </main>
+
+      {/* Floating Action Button */}
+      <FloatingActionButton />
 
       {/* Bottom Navigation */}
       <nav className="bg-card/80 backdrop-blur-lg border-t border-border/50 sticky bottom-0 z-50">

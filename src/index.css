@@ -8,84 +8,139 @@ All colors MUST be HSL.
 
 @layer base {
   :root {
-    /* Light theme - mobile optimized */
-    --background: 0 0% 100%;
-    --foreground: 260 15% 15%;
+    /* Light theme - Blue Lagoon */
+    --background: 214 25% 97%; /* #F5F7FA */
+    --foreground: 0 0% 13%; /* #212121 */
 
-    --card: 0 0% 100%;
-    --card-foreground: 260 15% 15%;
+    --card: 0 0% 100%; /* #FFFFFF */
+    --card-foreground: 0 0% 13%;
 
     --popover: 0 0% 100%;
-    --popover-foreground: 260 15% 15%;
+    --popover-foreground: 0 0% 13%;
 
-    --primary: 262 83% 58%;
-    --primary-foreground: 0 0% 98%;
+    --primary: 207 82% 51%; /* #1E88E5 */
+    --primary-foreground: 0 0% 100%;
 
-    --secondary: 174 74% 74%;
-    --secondary-foreground: 260 15% 15%;
+    --secondary: 185 100% 38%; /* #00ACC1 */
+    --secondary-foreground: 0 0% 100%;
 
-    --muted: 240 5% 96%;
-    --muted-foreground: 260 10% 50%;
+    --muted: 210 40% 96%;
+    --muted-foreground: 0 0% 38%; /* #616161 */
 
-    --accent: 174 74% 74%;
-    --accent-foreground: 260 15% 15%;
+    --accent: 231 100% 59%; /* #2979FF */
+    --accent-foreground: 0 0% 100%;
 
-    --destructive: 0 84% 60%;
-    --destructive-foreground: 0 0% 98%;
+    --destructive: 4 85% 58%; /* #E53935 */
+    --destructive-foreground: 0 0% 100%;
 
-    --border: 240 6% 90%;
-    --input: 240 6% 90%;
-    --ring: 262 83% 58%;
+    --border: 0 0% 88%; /* #E0E0E0 */
+    --input: 0 0% 88%;
+    --ring: 207 82% 51%;
 
     --radius: 1rem;
 
-    /* TeamFinder specific colors - Enhanced */
-    --gradient-primary: linear-gradient(135deg, hsl(262 83% 58%), hsl(282 83% 65%), hsl(302 83% 70%));
-    --gradient-secondary: linear-gradient(135deg, hsl(174 74% 74%), hsl(194 74% 74%), hsl(214 74% 74%));
-    --gradient-accent: linear-gradient(135deg, hsl(340 82% 65%), hsl(320 82% 70%));
-    --glass-bg: hsla(260, 15%, 15%, 0.05);
-    --shadow-primary: 0 10px 30px -10px hsla(262, 83%, 58%, 0.3);
-    --shadow-card: 0 4px 20px -4px hsla(260, 15%, 15%, 0.1);
+    /* Enhanced gradients and effects */
+    --gradient-primary: linear-gradient(135deg, #1E88E5, #2979FF);
+    --gradient-secondary: linear-gradient(135deg, #00ACC1, #29B6F6);
+    --gradient-accent: linear-gradient(135deg, #2979FF, #536DFE);
+    --glass-bg: rgba(255, 255, 255, 0.1);
+    --shadow-primary: 0 10px 30px -10px rgba(30, 136, 229, 0.3);
+    --shadow-card: 0 4px 20px -4px rgba(0, 0, 0, 0.1);
+    --shadow-glow: 0 0 40px rgba(41, 121, 255, 0.2);
+    --shimmer: linear-gradient(90deg, transparent, rgba(255,255,255,0.4), transparent);
   }
 
   .dark {
-    /* Dark theme - mobile optimized TeamFinder colors */
-    --background: 260 15% 8%;
-    --foreground: 0 0% 98%;
+    /* Dark theme - Electric Indigo */
+    --background: 0 0% 7%; /* #121212 */
+    --foreground: 199 18% 91%; /* #ECEFF1 */
 
-    --card: 260 15% 12%;
-    --card-foreground: 0 0% 98%;
+    --card: 0 0% 12%; /* #1E1E1E */
+    --card-foreground: 199 18% 91%;
 
-    --popover: 260 15% 12%;
-    --popover-foreground: 0 0% 98%;
+    --popover: 0 0% 12%;
+    --popover-foreground: 199 18% 91%;
 
-    --primary: 282 83% 65%;
-    --primary-foreground: 260 15% 8%;
+    --primary: 239 100% 67%; /* #536DFE */
+    --primary-foreground: 0 0% 100%;
 
-    --secondary: 174 74% 64%;
-    --secondary-foreground: 260 15% 8%;
+    --secondary: 188 100% 28%; /* #00838F */
+    --secondary-foreground: 0 0% 100%;
 
-    --muted: 260 15% 18%;
-    --muted-foreground: 260 10% 70%;
+    --muted: 0 0% 17%;
+    --muted-foreground: 200 18% 69%; /* #B0BEC5 */
 
-    --accent: 174 74% 64%;
-    --accent-foreground: 260 15% 8%;
+    --accent: 199 89% 58%; /* #29B6F6 */
+    --accent-foreground: 0 0% 100%;
 
-    --destructive: 0 84% 60%;
-    --destructive-foreground: 0 0% 98%;
+    --destructive: 343 100% 54%; /* #FF1744 */
+    --destructive-foreground: 0 0% 100%;
 
-    --border: 260 15% 18%;
-    --input: 260 15% 18%;
-    --ring: 282 83% 65%;
+    --border: 0 0% 17%; /* #2C2C2C */
+    --input: 0 0% 17%;
+    --ring: 239 100% 67%;
 
-    /* TeamFinder dark specific colors - Enhanced */
-    --gradient-primary: linear-gradient(135deg, hsl(282 83% 65%), hsl(302 83% 70%), hsl(322 83% 75%));
-    --gradient-secondary: linear-gradient(135deg, hsl(174 74% 64%), hsl(194 74% 64%), hsl(214 74% 64%));
-    --gradient-accent: linear-gradient(135deg, hsl(340 82% 65%), hsl(320 82% 70%));
-    --glass-bg: hsla(0, 0%, 100%, 0.05);
-    --shadow-primary: 0 10px 30px -10px hsla(282, 83%, 65%, 0.4);
-    --shadow-card: 0 4px 20px -4px hsla(0, 0%, 0%, 0.3);
-    --shadow-glow: 0 0 40px hsla(282, 83%, 65%, 0.2);
+    /* Enhanced dark gradients and effects */
+    --gradient-primary: linear-gradient(135deg, #536DFE, #29B6F6);
+    --gradient-secondary: linear-gradient(135deg, #00838F, #29B6F6);
+    --gradient-accent: linear-gradient(135deg, #29B6F6, #536DFE);
+    --glass-bg: rgba(255, 255, 255, 0.05);
+    --shadow-primary: 0 10px 30px -10px rgba(83, 109, 254, 0.4);
+    --shadow-card: 0 4px 20px -4px rgba(0, 0, 0, 0.3);
+    --shadow-glow: 0 0 40px rgba(41, 182, 246, 0.3);
+    --shimmer: linear-gradient(90deg, transparent, rgba(255,255,255,0.1), transparent);
+  }
+
+  /* Ocean Sunset Theme */
+  .theme-ocean {
+    --background: 195 100% 95%;
+    --foreground: 210 22% 22%;
+    --card: 180 25% 98%;
+    --card-foreground: 210 22% 22%;
+    --primary: 183 100% 32%;
+    --primary-foreground: 0 0% 100%;
+    --secondary: 33 100% 50%;
+    --secondary-foreground: 0 0% 100%;
+    --accent: 320 65% 58%;
+    --accent-foreground: 0 0% 100%;
+    --gradient-primary: linear-gradient(135deg, #006064, #FF8F00);
+    --gradient-secondary: linear-gradient(135deg, #FF8F00, #E91E63);
+    --shadow-primary: 0 10px 30px -10px rgba(0, 96, 100, 0.3);
+  }
+
+  /* Forest Theme */
+  .theme-forest {
+    --background: 120 25% 95%;
+    --foreground: 120 25% 15%;
+    --card: 120 20% 98%;
+    --card-foreground: 120 25% 15%;
+    --primary: 120 40% 30%;
+    --primary-foreground: 0 0% 100%;
+    --secondary: 80 60% 50%;
+    --secondary-foreground: 0 0% 100%;
+    --accent: 40 90% 60%;
+    --accent-foreground: 0 0% 0%;
+    --gradient-primary: linear-gradient(135deg, #2E7D32, #689F38);
+    --gradient-secondary: linear-gradient(135deg, #689F38, #FFC107);
+    --shadow-primary: 0 10px 30px -10px rgba(46, 125, 50, 0.3);
+  }
+
+  /* Cosmic Theme */
+  .theme-cosmic {
+    --background: 260 30% 8%;
+    --foreground: 280 20% 90%;
+    --card: 260 25% 12%;
+    --card-foreground: 280 20% 90%;
+    --primary: 280 100% 70%;
+    --primary-foreground: 0 0% 0%;
+    --secondary: 320 90% 65%;
+    --secondary-foreground: 0 0% 0%;
+    --accent: 200 100% 70%;
+    --accent-foreground: 0 0% 0%;
+    --gradient-primary: linear-gradient(135deg, #9C27B0, #E91E63);
+    --gradient-secondary: linear-gradient(135deg, #E91E63, #00BCD4);
+    --shadow-primary: 0 10px 30px -10px rgba(156, 39, 176, 0.4);
+    --shadow-glow: 0 0 40px rgba(233, 30, 99, 0.3);
   }
 }
 
@@ -107,7 +162,8 @@ All colors MUST be HSL.
 @layer components {
   /* Enhanced glassmorphism effects */
   .glass {
-    @apply bg-white/5 backdrop-blur-lg border border-white/10 shadow-lg;
+    background: var(--glass-bg);
+    @apply backdrop-blur-lg border border-white/10 shadow-lg;
   }
   
   .glass-card {
@@ -138,7 +194,63 @@ All colors MUST be HSL.
     @apply bg-transparent hover:bg-accent/10 border border-transparent hover:border-accent/20 transition-all duration-200;
   }
 
-  /* Mobile-optimized animations */
+  /* Floating Action Buttons */
+  .fab {
+    @apply fixed bottom-20 right-4 w-14 h-14 rounded-full shadow-2xl transition-all duration-300 z-40;
+    background: var(--gradient-accent);
+    box-shadow: var(--shadow-glow);
+  }
+
+  .fab:hover {
+    @apply scale-110;
+    box-shadow: var(--shadow-glow), 0 0 60px rgba(41, 121, 255, 0.4);
+  }
+
+  .fab:active {
+    @apply scale-95;
+  }
+
+  /* Loading shimmer animations */
+  .shimmer {
+    position: relative;
+    overflow: hidden;
+  }
+
+  .shimmer::before {
+    content: '';
+    position: absolute;
+    top: 0;
+    left: -100%;
+    width: 100%;
+    height: 100%;
+    background: var(--shimmer);
+    animation: shimmer 2s infinite;
+    z-index: 1;
+  }
+
+  @keyframes shimmer {
+    0% { left: -100%; }
+    100% { left: 100%; }
+  }
+
+  /* Page transitions */
+  .page-enter {
+    @apply opacity-0 translate-x-4;
+  }
+
+  .page-enter-active {
+    @apply opacity-100 translate-x-0 transition-all duration-300 ease-out;
+  }
+
+  .page-exit {
+    @apply opacity-100 translate-x-0;
+  }
+
+  .page-exit-active {
+    @apply opacity-0 -translate-x-4 transition-all duration-300 ease-out;
+  }
+
+  /* Enhanced mobile animations */
   .fade-in {
     @apply opacity-0 translate-y-4 transition-all duration-300 ease-out;
   }
@@ -153,6 +265,40 @@ All colors MUST be HSL.
 
   .slide-up.show {
     @apply translate-y-0;
+  }
+
+  /* Enhanced card hover states */
+  .card-interactive {
+    @apply transition-all duration-200 hover:scale-[1.02] hover:-translate-y-1;
+    box-shadow: var(--shadow-card);
+  }
+
+  .card-interactive:hover {
+    box-shadow: var(--shadow-primary);
+  }
+
+  /* Premium badge variants */
+  .badge-premium {
+    background: var(--gradient-accent);
+    @apply text-white font-semibold px-3 py-1 rounded-full text-xs shadow-lg;
+  }
+
+  /* Enhanced chat bubbles */
+  .chat-bubble {
+    @apply max-w-[80%] p-3 rounded-2xl shadow-sm transition-all duration-200;
+  }
+
+  .chat-bubble-sent {
+    background: var(--gradient-primary);
+    @apply text-primary-foreground ml-auto;
+  }
+
+  .chat-bubble-received {
+    @apply bg-muted text-muted-foreground mr-auto;
+  }
+
+  .chat-bubble:hover {
+    @apply scale-[1.02];
   }
 
   /* Team category badges */

@@ -1,10 +1,10 @@
-import { useState } from 'react';
+import { useState, useEffect } from 'react';
 import { useAuth } from '@/hooks/useAuth';
 import { Button } from '@/components/ui/button';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
 import { Switch } from '@/components/ui/switch';
 import { useNavigate } from 'react-router-dom';
-import { ArrowLeft, Moon, Sun, Settings as SettingsIcon, Palette } from 'lucide-react';
+import { ArrowLeft, Moon, Sun, Settings as SettingsIcon, Palette, Waves, Trees, Sparkles } from 'lucide-react';
 import { useTheme } from 'next-themes';
 
 const Settings = () => {
@@ -12,6 +12,34 @@ const Settings = () => {
   const { user, signOut } = useAuth();
   const { theme, setTheme } = useTheme();
   const [isSigningOut, setIsSigningOut] = useState(false);
+  const [currentTheme, setCurrentTheme] = useState('system');
+
+  const themes = [
+    { id: 'light', name: 'Light', icon: Sun, description: 'Blue Lagoon - Clean and bright' },
+    { id: 'dark', name: 'Dark', icon: Moon, description: 'Electric Indigo - Sleek and modern' },
+    { id: 'theme-ocean', name: 'Ocean Sunset', icon: Waves, description: 'Tropical vibes with warm accents' },
+    { id: 'theme-forest', name: 'Forest', icon: Trees, description: 'Natural greens and earth tones' },
+    { id: 'theme-cosmic', name: 'Cosmic', icon: Sparkles, description: 'Deep space with vibrant purples' }
+  ];
+
+  useEffect(() => {
+    setCurrentTheme(theme || 'system');
+  }, [theme]);
+
+  const handleThemeChange = (themeId: string) => {
+    setCurrentTheme(themeId);
+    setTheme(themeId);
+    
+    // Apply custom theme classes
+    document.documentElement.className = document.documentElement.className
+      .replace(/theme-\w+/g, '')
+      .replace(/\s+/g, ' ')
+      .trim();
+    
+    if (themeId.startsWith('theme-')) {
+      document.documentElement.classList.add(themeId);
+    }
+  };
 
   const handleSignOut = async () => {
     setIsSigningOut(true);
@@ -49,32 +77,44 @@ const Settings = () => {
           <CardHeader>
             <div className="flex items-center gap-2">
               <Palette className="h-5 w-5 text-primary" />
-              <CardTitle>Appearance</CardTitle>
+              <CardTitle>Themes</CardTitle>
             </div>
             <CardDescription>
-              Customize how TeamFinder looks and feels
+              Choose your perfect color palette
             </CardDescription>
           </CardHeader>
           <CardContent className="space-y-4">
-            <div className="flex items-center justify-between">
-              <div className="flex items-center gap-3">
-                {theme === 'dark' ? (
-                  <Moon className="h-5 w-5 text-primary" />
-                ) : (
-                  <Sun className="h-5 w-5 text-primary" />
-                )}
-                <div>
-                  <p className="font-medium">Dark Mode</p>
-                  <p className="text-sm text-muted-foreground">
-                    Switch between light and dark themes
-                  </p>
+            {themes.map((themeOption) => {
+              const IconComponent = themeOption.icon;
+              const isSelected = currentTheme === themeOption.id;
+              
+              return (
+                <div
+                  key={themeOption.id}
+                  className={`p-4 rounded-xl border-2 cursor-pointer transition-all duration-200 ${
+                    isSelected 
+                      ? 'border-primary bg-primary/5 shadow-lg' 
+                      : 'border-border hover:border-primary/50 hover:bg-accent/5'
+                  }`}
+                  onClick={() => handleThemeChange(themeOption.id)}
+                >
+                  <div className="flex items-center gap-3">
+                    <div className={`p-2 rounded-lg ${isSelected ? 'bg-primary text-primary-foreground' : 'bg-muted'}`}>
+                      <IconComponent className="h-5 w-5" />
+                    </div>
+                    <div className="flex-1">
+                      <p className="font-medium">{themeOption.name}</p>
+                      <p className="text-sm text-muted-foreground">
+                        {themeOption.description}
+                      </p>
+                    </div>
+                    {isSelected && (
+                      <div className="w-2 h-2 rounded-full bg-primary animate-pulse" />
+                    )}
+                  </div>
                 </div>
-              </div>
-              <Switch
-                checked={theme === 'dark'}
-                onCheckedChange={(checked) => setTheme(checked ? 'dark' : 'light')}
-              />
-            </div>
+              );
+            })}
           </CardContent>
         </Card>
 

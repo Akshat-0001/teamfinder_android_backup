@@ -34,15 +34,24 @@ const Home = () => {
   if (isLoading) {
     return (
       <div className="container mx-auto px-4 py-6">
-        <div className="animate-pulse space-y-4">
+        <div className="space-y-4">
           {[...Array(5)].map((_, i) => (
-            <Card key={i}>
+            <Card key={i} className="glass-card">
               <CardHeader>
-                <div className="h-6 bg-muted rounded w-3/4"></div>
-                <div className="h-4 bg-muted rounded w-1/2"></div>
+                <div className="shimmer h-6 bg-muted rounded w-3/4"></div>
+                <div className="shimmer h-4 bg-muted rounded w-1/2"></div>
               </CardHeader>
               <CardContent>
-                <div className="h-4 bg-muted rounded w-full"></div>
+                <div className="shimmer h-4 bg-muted rounded w-full mb-2"></div>
+                <div className="shimmer h-4 bg-muted rounded w-3/4 mb-4"></div>
+                <div className="flex gap-2 mb-4">
+                  <div className="shimmer h-6 bg-muted rounded w-16"></div>
+                  <div className="shimmer h-6 bg-muted rounded w-16"></div>
+                </div>
+                <div className="flex justify-between">
+                  <div className="shimmer h-4 bg-muted rounded w-20"></div>
+                  <div className="shimmer h-4 bg-muted rounded w-20"></div>
+                </div>
               </CardContent>
             </Card>
           ))}
@@ -117,7 +126,7 @@ const Home = () => {
         ) : (
           filteredTeams.map((team) => (
             <Link key={team.id} to={`/teams/${team.id}`}>
-              <Card className="glass-card hover:shadow-lg transition-all duration-200 active:scale-[0.98]">
+              <Card className="glass-card card-interactive">
                 <CardHeader>
                   <div className="flex items-start justify-between">
                     <div className="flex-1">
@@ -128,7 +137,7 @@ const Home = () => {
                         <span className="text-xs">{formatDate(team.created_at)}</span>
                       </CardDescription>
                     </div>
-                    <Badge variant="secondary" className={`category-${team.category.toLowerCase()}`}>
+                    <Badge variant="secondary" className={`category-${team.category.toLowerCase()} badge-premium`}>
                       {team.category}
                     </Badge>
                   </div>
@@ -141,14 +150,14 @@ const Home = () => {
                   {team.required_skills && team.required_skills.length > 0 && (
                     <div className="flex flex-wrap gap-1 mb-4">
                       {team.required_skills.slice(0, 3).map((skill) => (
-                        <Badge key={skill} variant="outline" className="text-xs">
+                        <span key={skill} className="skill-tag">
                           {skill}
-                        </Badge>
+                        </span>
                       ))}
                       {team.required_skills.length > 3 && (
-                        <Badge variant="outline" className="text-xs">
+                        <span className="skill-tag">
                           +{team.required_skills.length - 3} more
-                        </Badge>
+                        </span>
                       )}
                     </div>
                   )}
