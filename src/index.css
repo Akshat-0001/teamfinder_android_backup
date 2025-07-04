@@ -39,9 +39,10 @@ All colors MUST be HSL.
 
     --radius: 1rem;
 
-    /* TeamFinder specific colors */
-    --gradient-primary: linear-gradient(135deg, hsl(262 83% 58%), hsl(282 83% 65%));
-    --gradient-secondary: linear-gradient(135deg, hsl(174 74% 74%), hsl(194 74% 74%));
+    /* TeamFinder specific colors - Enhanced */
+    --gradient-primary: linear-gradient(135deg, hsl(262 83% 58%), hsl(282 83% 65%), hsl(302 83% 70%));
+    --gradient-secondary: linear-gradient(135deg, hsl(174 74% 74%), hsl(194 74% 74%), hsl(214 74% 74%));
+    --gradient-accent: linear-gradient(135deg, hsl(340 82% 65%), hsl(320 82% 70%));
     --glass-bg: hsla(260, 15%, 15%, 0.05);
     --shadow-primary: 0 10px 30px -10px hsla(262, 83%, 58%, 0.3);
     --shadow-card: 0 4px 20px -4px hsla(260, 15%, 15%, 0.1);
@@ -77,12 +78,14 @@ All colors MUST be HSL.
     --input: 260 15% 18%;
     --ring: 282 83% 65%;
 
-    /* TeamFinder dark specific colors */
-    --gradient-primary: linear-gradient(135deg, hsl(282 83% 65%), hsl(302 83% 70%));
-    --gradient-secondary: linear-gradient(135deg, hsl(174 74% 64%), hsl(194 74% 64%));
+    /* TeamFinder dark specific colors - Enhanced */
+    --gradient-primary: linear-gradient(135deg, hsl(282 83% 65%), hsl(302 83% 70%), hsl(322 83% 75%));
+    --gradient-secondary: linear-gradient(135deg, hsl(174 74% 64%), hsl(194 74% 64%), hsl(214 74% 64%));
+    --gradient-accent: linear-gradient(135deg, hsl(340 82% 65%), hsl(320 82% 70%));
     --glass-bg: hsla(0, 0%, 100%, 0.05);
     --shadow-primary: 0 10px 30px -10px hsla(282, 83%, 65%, 0.4);
     --shadow-card: 0 4px 20px -4px hsla(0, 0%, 0%, 0.3);
+    --shadow-glow: 0 0 40px hsla(282, 83%, 65%, 0.2);
   }
 }
 
@@ -102,23 +105,37 @@ All colors MUST be HSL.
 }
 
 @layer components {
-  /* Mobile-first glassmorphism effects */
+  /* Enhanced glassmorphism effects */
   .glass {
-    @apply bg-white/5 backdrop-blur-lg border border-white/10;
+    @apply bg-white/5 backdrop-blur-lg border border-white/10 shadow-lg;
   }
   
   .glass-card {
-    @apply bg-card/80 backdrop-blur-lg border border-border/50 shadow-lg;
+    @apply bg-card/80 backdrop-blur-lg border border-border/50 shadow-lg hover:shadow-xl transition-all duration-300;
   }
 
-  /* Gradient buttons */
+  .glass-strong {
+    @apply bg-card/90 backdrop-blur-xl border border-border/60 shadow-xl;
+  }
+
+  /* Enhanced gradient buttons */
   .btn-gradient {
     background: var(--gradient-primary);
-    @apply text-primary-foreground font-medium rounded-xl shadow-lg transition-all duration-200 active:scale-95;
+    @apply text-primary-foreground font-medium rounded-xl shadow-lg transition-all duration-200 active:scale-95 hover:shadow-xl;
   }
 
   .btn-gradient:hover {
     box-shadow: var(--shadow-primary);
+    transform: translateY(-1px);
+  }
+
+  .btn-gradient-secondary {
+    background: var(--gradient-secondary);
+    @apply text-secondary-foreground font-medium rounded-xl shadow-lg transition-all duration-200 active:scale-95 hover:shadow-xl;
+  }
+
+  .btn-ghost-enhanced {
+    @apply bg-transparent hover:bg-accent/10 border border-transparent hover:border-accent/20 transition-all duration-200;
   }
 
   /* Mobile-optimized animations */

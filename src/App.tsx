@@ -1,6 +1,7 @@
 import { Toaster } from "@/components/ui/toaster";
 import { Toaster as Sonner } from "@/components/ui/sonner";
 import { TooltipProvider } from "@/components/ui/tooltip";
+import { ThemeProvider } from "next-themes";
 import { QueryClient, QueryClientProvider } from "@tanstack/react-query";
 import { BrowserRouter, Routes, Route, Navigate } from "react-router-dom";
 import { useAuth } from "@/hooks/useAuth";
@@ -15,6 +16,7 @@ import MyTeams from "./pages/MyTeams";
 import TeamDetails from "./pages/TeamDetails";
 import TeamChat from "./pages/TeamChat";
 import Search from "./pages/Search";
+import Settings from "./pages/Settings";
 
 const queryClient = new QueryClient();
 
@@ -36,10 +38,11 @@ const ProtectedRoute = ({ children }: { children: React.ReactNode }) => {
 
 const App = () => (
   <QueryClientProvider client={queryClient}>
-    <TooltipProvider>
-      <Toaster />
-      <Sonner />
-      <BrowserRouter>
+    <ThemeProvider attribute="class" defaultTheme="system" enableSystem>
+      <TooltipProvider>
+        <Toaster />
+        <Sonner />
+        <BrowserRouter>
         <Routes>
           <Route path="/" element={<SplashScreen />} />
           <Route path="/onboarding" element={<OnboardingCarousel />} />
@@ -51,12 +54,14 @@ const App = () => (
             <Route path="teams/:id" element={<TeamDetails />} />
             <Route path="my-teams" element={<MyTeams />} />
             <Route path="search" element={<Search />} />
+            <Route path="settings" element={<Settings />} />
           </Route>
           <Route path="/chat/:teamId" element={<ProtectedRoute><TeamChat /></ProtectedRoute>} />
           <Route path="*" element={<Navigate to="/" replace />} />
         </Routes>
       </BrowserRouter>
-    </TooltipProvider>
+      </TooltipProvider>
+    </ThemeProvider>
   </QueryClientProvider>
 );
 

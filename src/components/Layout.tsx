@@ -99,6 +99,19 @@ const Layout = () => {
                 <span className="text-xs">Profile</span>
               </Button>
             </Link>
+
+            <Link to="/settings">
+              <Button
+                variant="ghost"
+                size="sm"
+                className={`flex-col h-12 w-16 ${
+                  isActive('/settings') ? 'text-primary' : 'text-muted-foreground'
+                }`}
+              >
+                <Settings className="h-5 w-5" />
+                <span className="text-xs">Settings</span>
+              </Button>
+            </Link>
           </div>
         </div>
       </nav>
