@@ -112,12 +112,12 @@ const Search = () => {
             {/* Category Filter */}
             <div>
               <label className="text-sm font-medium mb-2 block">Category</label>
-              <Select value={category} onValueChange={setCategory}>
+              <Select value={category} onValueChange={(value) => setCategory(value === 'all' ? '' : value)}>
                 <SelectTrigger>
                   <SelectValue placeholder="All categories" />
                 </SelectTrigger>
                 <SelectContent>
-                  <SelectItem value="">All categories</SelectItem>
+                  <SelectItem value="all">All categories</SelectItem>
                   {TEAM_CATEGORIES.map((cat) => (
                     <SelectItem key={cat} value={cat}>
                       {cat}
