@@ -88,9 +88,33 @@ export const COMMON_SKILLS = [
 ] as const;
 
 export const UNIVERSITIES = [
+
+  // Indian Institutes of Technology (IITs)
+  'IIT Bombay', 'IIT Delhi', 'IIT Kanpur', 'IIT Madras', 'IIT Kharagpur',
+  'IIT Roorkee', 'IIT Guwahati', 'IIT Hyderabad', 'IIT BHU', 'IIT Dhanbad',
+
+  // Indian Institutes of Information Technology (IIITs)
+  'IIIT Hyderabad', 'IIIT Delhi', 'IIIT Bangalore', 'IIIT Allahabad', 'IIIT Gwalior',
+
+  // National Institutes of Technology (NITs)
+  'NIT Trichy', 'NIT Surathkal', 'NIT Warangal', 'NIT Rourkela', 'NIT Calicut',
+
+  // Central and public universities
+  'Delhi University', 'JNU', 'Jamia Millia Islamia', 'AMU', 'BHU', 'IISc Bangalore',
+
+  // Top Private Universities
+  'BITS Pilani', 'BITS Goa', 'BITS Hyderabad', 'VIT Vellore', 'SRM University',
+  'Manipal University', 'Amity University', 'Shiv Nadar University',
+  'Ashoka University', 'Chandigarh University', 'Chitkara University',
+  'LNCT Bhopal', 'Galgotias University', 'Graphic Era University', 'Christ University',
+  
+  // Top U.S. Universities
   'MIT', 'Stanford University', 'Harvard University', 'UC Berkeley', 'Carnegie Mellon',
   'Caltech', 'University of Washington', 'Georgia Tech', 'University of Illinois',
   'Cornell University', 'Princeton University', 'Yale University', 'Columbia University',
   'University of Michigan', 'UC San Diego', 'UT Austin', 'University of Pennsylvania',
-  'Duke University', 'Northwestern University', 'Johns Hopkins University', 'Other'
+  'Duke University', 'Northwestern University', 'Johns Hopkins University',
+
+  // Other or unknown
+  'Other'
 ] as const;

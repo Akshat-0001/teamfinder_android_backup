@@ -23,7 +23,7 @@ const Home = () => {
 
   // Sort teams based on user preference
   const getSortedTeams = (teams: any[]) => {
-    if (!sortBy || !profile) return teams;
+    if (!sortBy || sortBy === 'default' || !profile) return teams;
     
     return [...teams].sort((a, b) => {
       switch (sortBy) {
@@ -149,7 +149,7 @@ const Home = () => {
               <SelectValue placeholder="Sort by" />
             </SelectTrigger>
             <SelectContent>
-              <SelectItem value="">Default</SelectItem>
+              <SelectItem value="default">Default</SelectItem>
               <SelectItem value="university">Same University</SelectItem>
               <SelectItem value="interests">Similar Interests</SelectItem>
               <SelectItem value="skills">Matching Skills</SelectItem>

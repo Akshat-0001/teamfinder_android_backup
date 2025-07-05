@@ -30,9 +30,16 @@ const Layout = () => {
       <header className="mobile-header bg-card/80 backdrop-blur-lg border-b border-border/50">
         <div className="container mx-auto px-4 h-16 flex items-center justify-between">
           <Link to="/home" className="flex items-center space-x-2">
-            <div className="w-8 h-8 rounded-lg bg-gradient-to-br from-primary to-secondary flex items-center justify-center">
-              <span className="text-white font-bold text-sm">TF</span>
-            </div>
+
+          <div className="w-8 h-8 rounded-lg overflow-hidden">
+  <img
+    src="https://res.cloudinary.com/dmz1x7at4/image/upload/cropped_circle_image-min_xiyyo5.png"
+    alt="TeamFinder Logo"
+    className="w-full h-full object-cover"
+  />
+</div>
+
+
             <span className="font-bold text-xl text-foreground">TeamFinder</span>
           </Link>
 
