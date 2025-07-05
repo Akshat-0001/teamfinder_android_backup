@@ -113,7 +113,7 @@ const Profile = () => {
   }
 
   return (
-    <div className="container mx-auto px-4 py-6 pb-20">
+    <div className="container mx-auto px-4 py-6 flex-1 flex flex-col">
       <div className="max-w-2xl mx-auto">
         {/* Header */}
         <div className="flex items-center justify-between mb-6">

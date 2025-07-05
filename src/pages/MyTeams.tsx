@@ -87,7 +87,7 @@ const MyTeams = () => {
   const joinedTeams = myTeams?.joined || [];
 
   return (
-    <div className="container mx-auto px-4 py-6 pb-20">
+    <div className="container mx-auto px-4 py-6 flex-1 flex flex-col">
       <div className="flex items-center justify-between mb-6">
         <div>
           <h1 className="text-2xl font-bold">My Teams</h1>
@@ -108,20 +108,22 @@ const MyTeams = () => {
           <TabsTrigger value="applications">Applications ({applications?.length || 0})</TabsTrigger>
         </TabsList>
 
-        <TabsContent value="created" className="space-y-4">
+        <TabsContent value="created" className="space-y-4 flex-1 flex flex-col">
           {createdTeams.length === 0 ? (
-            <Card className="text-center py-12">
-              <CardContent>
-                <Users className="h-12 w-12 text-muted-foreground mx-auto mb-4" />
-                <h3 className="text-lg font-semibold mb-2">No teams created yet</h3>
-                <p className="text-muted-foreground mb-4">
-                  Create your first team and start building something amazing!
-                </p>
-                <Link to="/teams/create">
-                  <Button className="btn-gradient">Create Your First Team</Button>
-                </Link>
-              </CardContent>
-            </Card>
+            <div className="full-height-content">
+              <Card className="text-center py-12">
+                <CardContent>
+                  <Users className="h-12 w-12 text-muted-foreground mx-auto mb-4" />
+                  <h3 className="text-lg font-semibold mb-2">No teams created yet</h3>
+                  <p className="text-muted-foreground mb-4">
+                    Create your first team and start building something amazing!
+                  </p>
+                  <Link to="/teams/create">
+                    <Button className="btn-gradient">Create Your First Team</Button>
+                  </Link>
+                </CardContent>
+              </Card>
+            </div>
           ) : (
             createdTeams.map((team) => (
               <Card key={team.id} className="glass-card">
@@ -183,20 +185,22 @@ const MyTeams = () => {
           )}
         </TabsContent>
 
-        <TabsContent value="joined" className="space-y-4">
+        <TabsContent value="joined" className="space-y-4 flex-1 flex flex-col">
           {joinedTeams.length === 0 ? (
-            <Card className="text-center py-12">
-              <CardContent>
-                <Users className="h-12 w-12 text-muted-foreground mx-auto mb-4" />
-                <h3 className="text-lg font-semibold mb-2">No teams joined yet</h3>
-                <p className="text-muted-foreground mb-4">
-                  Find and apply to teams that match your interests!
-                </p>
-                <Link to="/home">
-                  <Button className="btn-gradient">Browse Teams</Button>
-                </Link>
-              </CardContent>
-            </Card>
+            <div className="full-height-content">
+              <Card className="text-center py-12">
+                <CardContent>
+                  <Users className="h-12 w-12 text-muted-foreground mx-auto mb-4" />
+                  <h3 className="text-lg font-semibold mb-2">No teams joined yet</h3>
+                  <p className="text-muted-foreground mb-4">
+                    Find and apply to teams that match your interests!
+                  </p>
+                  <Link to="/home">
+                    <Button className="btn-gradient">Browse Teams</Button>
+                  </Link>
+                </CardContent>
+              </Card>
+            </div>
           ) : (
             joinedTeams.map((team) => (
               <Card key={team.id} className="glass-card">
@@ -230,20 +234,22 @@ const MyTeams = () => {
           )}
         </TabsContent>
 
-        <TabsContent value="applications" className="space-y-4">
+        <TabsContent value="applications" className="space-y-4 flex-1 flex flex-col">
           {!applications || applications.length === 0 ? (
-            <Card className="text-center py-12">
-              <CardContent>
-                <Clock className="h-12 w-12 text-muted-foreground mx-auto mb-4" />
-                <h3 className="text-lg font-semibold mb-2">No applications yet</h3>
-                <p className="text-muted-foreground mb-4">
-                  Apply to teams and track your application status here!
-                </p>
-                <Link to="/home">
-                  <Button className="btn-gradient">Browse Teams</Button>
-                </Link>
-              </CardContent>
-            </Card>
+            <div className="full-height-content">
+              <Card className="text-center py-12">
+                <CardContent>
+                  <Clock className="h-12 w-12 text-muted-foreground mx-auto mb-4" />
+                  <h3 className="text-lg font-semibold mb-2">No applications yet</h3>
+                  <p className="text-muted-foreground mb-4">
+                    Apply to teams and track your application status here!
+                  </p>
+                  <Link to="/home">
+                    <Button className="btn-gradient">Browse Teams</Button>
+                  </Link>
+                </CardContent>
+              </Card>
+            </div>
           ) : (
             applications.map((application) => (
               <Card key={application.id} className="glass-card">

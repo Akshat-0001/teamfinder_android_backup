@@ -51,7 +51,7 @@ const Search = () => {
   const hasActiveFilters = search || category || selectedSkills.length > 0;
 
   return (
-    <div className="container mx-auto px-4 py-6 pb-20">
+    <div className="container mx-auto px-4 py-6 flex-1 flex flex-col">
       {/* Header */}
       <div className="flex items-center gap-4 mb-6">
         <Button
@@ -167,7 +167,7 @@ const Search = () => {
       )}
 
       {/* Results */}
-      <div className="space-y-4">
+      <div className="space-y-4 flex-1 flex flex-col">
         {isLoading ? (
           <div className="space-y-4">
             {[...Array(5)].map((_, i) => (
@@ -183,23 +183,25 @@ const Search = () => {
             ))}
           </div>
         ) : filteredTeams.length === 0 ? (
-          <Card className="text-center py-12">
-            <CardContent>
-              <SearchIcon className="h-12 w-12 text-muted-foreground mx-auto mb-4" />
-              <h3 className="text-lg font-semibold mb-2">No teams found</h3>
-              <p className="text-muted-foreground mb-4">
-                {hasActiveFilters 
-                  ? "Try adjusting your search criteria or clearing some filters"
-                  : "There are no teams available right now"
-                }
-              </p>
-              {hasActiveFilters && (
-                <Button onClick={clearFilters} variant="outline">
-                  Clear Filters
-                </Button>
-              )}
-            </CardContent>
-          </Card>
+          <div className="full-height-content">
+            <Card className="text-center py-12">
+              <CardContent>
+                <SearchIcon className="h-12 w-12 text-muted-foreground mx-auto mb-4" />
+                <h3 className="text-lg font-semibold mb-2">No teams found</h3>
+                <p className="text-muted-foreground mb-4">
+                  {hasActiveFilters 
+                    ? "Try adjusting your search criteria or clearing some filters"
+                    : "There are no teams available right now"
+                  }
+                </p>
+                {hasActiveFilters && (
+                  <Button onClick={clearFilters} variant="outline">
+                    Clear Filters
+                  </Button>
+                )}
+              </CardContent>
+            </Card>
+          </div>
         ) : (
           <>
             <div className="flex items-center justify-between">

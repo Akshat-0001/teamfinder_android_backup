@@ -196,9 +196,11 @@ All colors MUST be HSL.
 
   /* Floating Action Buttons */
   .fab {
-    @apply fixed bottom-20 right-4 w-14 h-14 rounded-full shadow-2xl transition-all duration-300 z-40;
+    @apply fixed w-14 h-14 rounded-full shadow-2xl transition-all duration-300 z-40;
     background: var(--gradient-accent);
     box-shadow: var(--shadow-glow);
+    bottom: calc(5rem + env(safe-area-inset-bottom)); /* 5rem = bottom nav + spacing */
+    right: 1rem;
   }
 
   .fab:hover {
@@ -326,5 +328,52 @@ All colors MUST be HSL.
   /* Mobile touch targets */
   .touch-target {
     @apply min-h-[44px] min-w-[44px] flex items-center justify-center;
+  }
+
+  /* Mobile safe areas and layout */
+  .safe-area-top {
+    padding-top: env(safe-area-inset-top);
+  }
+
+  .safe-area-bottom {
+    padding-bottom: env(safe-area-inset-bottom);
+  }
+
+  .mobile-container {
+    @apply min-h-screen flex flex-col;
+    min-height: 100vh;
+    min-height: 100dvh; /* Dynamic viewport height */
+  }
+
+  .mobile-content {
+    @apply flex-1 flex flex-col;
+    padding-bottom: calc(4rem + env(safe-area-inset-bottom)); /* Bottom nav height + safe area */
+  }
+
+  .mobile-header {
+    @apply sticky top-0 z-50 safe-area-top;
+  }
+
+  .mobile-bottom-nav {
+    @apply sticky bottom-0 z-50 safe-area-bottom;
+    margin-bottom: env(safe-area-inset-bottom);
+  }
+
+  /* Full height content areas */
+  .full-height-content {
+    @apply flex-1 flex flex-col justify-center;
+    min-height: calc(100vh - 8rem); /* Account for header + bottom nav */
+    min-height: calc(100dvh - 8rem);
+  }
+
+  /* Prevent zooming and improve mobile UX */
+  input, textarea, select {
+    font-size: 16px !important; /* Prevents zoom on iOS */
+  }
+
+  /* Better mobile scrolling */
+  .mobile-scroll {
+    -webkit-overflow-scrolling: touch;
+    overscroll-behavior: contain;
   }
 }
