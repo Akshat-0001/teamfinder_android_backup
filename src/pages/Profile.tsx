@@ -11,6 +11,7 @@ import { Avatar, AvatarFallback, AvatarImage } from '@/components/ui/avatar';
 import { useToast } from '@/hooks/use-toast';
 import { User, Edit, Save, X } from 'lucide-react';
 import { COMMON_SKILLS, UNIVERSITIES } from '@/types';
+import ProfileAvatars from '@/components/ProfileAvatars';
 
 const Profile = () => {
   const { user, profile, updateProfile } = useAuth();
@@ -21,7 +22,8 @@ const Profile = () => {
     university: '',
     bio: '',
     interests: [] as string[],
-    skills: [] as string[]
+    skills: [] as string[],
+    avatar_url: ''
   });
   const [newInterest, setNewInterest] = useState('');
   const [newSkill, setNewSkill] = useState('');
@@ -33,7 +35,8 @@ const Profile = () => {
         university: profile.university || '',
         bio: profile.bio || '',
         interests: profile.interests || [],
-        skills: profile.skills || []
+        skills: profile.skills || [],
+        avatar_url: profile.avatar_url || ''
       });
     }
   }, [profile]);
@@ -129,7 +132,8 @@ const Profile = () => {
                   university: profile.university || '',
                   bio: profile.bio || '',
                   interests: profile.interests || [],
-                  skills: profile.skills || []
+                  skills: profile.skills || [],
+                  avatar_url: profile.avatar_url || ''
                 });
               } else {
                 setIsEditing(true);
@@ -153,12 +157,17 @@ const Profile = () => {
         <Card className="glass-card">
           <CardHeader>
             <div className="flex items-center space-x-4">
-              <Avatar className="w-16 h-16">
-                <AvatarImage src={profile.avatar_url || ''} />
+            <Avatar className="w-16 h-16">
+              {profile.avatar_url ? (
+                <div className="w-full h-full flex items-center justify-center text-2xl bg-gradient-to-br from-primary to-secondary rounded-full">
+                  {profile.avatar_url}
+                </div>
+              ) : (
                 <AvatarFallback className="bg-primary text-primary-foreground">
                   {getInitials(profile.full_name)}
                 </AvatarFallback>
-              </Avatar>
+              )}
+            </Avatar>
               <div>
                 <CardTitle>{profile.full_name}</CardTitle>
                 <p className="text-muted-foreground">{profile.email}</p>
@@ -177,6 +186,27 @@ const Profile = () => {
                       value={formData.full_name}
                       onChange={(e) => setFormData(prev => ({ ...prev, full_name: e.target.value }))}
                     />
+                  </div>
+
+                  <div>
+                    <Label>Profile Picture</Label>
+                    <div className="flex items-center gap-4">
+                      <Avatar className="w-16 h-16">
+                        {formData.avatar_url ? (
+                          <div className="w-full h-full flex items-center justify-center text-2xl bg-gradient-to-br from-primary to-secondary rounded-full">
+                            {formData.avatar_url}
+                          </div>
+                        ) : (
+                          <AvatarFallback className="bg-primary text-primary-foreground">
+                            {getInitials(formData.full_name)}
+                          </AvatarFallback>
+                        )}
+                      </Avatar>
+                      <ProfileAvatars
+                        selectedAvatar={formData.avatar_url}
+                        onSelect={(avatar) => setFormData(prev => ({ ...prev, avatar_url: avatar }))}
+                      />
+                    </div>
                   </div>
 
                   <div>

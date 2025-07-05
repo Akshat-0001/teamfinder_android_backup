@@ -7,20 +7,61 @@ import { Badge } from '@/components/ui/badge';
 import { Input } from '@/components/ui/input';
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
 import { Link } from 'react-router-dom';
-import { Plus, Search, Users, Calendar } from 'lucide-react';
+import { Plus, Search, Users, Calendar, ArrowUpDown } from 'lucide-react';
 import { TEAM_CATEGORIES } from '@/types';
 
 const Home = () => {
-  const { user } = useAuth();
+  const { user, profile } = useAuth();
   const [search, setSearch] = useState('');
   const [category, setCategory] = useState<string>('');
+  const [sortBy, setSortBy] = useState<string>('');
   
   const { data: teams, isLoading } = useTeams({
     search: search || undefined,
     category: category || undefined
   });
 
-  const filteredTeams = teams || [];
+  // Sort teams based on user preference
+  const getSortedTeams = (teams: any[]) => {
+    if (!sortBy || !profile) return teams;
+    
+    return [...teams].sort((a, b) => {
+      switch (sortBy) {
+        case 'university':
+          // Show teams from same university first
+          const aHasUniversity = a.creator?.university === profile.university;
+          const bHasUniversity = b.creator?.university === profile.university;
+          if (aHasUniversity && !bHasUniversity) return -1;
+          if (!aHasUniversity && bHasUniversity) return 1;
+          return 0;
+          
+        case 'interests':
+          // Show teams with similar interests first
+          const aCommonInterests = a.creator?.interests?.filter((interest: string) => 
+            profile.interests?.includes(interest)
+          ).length || 0;
+          const bCommonInterests = b.creator?.interests?.filter((interest: string) => 
+            profile.interests?.includes(interest)
+          ).length || 0;
+          return bCommonInterests - aCommonInterests;
+          
+        case 'skills':
+          // Show teams requiring user's skills first
+          const aCommonSkills = a.required_skills?.filter((skill: string) => 
+            profile.skills?.includes(skill)
+          ).length || 0;
+          const bCommonSkills = b.required_skills?.filter((skill: string) => 
+            profile.skills?.includes(skill)
+          ).length || 0;
+          return bCommonSkills - aCommonSkills;
+          
+        default:
+          return 0;
+      }
+    });
+  };
+
+  const filteredTeams = getSortedTeams(teams || []);
 
   const formatDate = (dateString: string) => {
     return new Date(dateString).toLocaleDateString();
@@ -88,19 +129,33 @@ const Home = () => {
           />
         </div>
         
-        <Select value={category} onValueChange={(value) => setCategory(value === 'all' ? '' : value)}>
-          <SelectTrigger>
-            <SelectValue placeholder="All categories" />
-          </SelectTrigger>
-          <SelectContent>
-            <SelectItem value="all">All categories</SelectItem>
-            {TEAM_CATEGORIES.map((cat) => (
-              <SelectItem key={cat} value={cat}>
-                {cat}
-              </SelectItem>
-            ))}
-          </SelectContent>
-        </Select>
+        <div className="flex gap-4">
+          <Select value={category} onValueChange={(value) => setCategory(value === 'all' ? '' : value)}>
+            <SelectTrigger className="flex-1">
+              <SelectValue placeholder="All categories" />
+            </SelectTrigger>
+            <SelectContent>
+              <SelectItem value="all">All categories</SelectItem>
+              {TEAM_CATEGORIES.map((cat) => (
+                <SelectItem key={cat} value={cat}>
+                  {cat}
+                </SelectItem>
+              ))}
+            </SelectContent>
+          </Select>
+          
+          <Select value={sortBy} onValueChange={setSortBy}>
+            <SelectTrigger className="flex-1">
+              <SelectValue placeholder="Sort by" />
+            </SelectTrigger>
+            <SelectContent>
+              <SelectItem value="">Default</SelectItem>
+              <SelectItem value="university">Same University</SelectItem>
+              <SelectItem value="interests">Similar Interests</SelectItem>
+              <SelectItem value="skills">Matching Skills</SelectItem>
+            </SelectContent>
+          </Select>
+        </div>
       </div>
 
       {/* Teams Grid */}
@@ -132,7 +187,13 @@ const Home = () => {
                     <div className="flex-1">
                       <CardTitle className="text-lg">{team.title}</CardTitle>
                       <CardDescription className="flex items-center gap-2 mt-1">
-                        <span>by {team.creator?.full_name}</span>
+                        <Link 
+                          to={`/user/${team.creator?.user_id}`} 
+                          className="hover:text-primary transition-colors"
+                          onClick={(e) => e.stopPropagation()}
+                        >
+                          by {team.creator?.full_name}
+                        </Link>
                         <span>•</span>
                         <span className="text-xs">{formatDate(team.created_at)}</span>
                       </CardDescription>

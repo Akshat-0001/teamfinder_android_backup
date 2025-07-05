@@ -6,6 +6,7 @@ import { Switch } from '@/components/ui/switch';
 import { useNavigate } from 'react-router-dom';
 import { ArrowLeft, Moon, Sun, Settings as SettingsIcon, Palette, Waves, Trees, Sparkles } from 'lucide-react';
 import { useTheme } from 'next-themes';
+import BugReport from '@/components/BugReport';
 
 const Settings = () => {
   const navigate = useNavigate();
@@ -135,7 +136,8 @@ const Settings = () => {
               <p className="text-sm text-muted-foreground">{user?.email}</p>
             </div>
             
-            <div className="pt-4 border-t">
+            <div className="pt-4 border-t space-y-2">
+              <BugReport />
               <Button
                 variant="destructive"
                 onClick={handleSignOut}

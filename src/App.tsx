@@ -17,6 +17,7 @@ import TeamDetails from "./pages/TeamDetails";
 import TeamChat from "./pages/TeamChat";
 import Search from "./pages/Search";
 import Settings from "./pages/Settings";
+import UserProfile from "./pages/UserProfile";
 
 const queryClient = new QueryClient();
 
@@ -55,6 +56,7 @@ const App = () => (
             <Route path="my-teams" element={<MyTeams />} />
             <Route path="search" element={<Search />} />
             <Route path="settings" element={<Settings />} />
+            <Route path="user/:userId" element={<UserProfile />} />
           </Route>
           <Route path="/chat/:teamId" element={<ProtectedRoute><TeamChat /></ProtectedRoute>} />
           <Route path="*" element={<Navigate to="/" replace />} />
