@@ -49,14 +49,6 @@ const Layout = () => {
                 <Search className="h-5 w-5" />
               </Button>
             </Link>
-            <Button
-              variant="ghost"
-              size="icon"
-              onClick={handleSignOut}
-              className="touch-target"
-            >
-              <LogOut className="h-5 w-5" />
-            </Button>
           </div>
         </div>
       </header>
@@ -72,7 +64,7 @@ const Layout = () => {
       <FloatingActionButton />
 
       {/* Bottom Navigation */}
-      <nav className="mobile-bottom-nav bg-card/80 backdrop-blur-lg border-t border-border/50">
+      <nav className="fixed bottom-0 left-0 right-0 z-50 bg-card/90 backdrop-blur-lg border-t border-border/50 safe-area-bottom">
         <div className="container mx-auto px-4">
           <div className="flex items-center justify-around h-16">
             <Link to="/home">

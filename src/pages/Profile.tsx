@@ -12,6 +12,7 @@ import { useToast } from '@/hooks/use-toast';
 import { User, Edit, Save, X } from 'lucide-react';
 import { COMMON_SKILLS, UNIVERSITIES } from '@/types';
 import ProfileAvatars from '@/components/ProfileAvatars';
+import ProfileLinks from '@/components/ProfileLinks';
 
 const Profile = () => {
   const { user, profile, updateProfile } = useAuth();
@@ -23,7 +24,14 @@ const Profile = () => {
     bio: '',
     interests: [] as string[],
     skills: [] as string[],
-    avatar_url: ''
+    avatar_url: '',
+    github_url: '',
+    linkedin_url: '',
+    leetcode_url: '',
+    codeforces_url: '',
+    geeksforgeeks_url: '',
+    codingame_url: '',
+    portfolio_url: ''
   });
   const [newInterest, setNewInterest] = useState('');
   const [newSkill, setNewSkill] = useState('');
@@ -36,7 +44,14 @@ const Profile = () => {
         bio: profile.bio || '',
         interests: profile.interests || [],
         skills: profile.skills || [],
-        avatar_url: profile.avatar_url || ''
+        avatar_url: profile.avatar_url || '',
+        github_url: profile.github_url || '',
+        linkedin_url: profile.linkedin_url || '',
+        leetcode_url: profile.leetcode_url || '',
+        codeforces_url: profile.codeforces_url || '',
+        geeksforgeeks_url: profile.geeksforgeeks_url || '',
+        codingame_url: profile.codingame_url || '',
+        portfolio_url: profile.portfolio_url || ''
       });
     }
   }, [profile]);
@@ -133,7 +148,14 @@ const Profile = () => {
                   bio: profile.bio || '',
                   interests: profile.interests || [],
                   skills: profile.skills || [],
-                  avatar_url: profile.avatar_url || ''
+                  avatar_url: profile.avatar_url || '',
+                  github_url: profile.github_url || '',
+                  linkedin_url: profile.linkedin_url || '',
+                  leetcode_url: profile.leetcode_url || '',
+                  codeforces_url: profile.codeforces_url || '',
+                  geeksforgeeks_url: profile.geeksforgeeks_url || '',
+                  codingame_url: profile.codingame_url || '',
+                  portfolio_url: profile.portfolio_url || ''
                 });
               } else {
                 setIsEditing(true);
@@ -280,6 +302,13 @@ const Profile = () => {
                       ))}
                     </div>
                   </div>
+
+                  {/* Profile Links */}
+                  <ProfileLinks
+                    profile={{ ...profile, ...formData }}
+                    isEditing={true}
+                    onLinksChange={(links) => setFormData(prev => ({ ...prev, ...links }))}
+                  />
                 </div>
 
                 <Button onClick={handleSave} className="w-full btn-gradient">
@@ -327,6 +356,9 @@ const Profile = () => {
                     </div>
                   </div>
                 )}
+
+                {/* Profile Links */}
+                <ProfileLinks profile={profile} />
               </>
             )}
           </CardContent>

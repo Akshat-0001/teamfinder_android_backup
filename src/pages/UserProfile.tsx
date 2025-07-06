@@ -7,6 +7,7 @@ import { Avatar, AvatarFallback } from '@/components/ui/avatar';
 import { supabase } from '@/integrations/supabase/client';
 import { Profile } from '@/types';
 import { ArrowLeft, Mail } from 'lucide-react';
+import ProfileLinks from '@/components/ProfileLinks';
 
 const UserProfile = () => {
   const { userId } = useParams();
@@ -151,13 +152,16 @@ const UserProfile = () => {
                 ))}
               </div>
             </div>
-          )}
+            )}
 
-          {!profile.bio && (!profile.skills || profile.skills.length === 0) && (!profile.interests || profile.interests.length === 0) && (
-            <div className="text-center py-8">
-              <p className="text-muted-foreground">This user hasn't filled out their profile yet.</p>
-            </div>
-          )}
+            {/* Profile Links */}
+            <ProfileLinks profile={profile} />
+
+            {!profile.bio && (!profile.skills || profile.skills.length === 0) && (!profile.interests || profile.interests.length === 0) && (
+              <div className="text-center py-8">
+                <p className="text-muted-foreground">This user hasn't filled out their profile yet.</p>
+              </div>
+            )}
         </CardContent>
       </Card>
     </div>

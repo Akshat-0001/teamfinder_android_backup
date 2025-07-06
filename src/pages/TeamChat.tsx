@@ -4,6 +4,8 @@ import { useQuery } from '@tanstack/react-query';
 import { supabase } from '@/integrations/supabase/client';
 import { useAuth } from '@/hooks/useAuth';
 import { useChat } from '@/hooks/useChat';
+import { useMobile } from '@/hooks/useMobile';
+import ClickableAvatar from '@/components/ClickableAvatar';
 import { Button } from '@/components/ui/button';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Input } from '@/components/ui/input';
@@ -17,6 +19,9 @@ const TeamChat = () => {
   const { user } = useAuth();
   const [newMessage, setNewMessage] = useState('');
   const messagesEndRef = useRef<HTMLDivElement>(null);
+  
+  // Use mobile hook for keyboard handling
+  useMobile();
 
   const { data: team } = useQuery({
     queryKey: ['team', teamId],
@@ -138,9 +143,9 @@ const TeamChat = () => {
   const messageGroups = groupMessagesByDate(messages);
 
   return (
-    <div className="flex flex-col h-screen">
-      {/* Header */}
-      <div className="bg-card/80 backdrop-blur-lg border-b border-border/50 px-4 py-3">
+    <div className="flex flex-col h-screen bg-background">
+      {/* Header with safe area */}
+      <div className="bg-card/80 backdrop-blur-lg border-b border-border/50 px-4 py-3 safe-area-top">
         <div className="flex items-center gap-4">
           <Button
             variant="ghost"
@@ -163,7 +168,7 @@ const TeamChat = () => {
       </div>
 
       {/* Messages */}
-      <div className="flex-1 overflow-y-auto p-4 space-y-4">
+      <div className="flex-1 overflow-y-auto p-4 space-y-4 mobile-scroll">
         {messageGroups.length === 0 ? (
           <div className="text-center py-12">
             <Users className="h-12 w-12 text-muted-foreground mx-auto mb-4" />
@@ -197,12 +202,12 @@ const TeamChat = () => {
                       {/* Avatar */}
                       <div className="flex-shrink-0">
                         {showAvatar ? (
-                          <Avatar className="w-8 h-8">
-                            <AvatarImage src={message.sender?.avatar_url || ''} />
-                            <AvatarFallback className="bg-primary text-primary-foreground text-xs">
-                              {getInitials(message.sender?.full_name || '')}
-                            </AvatarFallback>
-                          </Avatar>
+                          message.sender && (
+                            <ClickableAvatar 
+                              profile={message.sender} 
+                              size="sm" 
+                            />
+                          )
                         ) : (
                           <div className="w-8 h-8" />
                         )}
@@ -238,8 +243,8 @@ const TeamChat = () => {
         <div ref={messagesEndRef} />
       </div>
 
-      {/* Message Input */}
-      <div className="bg-card/80 backdrop-blur-lg border-t border-border/50 p-4">
+      {/* Message Input - Fixed position to handle keyboard */}
+      <div className="bg-card/90 backdrop-blur-lg border-t border-border/50 p-4 safe-area-bottom">
         <form onSubmit={handleSendMessage} className="flex gap-2">
           <Input
             value={newMessage}

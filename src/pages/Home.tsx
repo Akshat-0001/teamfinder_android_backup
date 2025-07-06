@@ -1,6 +1,8 @@
-import { useState } from 'react';
+import { useState, useEffect } from 'react';
 import { useTeams } from '@/hooks/useTeams';
 import { useAuth } from '@/hooks/useAuth';
+import { useDebounce } from '@/hooks/useDebounce';
+import ClickableAvatar from '@/components/ClickableAvatar';
 import { Button } from '@/components/ui/button';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
 import { Badge } from '@/components/ui/badge';
@@ -16,8 +18,11 @@ const Home = () => {
   const [category, setCategory] = useState<string>('');
   const [sortBy, setSortBy] = useState<string>('');
   
+  // Debounce search to avoid excessive API calls
+  const debouncedSearch = useDebounce(search, 500);
+  
   const { data: teams, isLoading } = useTeams({
-    search: search || undefined,
+    search: debouncedSearch || undefined,
     category: category || undefined
   });
 
@@ -187,13 +192,14 @@ const Home = () => {
                     <div className="flex-1">
                       <CardTitle className="text-lg">{team.title}</CardTitle>
                       <CardDescription className="flex items-center gap-2 mt-1">
-                        <Link 
-                          to={`/user/${team.creator?.user_id}`} 
-                          className="hover:text-primary transition-colors"
-                          onClick={(e) => e.stopPropagation()}
-                        >
-                          by {team.creator?.full_name}
-                        </Link>
+                        {team.creator && (
+                          <ClickableAvatar 
+                            profile={team.creator} 
+                            size="sm" 
+                            showName 
+                            className="hover:text-primary transition-colors"
+                          />
+                        )}
                         <span>•</span>
                         <span className="text-xs">{formatDate(team.created_at)}</span>
                       </CardDescription>

@@ -8,6 +8,13 @@ export interface Profile {
   skills: string[];
   bio?: string;
   avatar_url?: string;
+  github_url?: string;
+  linkedin_url?: string;
+  leetcode_url?: string;
+  codeforces_url?: string;
+  geeksforgeeks_url?: string;
+  codingame_url?: string;
+  portfolio_url?: string;
   created_at: string;
   updated_at: string;
 }
@@ -60,6 +67,13 @@ export interface UpdateProfileData {
   skills: string[];
   bio?: string;
   avatar_url?: string;
+  github_url?: string;
+  linkedin_url?: string;
+  leetcode_url?: string;
+  codeforces_url?: string;
+  geeksforgeeks_url?: string;
+  codingame_url?: string;
+  portfolio_url?: string;
 }
 
 export const TEAM_CATEGORIES = [
