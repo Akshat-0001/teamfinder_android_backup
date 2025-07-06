@@ -143,8 +143,27 @@ const TeamChat = () => {
   const messageGroups = groupMessagesByDate(messages);
 
   return (
-    <div className="flex flex-col h-screen bg-background">
-      {/* Header with safe area */}
+    <div className="flex flex-col bg-background min-h-0 h-full" style={{ minHeight: 0, height: '100dvh', maxHeight: '100dvh' }}>
+      {/* TeamFinder App Top Bar (copied from Layout) */}
+      <header className="mobile-header bg-card/80 backdrop-blur-lg border-b border-border/50 z-20">
+        <div className="container mx-auto px-4 h-16 flex items-center justify-between">
+          <button onClick={() => navigate('/home')} className="flex items-center space-x-2 focus:outline-none">
+            <div className="w-8 h-8 rounded-lg overflow-hidden">
+              <img
+                src="https://res.cloudinary.com/dmz1x7at4/image/upload/cropped_circle_image-min_xiyyo5.png"
+                alt="TeamFinder Logo"
+                className="w-full h-full object-cover"
+              />
+            </div>
+            <span className="font-bold text-xl text-foreground">TeamFinder</span>
+          </button>
+          <div className="flex items-center space-x-2">
+            {/* Optionally add search or other icons here if needed */}
+          </div>
+        </div>
+      </header>
+
+      {/* Chat Header (below app top bar) */}
       <div className="bg-card/80 backdrop-blur-lg border-b border-border/50 px-4 py-3 safe-area-top">
         <div className="flex items-center gap-4">
           <Button
@@ -168,7 +187,7 @@ const TeamChat = () => {
       </div>
 
       {/* Messages */}
-      <div className="flex-1 overflow-y-auto p-4 space-y-4 mobile-scroll">
+      <div className="flex-1 min-h-0 overflow-y-auto p-4 space-y-4 mobile-scroll" style={{ minHeight: 0 }}>
         {messageGroups.length === 0 ? (
           <div className="text-center py-12">
             <Users className="h-12 w-12 text-muted-foreground mx-auto mb-4" />
@@ -244,7 +263,7 @@ const TeamChat = () => {
       </div>
 
       {/* Message Input - Fixed position to handle keyboard */}
-      <div className="bg-card/90 backdrop-blur-lg border-t border-border/50 p-4 safe-area-bottom">
+      <div className="bg-card/90 backdrop-blur-lg border-t border-border/50 px-4 pt-3 pb-2" style={{ position: 'relative' }}>
         <form onSubmit={handleSendMessage} className="flex gap-2">
           <Input
             value={newMessage}
@@ -252,6 +271,8 @@ const TeamChat = () => {
             placeholder="Type a message..."
             className="flex-1"
             disabled={isSending}
+            autoFocus
+            inputMode="text"
           />
           <Button
             type="submit"

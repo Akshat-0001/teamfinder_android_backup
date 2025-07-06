@@ -17,6 +17,7 @@ export interface Profile {
   portfolio_url?: string;
   created_at: string;
   updated_at: string;
+  gender?: string;
 }
 
 export interface Team {

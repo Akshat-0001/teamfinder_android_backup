@@ -4,9 +4,11 @@ import { Button } from '@/components/ui/button';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
 import { Switch } from '@/components/ui/switch';
 import { useNavigate } from 'react-router-dom';
-import { ArrowLeft, Moon, Sun, Settings as SettingsIcon, Palette, Waves, Trees, Sparkles } from 'lucide-react';
+import { ArrowLeft, Moon, Sun, Settings as SettingsIcon, Palette, Waves, Trees, Sparkles, Lock } from 'lucide-react';
 import { useTheme } from 'next-themes';
 import BugReport from '@/components/BugReport';
+import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogTrigger } from '@/components/ui/dialog';
+import { AlertDialog, AlertDialogAction, AlertDialogCancel, AlertDialogContent, AlertDialogDescription, AlertDialogFooter, AlertDialogHeader, AlertDialogTitle, AlertDialogTrigger } from '@/components/ui/alert-dialog';
 
 const Settings = () => {
   const navigate = useNavigate();
@@ -14,6 +16,9 @@ const Settings = () => {
   const { theme, setTheme } = useTheme();
   const [isSigningOut, setIsSigningOut] = useState(false);
   const [currentTheme, setCurrentTheme] = useState('system');
+  const [showSignOutDialog, setShowSignOutDialog] = useState(false);
+  const [showSuggestionDialog, setShowSuggestionDialog] = useState(false);
+  const [showChangePasswordDialog, setShowChangePasswordDialog] = useState(false);
 
   const themes = [
     { id: 'light', name: 'Light', icon: Sun, description: 'Blue Lagoon - Clean and bright' },
@@ -73,6 +78,38 @@ const Settings = () => {
       </div>
 
       <div className="space-y-6">
+        {/* User Experience Section */}
+        <Card className="glass-card">
+          <CardHeader>
+            <div className="flex items-center gap-2">
+              <Sparkles className="h-5 w-5 text-primary" />
+              <CardTitle>User Experience</CardTitle>
+            </div>
+            <CardDescription>
+              Help us improve your experience
+            </CardDescription>
+          </CardHeader>
+          <CardContent className="space-y-2">
+            <BugReport />
+            <Dialog open={showSuggestionDialog} onOpenChange={setShowSuggestionDialog}>
+              <DialogTrigger asChild>
+                <Button variant="ghost" className="w-full justify-start">
+                  <Sparkles className="h-4 w-4 mr-2" />
+                  Give Suggestions
+                </Button>
+              </DialogTrigger>
+              <DialogContent>
+                <DialogHeader>
+                  <DialogTitle>Give Suggestions</DialogTitle>
+                </DialogHeader>
+                <div className="text-muted-foreground text-center py-8">
+                  Suggestion form coming soon!
+                </div>
+              </DialogContent>
+            </Dialog>
+          </CardContent>
+        </Card>
+
         {/* Theme Settings */}
         <Card className="glass-card">
           <CardHeader>
@@ -130,22 +167,59 @@ const Settings = () => {
               Manage your account settings
             </CardDescription>
           </CardHeader>
-          <CardContent className="space-y-4">
+          <CardContent>
             <div className="space-y-2">
               <p className="text-sm font-medium">Email</p>
               <p className="text-sm text-muted-foreground">{user?.email}</p>
             </div>
-            
             <div className="pt-4 border-t space-y-2">
-              <BugReport />
-              <Button
-                variant="destructive"
-                onClick={handleSignOut}
-                disabled={isSigningOut}
-                className="w-full"
-              >
-                {isSigningOut ? 'Signing out...' : 'Sign Out'}
-              </Button>
+              <AlertDialog open={showSignOutDialog} onOpenChange={setShowSignOutDialog}>
+                <AlertDialogTrigger asChild>
+                  <Button
+                    variant="destructive"
+                    disabled={isSigningOut}
+                    className="w-full"
+                  >
+                    {isSigningOut ? 'Signing out...' : 'Sign Out'}
+                  </Button>
+                </AlertDialogTrigger>
+                <AlertDialogContent>
+                  <AlertDialogHeader>
+                    <AlertDialogTitle>Sign Out</AlertDialogTitle>
+                    <AlertDialogDescription>
+                      Are you sure you want to sign out?
+                    </AlertDialogDescription>
+                  </AlertDialogHeader>
+                  <AlertDialogFooter>
+                    <AlertDialogCancel>Cancel</AlertDialogCancel>
+                    <AlertDialogAction
+                      onClick={handleSignOut}
+                      disabled={isSigningOut}
+                    >
+                      Sign Out
+                    </AlertDialogAction>
+                  </AlertDialogFooter>
+                </AlertDialogContent>
+              </AlertDialog>
+              <Dialog open={showChangePasswordDialog} onOpenChange={setShowChangePasswordDialog}>
+                <DialogTrigger asChild>
+                  <Button
+                    variant="outline"
+                    className="w-full flex items-center gap-2"
+                  >
+                    <Lock className="h-4 w-4" />
+                    Change Password
+                  </Button>
+                </DialogTrigger>
+                <DialogContent>
+                  <DialogHeader>
+                    <DialogTitle>Change Password</DialogTitle>
+                  </DialogHeader>
+                  <div className="text-muted-foreground text-center py-8">
+                    Password change coming soon!
+                  </div>
+                </DialogContent>
+              </Dialog>
             </div>
           </CardContent>
         </Card>

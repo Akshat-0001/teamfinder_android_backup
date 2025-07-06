@@ -335,10 +335,6 @@ All colors MUST be HSL.
     padding-top: env(safe-area-inset-top);
   }
 
-  .safe-area-bottom {
-    padding-bottom: env(safe-area-inset-bottom);
-  }
-
   .mobile-container {
     @apply min-h-screen flex flex-col;
     min-height: 100vh;
@@ -375,12 +371,6 @@ All colors MUST be HSL.
   .mobile-scroll {
     -webkit-overflow-scrolling: touch;
     overscroll-behavior: contain;
-  }
-
-  /* Keyboard handling for mobile chat */
-  body.keyboard-open .chat-input-container {
-    transform: translateY(-100px);
-    transition: transform 0.3s ease;
   }
 
   /* Fixed bottom navigation */

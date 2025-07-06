@@ -31,7 +31,8 @@ const Profile = () => {
     codeforces_url: '',
     geeksforgeeks_url: '',
     codingame_url: '',
-    portfolio_url: ''
+    portfolio_url: '',
+    gender: '',
   });
   const [newInterest, setNewInterest] = useState('');
   const [newSkill, setNewSkill] = useState('');
@@ -51,7 +52,8 @@ const Profile = () => {
         codeforces_url: profile.codeforces_url || '',
         geeksforgeeks_url: profile.geeksforgeeks_url || '',
         codingame_url: profile.codingame_url || '',
-        portfolio_url: profile.portfolio_url || ''
+        portfolio_url: profile.portfolio_url || '',
+        gender: profile.gender || '',
       });
     }
   }, [profile]);
@@ -155,7 +157,8 @@ const Profile = () => {
                   codeforces_url: profile.codeforces_url || '',
                   geeksforgeeks_url: profile.geeksforgeeks_url || '',
                   codingame_url: profile.codingame_url || '',
-                  portfolio_url: profile.portfolio_url || ''
+                  portfolio_url: profile.portfolio_url || '',
+                  gender: profile.gender || '',
                 });
               } else {
                 setIsEditing(true);
@@ -303,6 +306,26 @@ const Profile = () => {
                     </div>
                   </div>
 
+                  <div>
+                    <Label>Gender</Label>
+                    <div className="flex gap-2 mt-2">
+                      {['male', 'female', 'others'].map((option) => (
+                        <button
+                          key={option}
+                          type="button"
+                          className={`px-4 py-2 rounded-full border font-medium transition-colors duration-150 focus:outline-none ${
+                            formData.gender === option
+                              ? 'bg-primary text-primary-foreground border-primary shadow'
+                              : 'bg-muted text-muted-foreground border-border hover:bg-accent/10'
+                          }`}
+                          onClick={() => setFormData((prev) => ({ ...prev, gender: option }))}
+                        >
+                          {option.charAt(0).toUpperCase() + option.slice(1)}
+                        </button>
+                      ))}
+                    </div>
+                  </div>
+
                   {/* Profile Links */}
                   <ProfileLinks
                     profile={{ ...profile, ...formData }}
@@ -356,6 +379,11 @@ const Profile = () => {
                     </div>
                   </div>
                 )}
+
+                <div>
+                  <h3 className="font-semibold mb-2">Gender</h3>
+                  <p className="text-muted-foreground">{profile.gender ? profile.gender.charAt(0).toUpperCase() + profile.gender.slice(1) : 'Not specified'}</p>
+                </div>
 
                 {/* Profile Links */}
                 <ProfileLinks profile={profile} />
