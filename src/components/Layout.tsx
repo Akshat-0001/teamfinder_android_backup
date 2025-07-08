@@ -57,11 +57,11 @@ const Layout = () => {
             {/* Notification Bell Icon */}
             <Link to="/notifications">
               <Button variant="ghost" size="icon" className="touch-target relative">
-                <Bell className="h-5 w-5" />
+                <Bell className={`h-5 w-5 transition-transform duration-200 ${unreadCount > 0 ? 'animate-bounce' : ''}`} />
                 {unreadCount > 0 && (
                   <Badge 
                     variant="destructive" 
-                    className="absolute -top-1 -right-1 h-5 w-5 rounded-full p-0 flex items-center justify-center text-xs"
+                    className="absolute -top-1 -right-1 h-5 w-5 rounded-full p-0 flex items-center justify-center text-xs animate-pulse"
                   >
                     {unreadCount > 99 ? '99+' : unreadCount}
                   </Badge>

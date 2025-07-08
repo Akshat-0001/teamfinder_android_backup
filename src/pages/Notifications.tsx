@@ -1,14 +1,15 @@
-import { Link } from 'react-router-dom';
 import { Card, CardContent } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
 import { Badge } from '@/components/ui/badge';
-import { ArrowLeft, Check, Trash2 } from 'lucide-react';
+import { Check, Trash2, X } from 'lucide-react';
 import { useNotifications } from '@/hooks/useNotifications';
 import { formatDistanceToNow } from 'date-fns';
 import LoadingShimmer from '@/components/LoadingShimmer';
+import { useState } from 'react';
 
 const Notifications = () => {
-  const { notifications, unreadCount, loading, markAsRead, markAllAsRead, clearAll } = useNotifications();
+  const { notifications, unreadCount, loading, markAsRead, markAllAsRead, clearAll, dismissNotification } = useNotifications();
+  const [swipedNotifications, setSwipedNotifications] = useState<Set<string>>(new Set());
 
   if (loading) {
     return (
@@ -32,17 +33,57 @@ const Notifications = () => {
     await clearAll();
   };
 
+  const handleDismiss = async (notificationId: string) => {
+    await dismissNotification(notificationId);
+  };
+
+  const handleSwipeStart = (notificationId: string, e: React.TouchEvent) => {
+    const touch = e.touches[0];
+    const element = e.currentTarget as HTMLElement;
+    element.dataset.startX = touch.clientX.toString();
+    element.dataset.startY = touch.clientY.toString();
+  };
+
+  const handleSwipeMove = (notificationId: string, e: React.TouchEvent) => {
+    const touch = e.touches[0];
+    const element = e.currentTarget as HTMLElement;
+    const startX = parseFloat(element.dataset.startX || '0');
+    const startY = parseFloat(element.dataset.startY || '0');
+    const deltaX = touch.clientX - startX;
+    const deltaY = touch.clientY - startY;
+    
+    // Only trigger horizontal swipe if horizontal movement is greater than vertical
+    if (Math.abs(deltaX) > Math.abs(deltaY) && Math.abs(deltaX) > 50) {
+      element.style.transform = `translateX(${deltaX}px)`;
+      element.style.opacity = Math.max(0.3, 1 - Math.abs(deltaX) / 200).toString();
+    }
+  };
+
+  const handleSwipeEnd = (notificationId: string, e: React.TouchEvent) => {
+    const element = e.currentTarget as HTMLElement;
+    const startX = parseFloat(element.dataset.startX || '0');
+    const endX = e.changedTouches[0].clientX;
+    const deltaX = endX - startX;
+    
+    if (Math.abs(deltaX) > 100) {
+      // Swipe threshold reached - dismiss
+      setSwipedNotifications(prev => new Set([...prev, notificationId]));
+      setTimeout(() => handleDismiss(notificationId), 300);
+    } else {
+      // Reset position
+      element.style.transform = '';
+      element.style.opacity = '';
+    }
+  };
+
   return (
     <div className="mobile-container bg-background">
-      {/* Header */}
-      <header className="mobile-header bg-card/80 backdrop-blur-lg border-b border-border/50">
-        <div className="container mx-auto px-4 h-16 flex items-center justify-between">
-          <div className="flex items-center space-x-3">
-            <Link to="/home">
-              <Button variant="ghost" size="icon" className="touch-target">
-                <ArrowLeft className="h-5 w-5" />
-              </Button>
-            </Link>
+
+      {/* Content */}
+      <main className="mobile-content mobile-scroll">
+        <div className="container mx-auto px-4 py-6 max-w-lg">
+          {/* Page Title */}
+          <div className="flex items-center justify-between mb-6">
             <div className="flex items-center space-x-2">
               <div className="w-8 h-8 rounded-lg overflow-hidden">
                 <img
@@ -51,21 +92,14 @@ const Notifications = () => {
                   className="w-full h-full object-cover"
                 />
               </div>
-              <span className="font-bold text-xl text-foreground">TeamFinder</span>
+              <h1 className="text-2xl font-bold text-foreground">Notifications</h1>
             </div>
+            {unreadCount > 0 && (
+              <Badge variant="secondary" className="text-xs">
+                {unreadCount} new
+              </Badge>
+            )}
           </div>
-
-          {unreadCount > 0 && (
-            <Badge variant="secondary" className="text-xs">
-              {unreadCount} new
-            </Badge>
-          )}
-        </div>
-      </header>
-
-      {/* Content */}
-      <main className="mobile-content mobile-scroll">
-        <div className="container mx-auto px-4 py-6 max-w-lg">
           {/* Action Buttons */}
           {notifications.length > 0 && (
             <div className="flex gap-2 mb-6">
@@ -107,10 +141,13 @@ const Notifications = () => {
               notifications.map((notification) => (
                 <Card
                   key={notification.id}
-                  className={`cursor-pointer transition-all duration-200 hover:shadow-md ${
+                  className={`cursor-pointer transition-all duration-300 hover:shadow-md relative overflow-hidden ${
                     !notification.is_read ? 'bg-primary/5 border-primary/20' : 'opacity-60'
-                  }`}
+                  } ${swipedNotifications.has(notification.id) ? 'animate-fade-out' : ''}`}
                   onClick={() => !notification.is_read && handleMarkAsRead(notification.id)}
+                  onTouchStart={(e) => handleSwipeStart(notification.id, e)}
+                  onTouchMove={(e) => handleSwipeMove(notification.id, e)}
+                  onTouchEnd={(e) => handleSwipeEnd(notification.id, e)}
                 >
                   <CardContent className="p-4">
                     <div className="flex items-start justify-between gap-3">
@@ -120,7 +157,7 @@ const Notifications = () => {
                             {notification.title}
                           </h4>
                           {!notification.is_read && (
-                            <div className="w-2 h-2 bg-primary rounded-full flex-shrink-0" />
+                            <div className="w-2 h-2 bg-primary rounded-full flex-shrink-0 animate-pulse" />
                           )}
                         </div>
                         <p className="text-sm text-muted-foreground mb-2 leading-relaxed">
@@ -130,6 +167,17 @@ const Notifications = () => {
                           {formatDistanceToNow(new Date(notification.created_at), { addSuffix: true })}
                         </p>
                       </div>
+                      <Button
+                        variant="ghost"
+                        size="icon"
+                        className="h-6 w-6 hover:bg-destructive/10 hover:text-destructive flex-shrink-0"
+                        onClick={(e) => {
+                          e.stopPropagation();
+                          handleDismiss(notification.id);
+                        }}
+                      >
+                        <X className="h-3 w-3" />
+                      </Button>
                     </div>
                   </CardContent>
                 </Card>

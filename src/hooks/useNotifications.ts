@@ -61,6 +61,12 @@ export const useNotifications = () => {
   const markAsRead = async (notificationId: string) => {
     if (!user) return;
 
+    // Optimistic update
+    setNotifications(prev => 
+      prev.map(n => n.id === notificationId ? { ...n, is_read: true } : n)
+    );
+    setUnreadCount(prev => Math.max(0, prev - 1));
+
     const { error } = await supabase
       .from('notifications')
       .update({ is_read: true })
@@ -69,11 +75,21 @@ export const useNotifications = () => {
 
     if (error) {
       console.error('Error marking notification as read:', error);
+      // Revert optimistic update on error
+      setNotifications(prev => 
+        prev.map(n => n.id === notificationId ? { ...n, is_read: false } : n)
+      );
+      setUnreadCount(prev => prev + 1);
     }
   };
 
   const markAllAsRead = async () => {
     if (!user) return;
+
+    // Optimistic update
+    const unreadNotifications = notifications.filter(n => !n.is_read);
+    setNotifications(prev => prev.map(n => ({ ...n, is_read: true })));
+    setUnreadCount(0);
 
     const { error } = await supabase
       .from('notifications')
@@ -83,11 +99,21 @@ export const useNotifications = () => {
 
     if (error) {
       console.error('Error marking all notifications as read:', error);
+      // Revert optimistic update on error
+      setNotifications(prev => 
+        prev.map(n => unreadNotifications.find(u => u.id === n.id) ? { ...n, is_read: false } : n)
+      );
+      setUnreadCount(unreadNotifications.length);
     }
   };
 
   const clearAll = async () => {
     if (!user) return;
+
+    // Optimistic update
+    const previousNotifications = [...notifications];
+    setNotifications([]);
+    setUnreadCount(0);
 
     const { error } = await supabase
       .from('notifications')
@@ -96,6 +122,39 @@ export const useNotifications = () => {
 
     if (error) {
       console.error('Error clearing all notifications:', error);
+      // Revert optimistic update on error
+      setNotifications(previousNotifications);
+      setUnreadCount(previousNotifications.filter(n => !n.is_read).length);
+    }
+  };
+
+  const dismissNotification = async (notificationId: string) => {
+    if (!user) return;
+
+    // Optimistic update
+    const notificationToRemove = notifications.find(n => n.id === notificationId);
+    setNotifications(prev => prev.filter(n => n.id !== notificationId));
+    if (notificationToRemove && !notificationToRemove.is_read) {
+      setUnreadCount(prev => Math.max(0, prev - 1));
+    }
+
+    const { error } = await supabase
+      .from('notifications')
+      .delete()
+      .eq('id', notificationId)
+      .eq('user_id', user.id);
+
+    if (error) {
+      console.error('Error dismissing notification:', error);
+      // Revert optimistic update on error
+      if (notificationToRemove) {
+        setNotifications(prev => [...prev, notificationToRemove].sort((a, b) => 
+          new Date(b.created_at).getTime() - new Date(a.created_at).getTime()
+        ));
+        if (!notificationToRemove.is_read) {
+          setUnreadCount(prev => prev + 1);
+        }
+      }
     }
   };
 
@@ -105,6 +164,7 @@ export const useNotifications = () => {
     loading,
     markAsRead,
     markAllAsRead,
-    clearAll
+    clearAll,
+    dismissNotification
   };
 };

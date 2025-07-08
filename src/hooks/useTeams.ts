@@ -208,6 +208,7 @@ export const useApplyToTeam = () => {
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: ['teams'] });
       queryClient.invalidateQueries({ queryKey: ['my-applications'] });
+      queryClient.invalidateQueries({ queryKey: ['team'] });
     }
   });
 };
@@ -265,9 +266,11 @@ export const useManageApplication = () => {
       
       return application;
     },
-    onSuccess: () => {
+    onSuccess: (data, variables) => {
       queryClient.invalidateQueries({ queryKey: ['teams'] });
       queryClient.invalidateQueries({ queryKey: ['my-teams'] });
+      // Invalidate specific team query for instant UI update
+      queryClient.invalidateQueries({ queryKey: ['team'] });
     }
   });
 };
@@ -336,6 +339,7 @@ export const useLeaveTeam = () => {
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: ['teams'] });
       queryClient.invalidateQueries({ queryKey: ['my-teams'] });
+      queryClient.invalidateQueries({ queryKey: ['team'] });
     }
   });
 };
@@ -372,6 +376,7 @@ export const useKickMember = () => {
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: ['teams'] });
       queryClient.invalidateQueries({ queryKey: ['my-teams'] });
+      queryClient.invalidateQueries({ queryKey: ['team'] });
     }
   });
 };
