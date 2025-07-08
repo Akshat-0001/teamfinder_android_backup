@@ -87,11 +87,12 @@ All colors MUST be HSL.
   .animate-fade-out {
     animation: fade-out 0.3s ease-out forwards;
   }
+}
 
-  .dark {
-    /* Dark theme - Electric Indigo */
-    --background: 0 0% 7%; /* #121212 */
-    --foreground: 199 18% 91%; /* #ECEFF1 */
+.dark {
+  /* Dark theme - Electric Indigo */
+  --background: 0 0% 7%; /* #121212 */
+  --foreground: 199 18% 91%; /* #ECEFF1 */
 
     --card: 0 0% 12%; /* #1E1E1E */
     --card-foreground: 199 18% 91%;
