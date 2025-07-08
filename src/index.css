@@ -87,7 +87,6 @@ All colors MUST be HSL.
   .animate-fade-out {
     animation: fade-out 0.3s ease-out forwards;
   }
-  }
 
   .dark {
     /* Dark theme - Electric Indigo */
@@ -181,7 +180,6 @@ All colors MUST be HSL.
     --shadow-primary: 0 10px 30px -10px rgba(156, 39, 176, 0.4);
     --shadow-glow: 0 0 40px rgba(233, 30, 99, 0.3);
   }
-}
 
 @layer base {
   * {
