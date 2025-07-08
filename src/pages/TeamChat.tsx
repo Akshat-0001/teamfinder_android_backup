@@ -11,7 +11,8 @@ import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Input } from '@/components/ui/input';
 import { Avatar, AvatarFallback, AvatarImage } from '@/components/ui/avatar';
 import { Badge } from '@/components/ui/badge';
-import { ArrowLeft, Send, Users } from 'lucide-react';
+import { ArrowLeft, Send, Users, Search, X } from 'lucide-react';
+import { Popover, PopoverContent, PopoverTrigger } from '@/components/ui/popover';
 
 const TeamChat = () => {
   const { teamId } = useParams<{ teamId: string }>();
@@ -19,6 +20,7 @@ const TeamChat = () => {
   const { user } = useAuth();
   const [newMessage, setNewMessage] = useState('');
   const messagesEndRef = useRef<HTMLDivElement>(null);
+  const [searchQuery, setSearchQuery] = useState('');
   
   // Use mobile hook for keyboard handling
   useMobile();
@@ -183,6 +185,32 @@ const TeamChat = () => {
           <Badge variant="secondary" className="hidden sm:inline-flex">
             {team?.category}
           </Badge>
+          <Popover>
+            <PopoverTrigger asChild>
+              <Button variant="ghost" size="icon" className="touch-target" aria-label="Search messages">
+                <Search className="h-5 w-5" />
+              </Button>
+            </PopoverTrigger>
+            <PopoverContent align="end" className="w-80 p-0 bg-card/90 backdrop-blur-lg border border-border/50 rounded-xl shadow-lg">
+              <div className="flex items-center px-4 py-2 border-b border-border/30">
+                <Search className="h-4 w-4 text-muted-foreground mr-2" />
+                <input
+                  autoFocus
+                  type="text"
+                  placeholder="Search messages..."
+                  className="flex-1 bg-transparent outline-none text-sm text-foreground placeholder:text-muted-foreground"
+                  value={searchQuery}
+                  onChange={e => setSearchQuery(e.target.value)}
+                  onKeyDown={e => e.key === 'Escape' && setSearchQuery('')}
+                />
+                {searchQuery && (
+                  <button onClick={() => setSearchQuery('')} className="ml-2 text-muted-foreground hover:text-foreground focus:outline-none">
+                    <X className="h-4 w-4" />
+                  </button>
+                )}
+              </div>
+            </PopoverContent>
+          </Popover>
         </div>
       </div>
 
@@ -197,67 +225,72 @@ const TeamChat = () => {
             </p>
           </div>
         ) : (
-          messageGroups.map(([date, dayMessages]) => (
-            <div key={date}>
-              {/* Date Separator */}
-              <div className="flex items-center justify-center my-6">
-                <div className="bg-muted px-3 py-1 rounded-full text-xs text-muted-foreground">
-                  {formatDate(date)}
+          messageGroups.map(([date, dayMessages]) => {
+            // Filter messages by search query
+            const filteredMessages = searchQuery
+              ? dayMessages.filter(m => m.message.toLowerCase().includes(searchQuery.toLowerCase()) || (m.sender?.full_name && m.sender.full_name.toLowerCase().includes(searchQuery.toLowerCase())))
+              : dayMessages;
+            if (filteredMessages.length === 0) return null;
+            return (
+              <div key={date}>
+                {/* Date Separator */}
+                <div className="flex items-center justify-center my-6">
+                  <div className="bg-muted px-3 py-1 rounded-full text-xs text-muted-foreground">
+                    {formatDate(date)}
+                  </div>
                 </div>
-              </div>
 
-              {/* Messages for this date */}
-              <div className="space-y-4">
-                {dayMessages.map((message, index) => {
-                  const isCurrentUser = message.sender_id === user?.id;
-                  const showAvatar = index === 0 || 
-                    dayMessages[index - 1]?.sender_id !== message.sender_id;
+                {/* Messages for this date */}
+                <div className="space-y-4">
+                  {filteredMessages.map((message, index) => {
+                    const isCurrentUser = message.sender_id === user?.id;
+                    const showAvatar = index === 0 || 
+                      filteredMessages[index - 1]?.sender_id !== message.sender_id;
 
-                  return (
-                    <div
-                      key={message.id}
-                      className={`flex gap-3 ${isCurrentUser ? 'flex-row-reverse' : 'flex-row'}`}
-                    >
-                      {/* Avatar */}
-                      <div className="flex-shrink-0">
-                        {showAvatar ? (
-                          message.sender && (
-                            <ClickableAvatar 
-                              profile={message.sender} 
-                              size="sm" 
-                            />
-                          )
-                        ) : (
-                          <div className="w-8 h-8" />
-                        )}
-                      </div>
+                    return (
+                      <div
+                        key={message.id}
+                        className={`flex gap-2 sm:gap-3 ${isCurrentUser ? 'flex-row-reverse' : 'flex-row'} items-start`}
+                      >
+                        {/* Avatar column: always reserve space */}
+                        <div className="w-8 sm:w-10 flex-shrink-0 flex flex-col items-center">
+                          {showAvatar ? (
+                            message.sender && (
+                              <ClickableAvatar 
+                                profile={message.sender} 
+                                size="sm" 
+                              />
+                            )
+                          ) : null}
+                        </div>
 
-                      {/* Message */}
-                      <div className={`flex-1 max-w-xs sm:max-w-md ${isCurrentUser ? 'text-right' : 'text-left'}`}>
-                        {showAvatar && (
-                          <div className={`text-xs text-muted-foreground mb-1 ${isCurrentUser ? 'text-right' : 'text-left'}`}>
-                            {isCurrentUser ? 'You' : message.sender?.full_name}
+                        {/* Message bubble, always aligned */}
+                        <div className={`flex-1 max-w-xs sm:max-w-md ${isCurrentUser ? 'text-right' : 'text-left'}`}>
+                          {showAvatar && (
+                            <div className={`text-xs text-muted-foreground mb-1 ${isCurrentUser ? 'text-right' : 'text-left'}`}>
+                              {isCurrentUser ? 'You' : message.sender?.full_name}
+                            </div>
+                          )}
+                          <div
+                            className={`inline-block px-3 py-2 rounded-2xl ${
+                              isCurrentUser
+                                ? 'bg-primary text-primary-foreground'
+                                : 'bg-muted text-muted-foreground'
+                            }`}
+                          >
+                            <p className="text-sm leading-relaxed">{message.message}</p>
+                            <p className={`text-xs mt-1 opacity-70 ${isCurrentUser ? 'text-right' : 'text-left'}`}>
+                              {formatTime(message.created_at)}
+                            </p>
                           </div>
-                        )}
-                        <div
-                          className={`inline-block px-3 py-2 rounded-2xl ${
-                            isCurrentUser
-                              ? 'bg-primary text-primary-foreground'
-                              : 'bg-muted text-muted-foreground'
-                          }`}
-                        >
-                          <p className="text-sm leading-relaxed">{message.message}</p>
-                          <p className={`text-xs mt-1 opacity-70 ${isCurrentUser ? 'text-right' : 'text-left'}`}>
-                            {formatTime(message.created_at)}
-                          </p>
                         </div>
                       </div>
-                    </div>
-                  );
-                })}
+                    );
+                  })}
+                </div>
               </div>
-            </div>
-          ))
+            );
+          })
         )}
         <div ref={messagesEndRef} />
       </div>

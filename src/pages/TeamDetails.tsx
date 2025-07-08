@@ -3,7 +3,7 @@ import { useParams, useNavigate, Link } from 'react-router-dom';
 import { useQuery } from '@tanstack/react-query';
 import { supabase } from '@/integrations/supabase/client';
 import { useAuth } from '@/hooks/useAuth';
-import { useApplyToTeam, useManageApplication } from '@/hooks/useTeams';
+import { useApplyToTeam, useManageApplication, useLeaveTeam, useKickMember } from '@/hooks/useTeams';
 import { Button } from '@/components/ui/button';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Badge } from '@/components/ui/badge';
@@ -18,7 +18,8 @@ import {
   CheckCircle,
   XCircle,
   Clock,
-  UserPlus
+  UserPlus,
+  Trash2
 } from 'lucide-react';
 
 const TeamDetails = () => {
@@ -27,6 +28,8 @@ const TeamDetails = () => {
   const { user } = useAuth();
   const applyToTeam = useApplyToTeam();
   const manageApplication = useManageApplication();
+  const leaveTeam = useLeaveTeam();
+  const kickMember = useKickMember();
   const { toast } = useToast();
 
   const { data: team, isLoading } = useQuery({
@@ -203,14 +206,27 @@ const TeamDetails = () => {
                 <div className="space-y-4">
                   {/* Creator */}
                   <div className="flex items-center gap-3">
-                    <Avatar>
-                      <AvatarImage src={team.creator?.avatar_url || ''} />
-                      <AvatarFallback className="bg-primary text-primary-foreground">
-                        {getInitials(team.creator?.full_name || '')}
-                      </AvatarFallback>
-                    </Avatar>
+                    <Link to={team.creator?.user_id ? `/user/${team.creator.user_id}` : '#'} className="focus:outline-none">
+                      <Avatar className="cursor-pointer hover:scale-105 transition-transform">
+                        {team.creator?.avatar_url ? (
+                          team.creator.avatar_url.startsWith('http') || team.creator.avatar_url.startsWith('data:') ? (
+                            <AvatarImage src={team.creator.avatar_url} />
+                          ) : (
+                            <div className="w-full h-full flex items-center justify-center text-2xl bg-gradient-to-br from-primary to-secondary rounded-full">
+                              {team.creator.avatar_url}
+                            </div>
+                          )
+                        ) : (
+                          <AvatarFallback className="bg-primary text-primary-foreground">
+                            {getInitials(team.creator?.full_name || '')}
+                          </AvatarFallback>
+                        )}
+                      </Avatar>
+                    </Link>
                     <div className="flex-1">
-                      <p className="font-medium">{team.creator?.full_name}</p>
+                      <Link to={team.creator?.user_id ? `/user/${team.creator.user_id}` : '#'} className="font-medium hover:underline focus:outline-none">
+                        {team.creator?.full_name}
+                      </Link>
                       <p className="text-sm text-muted-foreground">Team Creator</p>
                     </div>
                     <Badge variant="outline">Creator</Badge>
@@ -219,19 +235,63 @@ const TeamDetails = () => {
                   {/* Accepted Members */}
                   {acceptedMembers.map((application: any) => (
                     <div key={application.id} className="flex items-center gap-3">
-                      <Avatar>
-                        <AvatarImage src={application.user?.avatar_url || ''} />
-                        <AvatarFallback className="bg-secondary text-secondary-foreground">
-                          {getInitials(application.user?.full_name || '')}
-                        </AvatarFallback>
-                      </Avatar>
+                      <Link to={application.user?.user_id ? `/user/${application.user.user_id}` : '#'} className="focus:outline-none">
+                        <Avatar className="cursor-pointer hover:scale-105 transition-transform">
+                          {application.user?.avatar_url ? (
+                            application.user.avatar_url.startsWith('http') || application.user.avatar_url.startsWith('data:') ? (
+                              <AvatarImage src={application.user.avatar_url} />
+                            ) : (
+                              <div className="w-full h-full flex items-center justify-center text-2xl bg-gradient-to-br from-primary to-secondary rounded-full">
+                                {application.user.avatar_url}
+                              </div>
+                            )
+                          ) : (
+                            <AvatarFallback className="bg-secondary text-secondary-foreground">
+                              {getInitials(application.user?.full_name || '')}
+                            </AvatarFallback>
+                          )}
+                        </Avatar>
+                      </Link>
                       <div className="flex-1">
-                        <p className="font-medium">{application.user?.full_name}</p>
+                        <Link to={application.user?.user_id ? `/user/${application.user.user_id}` : '#'} className="font-medium hover:underline focus:outline-none">
+                          {application.user?.full_name}
+                        </Link>
                         <p className="text-sm text-muted-foreground">
                           Joined {formatDate(application.applied_at)}
                         </p>
                       </div>
                       <Badge variant="secondary">Member</Badge>
+                      {isCreator && application.user_id !== user?.id && (
+                        <Button
+                          size="icon"
+                          variant="ghost"
+                          className="text-destructive hover:bg-destructive/10 ml-2"
+                          title="Remove Member"
+                          onClick={async () => {
+                            if (!window.confirm(`Remove ${application.user?.full_name || 'this member'} from the team?`)) return;
+                            try {
+                              await kickMember.mutateAsync({ teamId: team.id, userId: application.user_id });
+                              toast({
+                                title: 'Member Removed',
+                                description: `${application.user?.full_name || 'Member'} was removed from the team.`,
+                              });
+                            } catch (error) {
+                              toast({
+                                title: 'Error',
+                                description: 'Failed to remove member. Please try again.',
+                                variant: 'destructive',
+                              });
+                            }
+                          }}
+                          disabled={kickMember.isPending}
+                        >
+                          {kickMember.isPending ? (
+                            <div className="animate-spin rounded-full h-4 w-4 border-2 border-destructive border-t-transparent" />
+                          ) : (
+                            <Trash2 className="h-4 w-4" />
+                          )}
+                        </Button>
+                      )}
                     </div>
                   ))}
 
@@ -257,14 +317,27 @@ const TeamDetails = () => {
                   <div className="space-y-4">
                     {pendingApplications.map((application: any) => (
                       <div key={application.id} className="flex items-center gap-3 p-4 border rounded-lg">
-                        <Avatar>
-                          <AvatarImage src={application.user?.avatar_url || ''} />
-                          <AvatarFallback className="bg-muted">
-                            {getInitials(application.user?.full_name || '')}
-                          </AvatarFallback>
-                        </Avatar>
+                        <Link to={application.user?.user_id ? `/user/${application.user.user_id}` : '#'} className="focus:outline-none">
+                          <Avatar className="cursor-pointer hover:scale-105 transition-transform">
+                            {application.user?.avatar_url ? (
+                              application.user.avatar_url.startsWith('http') || application.user.avatar_url.startsWith('data:') ? (
+                                <AvatarImage src={application.user.avatar_url} />
+                              ) : (
+                                <div className="w-full h-full flex items-center justify-center text-2xl bg-gradient-to-br from-primary to-secondary rounded-full">
+                                  {application.user.avatar_url}
+                                </div>
+                              )
+                            ) : (
+                              <AvatarFallback className="bg-muted">
+                                {getInitials(application.user?.full_name || '')}
+                              </AvatarFallback>
+                            )}
+                          </Avatar>
+                        </Link>
                         <div className="flex-1">
-                          <p className="font-medium">{application.user?.full_name}</p>
+                          <Link to={application.user?.user_id ? `/user/${application.user.user_id}` : '#'} className="font-medium hover:underline focus:outline-none">
+                            {application.user?.full_name}
+                          </Link>
                           <p className="text-sm text-muted-foreground">
                             Applied {formatDate(application.applied_at)}
                           </p>
@@ -342,12 +415,39 @@ const TeamDetails = () => {
                       )}
                     </div>
                     {userApplication.status === 'accepted' && (
-                      <Link to={`/chat/${team.id}`} className="block">
-                        <Button className="w-full btn-gradient">
-                          <MessageSquare className="h-4 w-4 mr-2" />
-                          Team Chat
+                      <>
+                        <Link to={`/chat/${team.id}`} className="block">
+                          <Button className="w-full btn-gradient">
+                            <MessageSquare className="h-4 w-4 mr-2" />
+                            Team Chat
+                          </Button>
+                        </Link>
+                        <Button
+                          className="w-full btn-gradient-secondary"
+                          onClick={async () => {
+                            try {
+                              await leaveTeam.mutateAsync(team.id);
+                              toast({
+                                title: 'Left Team',
+                                description: 'You have left the team.',
+                              });
+                              navigate('/my-teams');
+                            } catch (error) {
+                              toast({
+                                title: 'Error',
+                                description: 'Failed to leave team. Please try again.',
+                                variant: 'destructive',
+                              });
+                            }
+                          }}
+                          disabled={leaveTeam.isPending}
+                        >
+                          {leaveTeam.isPending ? (
+                            <div className="animate-spin rounded-full h-4 w-4 border-2 border-white border-t-transparent mr-2" />
+                          ) : null}
+                          Leave Team
                         </Button>
-                      </Link>
+                      </>
                     )}
                   </div>
                 ) : (

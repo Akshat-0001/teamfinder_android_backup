@@ -137,11 +137,23 @@ export const useDeleteTeam = () => {
 
   return useMutation({
     mutationFn: async (teamId: string) => {
+      // Get all accepted members
+      const { data: members } = await supabase
+        .from('team_applicants')
+        .select('user_id')
+        .eq('team_id', teamId)
+        .eq('status', 'accepted');
+      // Get team info
+      const { data: team } = await supabase
+        .from('teams')
+        .select('id, title')
+        .eq('id', teamId)
+        .single();
+      // Delete team
       const { error } = await supabase
         .from('teams')
         .delete()
         .eq('id', teamId);
-
       if (error) throw error;
     },
     onSuccess: () => {
@@ -159,7 +171,8 @@ export const useApplyToTeam = () => {
       const { data: { user } } = await supabase.auth.getUser();
       if (!user) throw new Error('Not authenticated');
 
-      const { data, error } = await supabase
+      // Insert application
+      const { data: application, error } = await supabase
         .from('team_applicants')
         .insert({
           team_id: teamId,
@@ -167,9 +180,25 @@ export const useApplyToTeam = () => {
         })
         .select()
         .single();
-
       if (error) throw error;
-      return data;
+
+      // Fetch team to get owner
+      const { data: team } = await supabase
+        .from('teams')
+        .select('id, title, created_by')
+        .eq('id', teamId)
+        .single();
+      if (team && team.created_by) {
+        // Notify owner
+        // await notifyViaEdge({
+        //   user_id: team.created_by,
+        //   type: 'info',
+        //   title: 'New Team Application',
+        //   message: `${user.user_metadata?.full_name || 'A user'} applied to join your team "${team.title}"`,
+        //   data: { teamId }
+        // });
+      }
+      return application;
     },
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: ['teams'] });
@@ -189,15 +218,58 @@ export const useManageApplication = () => {
       applicationId: string; 
       status: 'accepted' | 'rejected' 
     }) => {
-      const { data, error } = await supabase
+      // Update application status
+      const { data: application, error } = await supabase
         .from('team_applicants')
         .update({ status })
         .eq('id', applicationId)
         .select()
         .single();
-
       if (error) throw error;
-      return data;
+
+      // Fetch applicant and team
+      const { data: applicant } = await supabase
+        .from('team_applicants')
+        .select('user_id, team_id')
+        .eq('id', applicationId)
+        .single();
+      const { data: team } = await supabase
+        .from('teams')
+        .select('id, title')
+        .eq('id', applicant.team_id)
+        .single();
+      // Notify applicant
+      if (applicant && team) {
+        // await notifyViaEdge({
+        //   user_id: applicant.user_id,
+        //   type: status === 'accepted' ? 'success' : 'error',
+        //   title: `Application ${status === 'accepted' ? 'Accepted' : 'Rejected'}`,
+        //   message: `Your application to join "${team.title}" was ${status}.`,
+        //   data: { teamId: team.id }
+        // });
+      }
+      // If accepted, notify all team members (except new member)
+      if (status === 'accepted' && applicant && team) {
+        // Get all accepted members except the new one
+        const { data: members } = await supabase
+          .from('team_applicants')
+          .select('user_id')
+          .eq('team_id', team.id)
+          .eq('status', 'accepted');
+        if (members && Array.isArray(members)) {
+          const notifyIds = members.map(m => m.user_id).filter(id => id !== applicant.user_id);
+          for (const memberId of notifyIds) {
+            // await notifyViaEdge({
+            //   user_id: memberId,
+            //   type: 'info',
+            //   title: 'New Team Member',
+            //   message: `A new member joined your team "${team.title}"!`,
+            //   data: { teamId: team.id }
+            // });
+          }
+        }
+      }
+      return application;
     },
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: ['teams'] });
@@ -227,6 +299,75 @@ export const useMyApplications = () => {
 
       if (error) throw error;
       return data;
+    }
+  });
+};
+
+export const useLeaveTeam = () => {
+  const queryClient = useQueryClient();
+
+  return useMutation({
+    mutationFn: async (teamId: string) => {
+      const { data: { user } } = await supabase.auth.getUser();
+      if (!user) throw new Error('Not authenticated');
+      // Remove user from team_applicants
+      const { error } = await supabase
+        .from('team_applicants')
+        .delete()
+        .eq('team_id', teamId)
+        .eq('user_id', user.id)
+        .eq('status', 'accepted');
+      if (error) throw error;
+      // Get team info
+      const { data: team } = await supabase
+        .from('teams')
+        .select('id, title, created_by')
+        .eq('id', teamId)
+        .single();
+      // Notify owner
+      if (team && team.created_by) {
+        // await notifyViaEdge({
+        //   user_id: team.created_by,
+        //   type: 'warning',
+        //   title: 'Member Left Team',
+        //   message: `${user.user_metadata?.full_name || 'A user'} left your team "${team.title}"`,
+        //   data: { teamId }
+        // });
+      }
+    },
+    onSuccess: () => {
+      queryClient.invalidateQueries({ queryKey: ['teams'] });
+      queryClient.invalidateQueries({ queryKey: ['my-teams'] });
+    }
+  });
+};
+
+export const useKickMember = () => {
+  const queryClient = useQueryClient();
+
+  return useMutation({
+    mutationFn: async ({ teamId, userId }: { teamId: string; userId: string }) => {
+      const { data: { user: currentUser } } = await supabase.auth.getUser();
+      if (!currentUser) throw new Error('Not authenticated');
+      // Get team info and check ownership
+      const { data: team } = await supabase
+        .from('teams')
+        .select('id, title, created_by')
+        .eq('id', teamId)
+        .single();
+      if (!team || team.created_by !== currentUser.id) throw new Error('Only the team owner can remove members');
+      // Remove member
+      const { error } = await supabase
+        .from('team_applicants')
+        .delete()
+        .eq('team_id', teamId)
+        .eq('user_id', userId)
+        .eq('status', 'accepted');
+      if (error) throw error;
+    },
+    onSuccess: () => {
+      queryClient.invalidateQueries({ queryKey: ['teams'] });
+      queryClient.invalidateQueries({ queryKey: ['my-teams'] });
     }
   });
 };

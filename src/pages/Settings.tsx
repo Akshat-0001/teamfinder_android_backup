@@ -6,9 +6,12 @@ import { Switch } from '@/components/ui/switch';
 import { useNavigate } from 'react-router-dom';
 import { ArrowLeft, Moon, Sun, Settings as SettingsIcon, Palette, Waves, Trees, Sparkles, Lock } from 'lucide-react';
 import { useTheme } from 'next-themes';
-import BugReport from '@/components/BugReport';
 import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogTrigger } from '@/components/ui/dialog';
 import { AlertDialog, AlertDialogAction, AlertDialogCancel, AlertDialogContent, AlertDialogDescription, AlertDialogFooter, AlertDialogHeader, AlertDialogTitle, AlertDialogTrigger } from '@/components/ui/alert-dialog';
+import { supabase } from '@/integrations/supabase/client';
+import { Input } from '@/components/ui/input';
+import { Textarea } from '@/components/ui/textarea';
+import { useToast } from '@/hooks/use-toast';
 
 const Settings = () => {
   const navigate = useNavigate();
@@ -19,6 +22,25 @@ const Settings = () => {
   const [showSignOutDialog, setShowSignOutDialog] = useState(false);
   const [showSuggestionDialog, setShowSuggestionDialog] = useState(false);
   const [showChangePasswordDialog, setShowChangePasswordDialog] = useState(false);
+  const { toast } = useToast();
+  const [suggestions, setSuggestions] = useState<any[]>([]);
+  const [loadingSuggestions, setLoadingSuggestions] = useState(false);
+  const [suggestionForm, setSuggestionForm] = useState({
+    title: '',
+    description: '',
+    category: '',
+  });
+  const [submitting, setSubmitting] = useState(false);
+  const [formError, setFormError] = useState('');
+  const [showChangeEmailDialog, setShowChangeEmailDialog] = useState(false);
+  const [changePasswordForm, setChangePasswordForm] = useState({ current: '', new: '', confirm: '' });
+  const [changePasswordLoading, setChangePasswordLoading] = useState(false);
+  const [changePasswordError, setChangePasswordError] = useState('');
+  const [changePasswordSuccess, setChangePasswordSuccess] = useState('');
+  const [changeEmailForm, setChangeEmailForm] = useState({ email: '', password: '' });
+  const [changeEmailLoading, setChangeEmailLoading] = useState(false);
+  const [changeEmailError, setChangeEmailError] = useState('');
+  const [changeEmailSuccess, setChangeEmailSuccess] = useState('');
 
   const themes = [
     { id: 'light', name: 'Light', icon: Sun, description: 'Blue Lagoon - Clean and bright' },
@@ -31,6 +53,21 @@ const Settings = () => {
   useEffect(() => {
     setCurrentTheme(theme || 'system');
   }, [theme]);
+
+  // Fetch user's suggestions
+  useEffect(() => {
+    if (!user) return;
+    setLoadingSuggestions(true);
+    supabase
+      .from('suggestions')
+      .select('*')
+      .eq('user_id', user.id)
+      .order('created_at', { ascending: false })
+      .then(({ data, error }) => {
+        if (!error) setSuggestions(data || []);
+        setLoadingSuggestions(false);
+      });
+  }, [user, showSuggestionDialog]);
 
   const handleThemeChange = (themeId: string) => {
     setCurrentTheme(themeId);
@@ -57,6 +94,112 @@ const Settings = () => {
     } finally {
       setIsSigningOut(false);
     }
+  };
+
+  const handleSuggestionInput = (e: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement>) => {
+    setSuggestionForm(f => ({ ...f, [e.target.name]: e.target.value }));
+  };
+
+  const handleSuggestionSubmit = async (e: React.FormEvent) => {
+    e.preventDefault();
+    setFormError('');
+    if (!suggestionForm.title.trim() || !suggestionForm.description.trim() || !suggestionForm.category.trim()) {
+      setFormError('All fields are required.');
+      return;
+    }
+    setSubmitting(true);
+    const { error } = await supabase.from('suggestions').insert({
+      user_id: user.id,
+      title: suggestionForm.title.trim(),
+      description: suggestionForm.description.trim(),
+      category: suggestionForm.category.trim(),
+    });
+    if (error) {
+      setFormError(error.message);
+    } else {
+      toast({ title: 'Suggestion submitted!', description: 'Thank you for your feedback.' });
+      setSuggestionForm({ title: '', description: '', category: '' });
+      setShowSuggestionDialog(false);
+    }
+    setSubmitting(false);
+  };
+
+  const handleChangePasswordInput = (e: React.ChangeEvent<HTMLInputElement>) => {
+    setChangePasswordForm(f => ({ ...f, [e.target.name]: e.target.value }));
+  };
+
+  const handleChangeEmailInput = (e: React.ChangeEvent<HTMLInputElement>) => {
+    setChangeEmailForm(f => ({ ...f, [e.target.name]: e.target.value }));
+  };
+
+  const handleChangePassword = async (e: React.FormEvent) => {
+    e.preventDefault();
+    setChangePasswordError('');
+    setChangePasswordSuccess('');
+    if (!changePasswordForm.current || !changePasswordForm.new || !changePasswordForm.confirm) {
+      setChangePasswordError('All fields are required.');
+      return;
+    }
+    if (changePasswordForm.new.length < 6) {
+      setChangePasswordError('New password must be at least 6 characters.');
+      return;
+    }
+    if (changePasswordForm.new !== changePasswordForm.confirm) {
+      setChangePasswordError('Passwords do not match.');
+      return;
+    }
+    setChangePasswordLoading(true);
+    // Re-authenticate user
+    const { error: signInError } = await supabase.auth.signInWithPassword({
+      email: user.email,
+      password: changePasswordForm.current
+    });
+    if (signInError) {
+      setChangePasswordError('Current password is incorrect.');
+      setChangePasswordLoading(false);
+      return;
+    }
+    // Update password
+    const { error } = await supabase.auth.updateUser({ password: changePasswordForm.new });
+    if (error) {
+      setChangePasswordError(error.message);
+    } else {
+      setChangePasswordSuccess('Password updated successfully!');
+      setChangePasswordForm({ current: '', new: '', confirm: '' });
+      setTimeout(() => setShowChangePasswordDialog(false), 1200);
+    }
+    setChangePasswordLoading(false);
+  };
+
+  const handleChangeEmail = async (e: React.FormEvent) => {
+    e.preventDefault();
+    setChangeEmailError('');
+    setChangeEmailSuccess('');
+    if (!changeEmailForm.email || !changeEmailForm.password) {
+      setChangeEmailError('All fields are required.');
+      return;
+    }
+    // Re-authenticate user
+    setChangeEmailLoading(true);
+    const { error: signInError } = await supabase.auth.signInWithPassword({
+      email: user.email,
+      password: changeEmailForm.password
+    });
+    if (signInError) {
+      setChangeEmailError('Current password is incorrect.');
+      setChangeEmailLoading(false);
+      return;
+    }
+    // Update email
+    const { error } = await supabase.auth.updateUser({ email: changeEmailForm.email });
+    if (error) {
+      setChangeEmailError(error.message);
+    } else {
+      setChangeEmailSuccess('Email update requested! Check your new email to confirm.');
+      setChangeEmailForm({ email: '', password: '' });
+      setTimeout(() => setShowChangeEmailDialog(false), 2000);
+    }
+    setChangeEmailLoading(false);
   };
 
   return (
@@ -90,23 +233,19 @@ const Settings = () => {
             </CardDescription>
           </CardHeader>
           <CardContent className="space-y-2">
-            <BugReport />
-            <Dialog open={showSuggestionDialog} onOpenChange={setShowSuggestionDialog}>
-              <DialogTrigger asChild>
-                <Button variant="ghost" className="w-full justify-start">
+            <div className="flex flex-col gap-2">
+              <Button asChild variant="ghost" className="w-full justify-start">
+                <a href="/settings/suggestions">
                   <Sparkles className="h-4 w-4 mr-2" />
-                  Give Suggestions
-                </Button>
-              </DialogTrigger>
-              <DialogContent>
-                <DialogHeader>
-                  <DialogTitle>Give Suggestions</DialogTitle>
-                </DialogHeader>
-                <div className="text-muted-foreground text-center py-8">
-                  Suggestion form coming soon!
-                </div>
-              </DialogContent>
-            </Dialog>
+                  Suggestions
+                </a>
+              </Button>
+              <Button asChild variant="ghost" className="w-full justify-start">
+                <a href="/settings/bug-report">
+                  <span className="inline-flex items-center"><span className="mr-2"><svg width="16" height="16" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" className="lucide lucide-bug h-4 w-4"><rect width="8" height="14" x="8" y="6" rx="4" /><path d="M19 7v4M5 7v4M12 19v2M12 3V1M17 3l-2.2 2.2M7 3l2.2 2.2" /></svg></span>Report Bug</span>
+                </a>
+              </Button>
+            </div>
           </CardContent>
         </Card>
 
@@ -173,12 +312,98 @@ const Settings = () => {
               <p className="text-sm text-muted-foreground">{user?.email}</p>
             </div>
             <div className="pt-4 border-t space-y-2">
+              <Dialog open={showChangePasswordDialog} onOpenChange={setShowChangePasswordDialog}>
+                <DialogTrigger asChild>
+                  <Button
+                    variant="outline"
+                    className="w-full flex items-center gap-2"
+                  >
+                    <Lock className="h-4 w-4" />
+                    Change Password
+                  </Button>
+                </DialogTrigger>
+                <DialogContent>
+                  <DialogHeader>
+                    <DialogTitle>Change Password</DialogTitle>
+                  </DialogHeader>
+                  <form onSubmit={handleChangePassword} className="space-y-4">
+                    <Input
+                      name="current"
+                      type="password"
+                      placeholder="Current password"
+                      value={changePasswordForm.current}
+                      onChange={handleChangePasswordInput}
+                      required
+                    />
+                    <Input
+                      name="new"
+                      type="password"
+                      placeholder="New password"
+                      value={changePasswordForm.new}
+                      onChange={handleChangePasswordInput}
+                      required
+                    />
+                    <Input
+                      name="confirm"
+                      type="password"
+                      placeholder="Confirm new password"
+                      value={changePasswordForm.confirm}
+                      onChange={handleChangePasswordInput}
+                      required
+                    />
+                    {changePasswordError && <div className="text-destructive text-sm">{changePasswordError}</div>}
+                    {changePasswordSuccess && <div className="text-green-600 text-sm">{changePasswordSuccess}</div>}
+                    <Button type="submit" className="w-full btn-gradient" disabled={changePasswordLoading}>
+                      {changePasswordLoading ? 'Updating...' : 'Update Password'}
+                    </Button>
+                  </form>
+                </DialogContent>
+              </Dialog>
+              <Dialog open={showChangeEmailDialog} onOpenChange={setShowChangeEmailDialog}>
+                <DialogTrigger asChild>
+                  <Button
+                    variant="outline"
+                    className="w-full flex items-center gap-2"
+                  >
+                    <Lock className="h-4 w-4" />
+                    Change Email
+                  </Button>
+                </DialogTrigger>
+                <DialogContent>
+                  <DialogHeader>
+                    <DialogTitle>Change Email</DialogTitle>
+                  </DialogHeader>
+                  <form onSubmit={handleChangeEmail} className="space-y-4">
+                    <Input
+                      name="email"
+                      type="email"
+                      placeholder="New email address"
+                      value={changeEmailForm.email}
+                      onChange={handleChangeEmailInput}
+                      required
+                    />
+                    <Input
+                      name="password"
+                      type="password"
+                      placeholder="Current password"
+                      value={changeEmailForm.password}
+                      onChange={handleChangeEmailInput}
+                      required
+                    />
+                    {changeEmailError && <div className="text-destructive text-sm">{changeEmailError}</div>}
+                    {changeEmailSuccess && <div className="text-green-600 text-sm">{changeEmailSuccess}</div>}
+                    <Button type="submit" className="w-full btn-gradient" disabled={changeEmailLoading}>
+                      {changeEmailLoading ? 'Updating...' : 'Update Email'}
+                    </Button>
+                  </form>
+                </DialogContent>
+              </Dialog>
               <AlertDialog open={showSignOutDialog} onOpenChange={setShowSignOutDialog}>
                 <AlertDialogTrigger asChild>
                   <Button
                     variant="destructive"
                     disabled={isSigningOut}
-                    className="w-full"
+                    className="w-full mt-2"
                   >
                     {isSigningOut ? 'Signing out...' : 'Sign Out'}
                   </Button>
@@ -201,25 +426,6 @@ const Settings = () => {
                   </AlertDialogFooter>
                 </AlertDialogContent>
               </AlertDialog>
-              <Dialog open={showChangePasswordDialog} onOpenChange={setShowChangePasswordDialog}>
-                <DialogTrigger asChild>
-                  <Button
-                    variant="outline"
-                    className="w-full flex items-center gap-2"
-                  >
-                    <Lock className="h-4 w-4" />
-                    Change Password
-                  </Button>
-                </DialogTrigger>
-                <DialogContent>
-                  <DialogHeader>
-                    <DialogTitle>Change Password</DialogTitle>
-                  </DialogHeader>
-                  <div className="text-muted-foreground text-center py-8">
-                    Password change coming soon!
-                  </div>
-                </DialogContent>
-              </Dialog>
             </div>
           </CardContent>
         </Card>

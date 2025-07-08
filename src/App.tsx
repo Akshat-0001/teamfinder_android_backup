@@ -18,6 +18,11 @@ import TeamChat from "./pages/TeamChat";
 import Search from "./pages/Search";
 import Settings from "./pages/Settings";
 import UserProfile from "./pages/UserProfile";
+import ResetPassword from './pages/ResetPassword';
+import PageTransition from "./components/PageTransition";
+import ProfileSetup from './pages/ProfileSetup';
+import Suggestions from './pages/Suggestions';
+import BugReportPage from './pages/BugReportPage';
 
 const queryClient = new QueryClient();
 
@@ -48,6 +53,9 @@ const App = () => (
           <Route path="/" element={<SplashScreen />} />
           <Route path="/onboarding" element={<OnboardingCarousel />} />
           <Route path="/auth" element={<AuthPage />} />
+          <Route path="/settings/suggestions" element={<Suggestions />} />
+          <Route path="/settings/bug-report" element={<BugReportPage />} />
+          <Route path="/profile-setup" element={<ProfileSetup />} />
           <Route path="/" element={<ProtectedRoute><Layout /></ProtectedRoute>}>
             <Route path="home" element={<Home />} />
             <Route path="profile" element={<Profile />} />
@@ -58,7 +66,8 @@ const App = () => (
             <Route path="settings" element={<Settings />} />
             <Route path="user/:userId" element={<UserProfile />} />
           </Route>
-          <Route path="/chat/:teamId" element={<ProtectedRoute><TeamChat /></ProtectedRoute>} />
+          <Route path="/chat/:teamId" element={<ProtectedRoute><PageTransition><TeamChat /></PageTransition></ProtectedRoute>} />
+          <Route path="/auth/reset-password" element={<ResetPassword />} />
           <Route path="*" element={<Navigate to="/" replace />} />
         </Routes>
       </BrowserRouter>

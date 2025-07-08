@@ -93,7 +93,7 @@ const UserProfile = () => {
       <Card className="glass-card">
         <CardHeader>
           <div className="flex items-center space-x-4">
-            <Avatar className="w-16 h-16">
+            <Avatar className="w-20 h-20">
               {profile.avatar_url ? (
                 <div className="w-full h-full flex items-center justify-center text-2xl bg-gradient-to-br from-primary to-secondary rounded-full">
                   {profile.avatar_url}
@@ -106,10 +106,7 @@ const UserProfile = () => {
             </Avatar>
             <div>
               <CardTitle>{profile.full_name}</CardTitle>
-              <div className="flex items-center gap-2 text-muted-foreground mt-1">
-                <Mail className="h-4 w-4" />
-                <span>{profile.email}</span>
-              </div>
+              {/* Email intentionally omitted for privacy */}
             </div>
           </div>
         </CardHeader>

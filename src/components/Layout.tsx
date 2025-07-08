@@ -9,20 +9,53 @@ import {
   Settings, 
   LogOut,
   MessageSquare,
-  Search
+  Search,
+  Bell
 } from 'lucide-react';
+import { Badge } from '@/components/ui/badge';
+import { useEffect, useState } from 'react';
+import { supabase } from '@/integrations/supabase/client';
 
 const Layout = () => {
   const { user, signOut } = useAuth();
   const location = useLocation();
   const navigate = useNavigate();
+  const [unreadCount, setUnreadCount] = useState(0);
+
+  useEffect(() => {
+    if (!user) return;
+    let subscription: any;
+    const fetchUnread = async () => {
+      const { count } = await supabase
+        .from('notifications')
+        .select('*', { count: 'exact', head: true })
+        .eq('user_id', user.id)
+        .eq('is_read', false);
+      setUnreadCount(count || 0);
+    };
+    fetchUnread();
+    // Listen for real-time changes
+    subscription = supabase
+      .channel('notifications-bell-' + user.id)
+      .on('postgres_changes', { event: '*', schema: 'public', table: 'notifications', filter: `user_id=eq.${user.id}` }, fetchUnread)
+      .subscribe();
+    return () => {
+      if (subscription) supabase.removeChannel(subscription);
+    };
+  }, [user]);
 
   const handleSignOut = async () => {
     await signOut();
     navigate('/');
   };
 
-  const isActive = (path: string) => location.pathname === path;
+  // Match full path segment (so /profile matches /profile and /profile/edit, but not /profiled)
+  const isActive = (path: string) => {
+    const current = location.pathname;
+    if (current === path) return true;
+    // Only match if next char is / or end of string
+    return current.startsWith(path + '/') && (path !== '/');
+  };
 
   return (
     <div className="mobile-container bg-background">
@@ -44,6 +77,8 @@ const Layout = () => {
           </Link>
 
           <div className="flex items-center space-x-2">
+            {/* Notification Bell Icon - removed */}
+            {/* Search Icon */}
             <Link to="/search">
               <Button variant="ghost" size="icon" className="touch-target">
                 <Search className="h-5 w-5" />

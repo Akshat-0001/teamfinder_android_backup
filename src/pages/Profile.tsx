@@ -182,7 +182,7 @@ const Profile = () => {
         <Card className="glass-card">
           <CardHeader>
             <div className="flex items-center space-x-4">
-            <Avatar className="w-16 h-16">
+            <Avatar className="w-20 h-20">
               {profile.avatar_url ? (
                 <div className="w-full h-full flex items-center justify-center text-2xl bg-gradient-to-br from-primary to-secondary rounded-full">
                   {profile.avatar_url}
@@ -195,7 +195,8 @@ const Profile = () => {
             </Avatar>
               <div>
                 <CardTitle>{profile.full_name}</CardTitle>
-                <p className="text-muted-foreground">{profile.email}</p>
+                {/* <p className="text-muted-foreground">{profile.email}</p> */}
+                <p className="text-muted-foreground italic">Hidden for privacy</p>
               </div>
             </div>
           </CardHeader>
@@ -216,7 +217,7 @@ const Profile = () => {
                   <div>
                     <Label>Profile Picture</Label>
                     <div className="flex items-center gap-4">
-                      <Avatar className="w-16 h-16">
+                      <Avatar className="w-20 h-20">
                         {formData.avatar_url ? (
                           <div className="w-full h-full flex items-center justify-center text-2xl bg-gradient-to-br from-primary to-secondary rounded-full">
                             {formData.avatar_url}
@@ -227,10 +228,12 @@ const Profile = () => {
                           </AvatarFallback>
                         )}
                       </Avatar>
-                      <ProfileAvatars
-                        selectedAvatar={formData.avatar_url}
-                        onSelect={(avatar) => setFormData(prev => ({ ...prev, avatar_url: avatar }))}
-                      />
+                      <div className="ml-2">
+                        <ProfileAvatars
+                          selectedAvatar={formData.avatar_url}
+                          onSelect={(avatar) => setFormData(prev => ({ ...prev, avatar_url: avatar }))}
+                        />
+                      </div>
                     </div>
                   </div>
 
