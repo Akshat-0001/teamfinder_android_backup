@@ -175,10 +175,10 @@ const MyTeams = () => {
                         <span>{team.applicants?.filter((app: any) => app.status === 'pending').length || 0} pending</span>
                       </div>
                     </div>
-                      <Link to={`/chat/${team.id}`} onClick={(e) => e.preventDefault()}>
-                        <Button variant="outline" size="sm">
+                      <Link to={`/chat/${team.id}`} className="block">
+                        <Button className="btn-gradient w-full sm:w-auto">
                           <MessageSquare className="h-4 w-4 mr-2" />
-                          Chat
+                          Team Chat
                         </Button>
                       </Link>
                     </div>

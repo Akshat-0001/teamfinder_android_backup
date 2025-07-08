@@ -145,7 +145,7 @@ const TeamChat = () => {
   const messageGroups = groupMessagesByDate(messages);
 
   return (
-    <div className="flex flex-col bg-background min-h-0 h-full" style={{ minHeight: 0, height: '100dvh', maxHeight: '100dvh' }}>
+    <div className="flex flex-col bg-background min-h-0 h-full allow-copy allow-drag" style={{ minHeight: 0, height: '100dvh', maxHeight: '100dvh' }}>
       {/* TeamFinder App Top Bar (copied from Layout) */}
       <header className="mobile-header bg-card/80 backdrop-blur-lg border-b border-border/50 z-20">
         <div className="container mx-auto px-4 h-16 flex items-center justify-between">

@@ -137,8 +137,8 @@ const TeamDetails = () => {
   }
 
   return (
-    <div className="container mx-auto px-4 py-6 pb-20">
-      <div className="max-w-4xl mx-auto">
+    <div className="container mx-auto px-4 py-6 pb-20 overflow-x-hidden">
+      <div className="mx-auto w-full lg:max-w-4xl">
         {/* Header */}
         <div className="flex items-center gap-4 mb-6">
           <Button
@@ -158,11 +158,11 @@ const TeamDetails = () => {
           </Badge>
         </div>
 
-        <div className="grid gap-6 lg:grid-cols-3">
+        <div className="grid gap-6 w-full lg:grid-cols-3">
           {/* Main Content */}
           <div className="lg:col-span-2 space-y-6">
             {/* Description */}
-            <Card className="glass-card">
+            <Card className="glass-card w-full">
               <CardHeader>
                 <CardTitle>About This Team</CardTitle>
               </CardHeader>
@@ -198,7 +198,7 @@ const TeamDetails = () => {
             </Card>
 
             {/* Team Members */}
-            <Card className="glass-card">
+            <Card className="glass-card w-full">
               <CardHeader>
                 <CardTitle>Team Members ({acceptedMembers.length + 1})</CardTitle>
               </CardHeader>
@@ -309,14 +309,14 @@ const TeamDetails = () => {
 
             {/* Pending Applications (Creator Only) */}
             {isCreator && pendingApplications.length > 0 && (
-              <Card className="glass-card">
+              <Card className="glass-card w-full">
                 <CardHeader>
                   <CardTitle>Pending Applications ({pendingApplications.length})</CardTitle>
                 </CardHeader>
                 <CardContent>
                   <div className="space-y-4">
                     {pendingApplications.map((application: any) => (
-                      <div key={application.id} className="flex items-center gap-3 p-4 border rounded-lg">
+                      <div key={application.id} className="flex items-center gap-3 p-4 border rounded-lg w-full flex-wrap">
                         <Link to={application.user?.user_id ? `/user/${application.user.user_id}` : '#'} className="focus:outline-none">
                           <Avatar className="cursor-pointer hover:scale-105 transition-transform">
                             {application.user?.avatar_url ? (
@@ -334,7 +334,7 @@ const TeamDetails = () => {
                             )}
                           </Avatar>
                         </Link>
-                        <div className="flex-1">
+                        <div className="flex-1 min-w-0">
                           <Link to={application.user?.user_id ? `/user/${application.user.user_id}` : '#'} className="font-medium hover:underline focus:outline-none">
                             {application.user?.full_name}
                           </Link>
@@ -347,9 +347,10 @@ const TeamDetails = () => {
                             </p>
                           )}
                         </div>
-                        <div className="flex gap-2">
+                        <div className="flex flex-col w-full gap-2 mt-2 sm:flex-row sm:w-auto sm:mt-0">
                           <Button
                             size="sm"
+                            className="w-full sm:w-auto"
                             onClick={() => handleManageApplication(application.id, 'accepted')}
                             disabled={manageApplication.isPending}
                           >
@@ -359,9 +360,9 @@ const TeamDetails = () => {
                           <Button
                             size="sm"
                             variant="outline"
+                            className="w-full sm:w-auto text-destructive hover:text-destructive"
                             onClick={() => handleManageApplication(application.id, 'rejected')}
                             disabled={manageApplication.isPending}
-                            className="text-destructive hover:text-destructive"
                           >
                             <XCircle className="h-4 w-4 mr-2" />
                             Reject
@@ -378,7 +379,7 @@ const TeamDetails = () => {
           {/* Sidebar */}
           <div className="space-y-6">
             {/* Actions */}
-            <Card className="glass-card">
+            <Card className="glass-card w-full">
               <CardContent className="pt-6">
                 {isCreator ? (
                   <div className="space-y-3">
@@ -478,7 +479,7 @@ const TeamDetails = () => {
             </Card>
 
             {/* Team Stats */}
-            <Card className="glass-card">
+            <Card className="glass-card w-full">
               <CardHeader>
                 <CardTitle>Team Stats</CardTitle>
               </CardHeader>

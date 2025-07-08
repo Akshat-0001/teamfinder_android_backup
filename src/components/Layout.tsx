@@ -35,7 +35,7 @@ const Layout = () => {
   };
 
   return (
-    <div className="mobile-container bg-background">
+    <div className="mobile-container bg-background no-copy no-drag">
       {/* Header */}
       <header className="mobile-header bg-card/80 backdrop-blur-lg border-b border-border/50">
         <div className="container mx-auto px-4 h-16 flex items-center justify-between">
@@ -89,7 +89,7 @@ const Layout = () => {
       <FloatingActionButton />
 
       {/* Bottom Navigation */}
-      <nav className="fixed bottom-0 left-0 right-0 z-50 bg-card/90 backdrop-blur-lg border-t border-border/50 safe-area-bottom">
+      <nav className="fixed bottom-0 left-0 right-0 z-50 bg-card/90 backdrop-blur-lg border-t border-border/50 safe-area-bottom-fixed">
         <div className="container mx-auto px-4">
           <div className="flex items-center justify-around h-16">
             <Link to="/home">

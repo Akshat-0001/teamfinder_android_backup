@@ -1,73 +1,181 @@
-# Welcome to your Lovable project
+# TeamFinder: Team Collaboration & Project Hub
 
-## Project info
+## Overview & Purpose
 
-**URL**: https://lovable.dev/projects/8eda3502-153c-45cd-949b-e5effd2622d1
+**TeamFinder** is a modern, full-featured team collaboration platform designed to help students, professionals, and enthusiasts find, create, and manage project teams. Whether for hackathons, research, startups, or study groups, TeamFinder streamlines the process of team formation, communication, and project management, all in one place.
 
-## How can I edit this code?
+---
 
-There are several ways of editing your application.
+## Key Features & User Flows
 
-**Use Lovable**
+- **User Authentication**: Secure sign-up/sign-in (email/password & Google OAuth) with profile onboarding.
+- **Profile Management**: Rich user profiles with skills, interests, university, social/coding links, and avatars.
+- **Team Discovery & Search**: Browse, search, and filter teams by category, skills, and more.
+- **Team Creation & Management**: Create teams, set requirements, manage members, and handle applications.
+- **Application Workflow**: Apply to teams, review/join/leave teams, and manage applications (accept/reject).
+- **Team Chat**: Real-time group chat for each team, with message search and member tagging.
+- **Notifications**: In-app notifications for invites, application status, team events, and more.
+- **Bug Reporting & Suggestions**: Built-in forms for users to report bugs and suggest features.
+- **Settings & Customization**: Theme switching (light/dark/custom), password/email change, and more.
+- **Mobile-Ready & PWA**: Responsive UI, installable as a PWA, and deployable as a native Android app via Capacitor.
 
-Simply visit the [Lovable Project](https://lovable.dev/projects/8eda3502-153c-45cd-949b-e5effd2622d1) and start prompting.
+---
 
-Changes made via Lovable will be committed automatically to this repo.
+## Technology Stack
 
-**Use your preferred IDE**
+- **Frontend**: React 18, TypeScript, Vite, shadcn-ui, Tailwind CSS
+- **State/Data**: React Query, custom hooks
+- **Backend/DB**: [Supabase](https://supabase.com/) (Postgres, Auth, Realtime, Storage)
+- **Mobile/Native**: Capacitor (Android integration)
+- **Other**: ESLint, PostCSS, Zod, Lucide Icons, date-fns, and more
 
-If you want to work locally using your own IDE, you can clone this repo and push changes. Pushed changes will also be reflected in Lovable.
+---
 
-The only requirement is having Node.js & npm installed - [install with nvm](https://github.com/nvm-sh/nvm#installing-and-updating)
+## Folder Structure & Code Organization
 
-Follow these steps:
-
-```sh
-# Step 1: Clone the repository using the project's Git URL.
-git clone <YOUR_GIT_URL>
-
-# Step 2: Navigate to the project directory.
-cd <YOUR_PROJECT_NAME>
-
-# Step 3: Install the necessary dependencies.
-npm i
-
-# Step 4: Start the development server with auto-reloading and an instant preview.
-npm run dev
+```
+teamfind-connect-hub/
+├── android/                # Native Android project (Capacitor)
+├── public/                 # Static assets (favicons, avatars, etc.)
+├── src/
+│   ├── components/         # Reusable UI components & dialogs
+│   │   └── ui/             # Low-level UI primitives (buttons, cards, etc.)
+│   ├── hooks/              # Custom React hooks (auth, teams, chat, etc.)
+│   ├── integrations/       # Supabase client & types
+│   ├── lib/                # Utility functions
+│   ├── pages/              # Main app pages (Home, Teams, Chat, etc.)
+│   ├── types/              # TypeScript types & constants
+│   ├── utils/              # Notification utilities, helpers
+│   └── App.tsx, main.tsx   # App entry points
+├── supabase/               # Supabase config, edge functions, migrations
+├── package.json            # Project metadata & scripts
+├── tailwind.config.ts      # Tailwind CSS config
+├── vite.config.ts          # Vite build config
+└── ...                     # Other config/build files
 ```
 
-**Edit a file directly in GitHub**
+---
 
-- Navigate to the desired file(s).
-- Click the "Edit" button (pencil icon) at the top right of the file view.
-- Make your changes and commit the changes.
+## Setup & Installation (Linux/Ubuntu)
 
-**Use GitHub Codespaces**
+### 1. Prerequisites
+- **Node.js** (v18+ recommended)
+- **npm** (v9+ recommended)
+- **Git**
+- **[Supabase](https://supabase.com/)** project (for backend)
+- **Android Studio** (for native build, optional)
 
-- Navigate to the main page of your repository.
-- Click on the "Code" button (green button) near the top right.
-- Select the "Codespaces" tab.
-- Click on "New codespace" to launch a new Codespace environment.
-- Edit files directly within the Codespace and commit and push your changes once you're done.
+### 2. Clone the Repository
+```sh
+git clone <YOUR_GIT_URL>
+cd teamfind-connect-hub
+```
 
-## What technologies are used for this project?
+### 3. Install Dependencies
+```sh
+npm install
+```
 
-This project is built with:
+### 4. Environment Setup
+- Configure your Supabase credentials in `src/integrations/supabase/client.ts` (see Supabase docs for details).
+- (Optional) Set up environment variables if needed (e.g., `.env` for API keys).
 
-- Vite
-- TypeScript
-- React
-- shadcn-ui
-- Tailwind CSS
+### 5. Run the App (Web)
+```sh
+npm run dev
+```
+- Visit [http://localhost:5173](http://localhost:5173) in your browser.
 
-## How can I deploy this project?
+---
 
-Simply open [Lovable](https://lovable.dev/projects/8eda3502-153c-45cd-949b-e5effd2622d1) and click on Share -> Publish.
+## Usage & Deployment
 
-## Can I connect a custom domain to my Lovable project?
+### Web Deployment
+- **Build for production:**
+  ```sh
+  npm run build
+  ```
+- **Preview production build:**
+  ```sh
+  npm run preview
+  ```
+- **Deploy** to your preferred static host (Vercel, Netlify, etc.) or use [Lovable](https://lovable.dev/) for instant deployment.
 
-Yes, you can!
+### Android (Capacitor) Integration & Deployment
 
-To connect a domain, navigate to Project > Settings > Domains and click Connect Domain.
+#### 1. Add Android Platform
+```sh
+npx cap add android
+```
 
-Read more here: [Setting up a custom domain](https://docs.lovable.dev/tips-tricks/custom-domain#step-by-step-guide)
+#### 2. Sync Web Assets to Android
+```sh
+npm run build
+npx cap sync android
+```
+
+#### 3. Open in Android Studio
+```sh
+npx cap open android
+```
+- Build, run, and test the app on an emulator or device.
+
+#### 4. Common Capacitor Commands
+- **Sync after changes:**
+  ```sh
+  npx cap sync
+  ```
+- **Copy assets only:**
+  ```sh
+  npx cap copy
+  ```
+- **Update plugins:**
+  ```sh
+  npx cap update
+  ```
+
+#### 5. Android Build Notes
+- Ensure Android Studio is installed and configured.
+- You may need to update package names, icons, and splash screens in `android/app/src/main/res/`.
+- For push notifications, deep linking, or other native features, refer to [Capacitor docs](https://capacitorjs.com/docs).
+
+---
+
+## Supabase Integration
+- All authentication, database, and real-time features are powered by Supabase.
+- Database schema is defined in `supabase/migrations/`.
+- Edge functions (e.g., notifications) are in `supabase/functions/`.
+- Update Supabase credentials in `src/integrations/supabase/client.ts`.
+
+---
+
+## Developer Notes & Contribution
+
+- **Code Style**: Uses ESLint, Prettier, and TypeScript strict mode.
+- **UI**: Built with shadcn-ui and Tailwind CSS for rapid, accessible design.
+- **Testing**: (Add your preferred testing setup here if any)
+- **Contributions**: PRs and issues are welcome! Please open an issue for major changes first.
+- **Extending**: Add new pages in `src/pages/`, new hooks in `src/hooks/`, and new UI in `src/components/`.
+
+---
+
+## FAQ & Troubleshooting
+
+- **Q: How do I reset my password?**
+  - Use the "Forgot Password" link on the login page. Check your email for a reset link.
+- **Q: How do I deploy to a custom domain?**
+  - If using Lovable, see [custom domain guide](https://docs.lovable.dev/tips-tricks/custom-domain#step-by-step-guide).
+- **Q: How do I add more native features?**
+  - Use Capacitor plugins and follow [Capacitor documentation](https://capacitorjs.com/docs).
+
+---
+
+## License
+
+This project is open source. See [LICENSE](./LICENSE) for details.
+
+---
+
+## Credits
+- Built with ❤️ by the TeamFinder contributors.
+- Powered by [Supabase](https://supabase.com/), [React](https://react.dev/), [Vite](https://vitejs.dev/), and [Capacitor](https://capacitorjs.com/).
