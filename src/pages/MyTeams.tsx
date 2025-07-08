@@ -126,37 +126,40 @@ const MyTeams = () => {
             </div>
           ) : (
             createdTeams.map((team) => (
-              <Card key={team.id} className="glass-card">
-                <CardHeader>
-                  <div className="flex items-start justify-between">
-                    <div className="flex-1">
-                      <CardTitle className="text-lg">{team.title}</CardTitle>
-                      <CardDescription className="flex items-center gap-2 mt-1">
-                        <span>Created {formatDate(team.created_at)}</span>
-                        <span>•</span>
-                        <Badge variant="secondary" className={`category-${team.category.toLowerCase()}`}>
-                          {team.category}
-                        </Badge>
-                      </CardDescription>
-                    </div>
-                    <div className="flex gap-2">
-                      <Link to={`/teams/${team.id}`}>
+              <Link key={team.id} to={`/teams/${team.id}`} className="block">
+                <Card className="glass-card cursor-pointer hover:shadow-md transition-shadow">
+                  <CardHeader>
+                    <div className="flex items-start justify-between">
+                      <div className="flex-1">
+                        <CardTitle className="text-lg">{team.title}</CardTitle>
+                        <CardDescription className="flex items-center gap-2 mt-1">
+                          <span>Created {formatDate(team.created_at)}</span>
+                          <span>•</span>
+                          <Badge variant="secondary" className={`category-${team.category.toLowerCase()}`}>
+                            {team.category}
+                          </Badge>
+                        </CardDescription>
+                      </div>
+                    <div className="flex gap-2" onClick={(e) => e.preventDefault()}>
                         <Button variant="outline" size="sm">
                           <Settings className="h-4 w-4" />
                         </Button>
-                      </Link>
-                      <Button
-                        variant="outline"
-                        size="sm"
-                        onClick={() => handleDeleteTeam(team.id, team.title)}
-                        className="text-destructive hover:text-destructive"
-                      >
-                        <Trash2 className="h-4 w-4" />
-                      </Button>
+                        <Button
+                          variant="outline"
+                          size="sm"
+                          onClick={(e) => {
+                            e.preventDefault();
+                            e.stopPropagation();
+                            handleDeleteTeam(team.id, team.title);
+                          }}
+                          className="text-destructive hover:text-destructive"
+                        >
+                          <Trash2 className="h-4 w-4" />
+                        </Button>
+                      </div>
                     </div>
-                  </div>
-                </CardHeader>
-                <CardContent>
+                  </CardHeader>
+                  <CardContent>
                   <p className="text-sm text-muted-foreground mb-4 line-clamp-2">
                     {team.description}
                   </p>
@@ -172,15 +175,16 @@ const MyTeams = () => {
                         <span>{team.applicants?.filter((app: any) => app.status === 'pending').length || 0} pending</span>
                       </div>
                     </div>
-                    <Link to={`/chat/${team.id}`}>
-                      <Button variant="outline" size="sm">
-                        <MessageSquare className="h-4 w-4 mr-2" />
-                        Chat
-                      </Button>
-                    </Link>
-                  </div>
-                </CardContent>
-              </Card>
+                      <Link to={`/chat/${team.id}`} onClick={(e) => e.preventDefault()}>
+                        <Button variant="outline" size="sm">
+                          <MessageSquare className="h-4 w-4 mr-2" />
+                          Chat
+                        </Button>
+                      </Link>
+                    </div>
+                  </CardContent>
+                </Card>
+              </Link>
             ))
           )}
         </TabsContent>
@@ -203,33 +207,35 @@ const MyTeams = () => {
             </div>
           ) : (
             joinedTeams.map((team) => (
-              <Card key={team.id} className="glass-card">
-                <CardHeader>
-                  <div className="flex items-start justify-between">
-                    <div>
-                      <CardTitle className="text-lg">{team.title}</CardTitle>
-                      <CardDescription className="flex items-center gap-2 mt-1">
-                        <span>by {team.creator?.full_name}</span>
-                        <span>•</span>
-                        <Badge variant="secondary" className={`category-${team.category.toLowerCase()}`}>
-                          {team.category}
-                        </Badge>
-                      </CardDescription>
+              <Link key={team.id} to={`/teams/${team.id}`} className="block">
+                <Card className="glass-card cursor-pointer hover:shadow-md transition-shadow">
+                  <CardHeader>
+                    <div className="flex items-start justify-between">
+                      <div>
+                        <CardTitle className="text-lg">{team.title}</CardTitle>
+                        <CardDescription className="flex items-center gap-2 mt-1">
+                          <span>by {team.creator?.full_name}</span>
+                          <span>•</span>
+                          <Badge variant="secondary" className={`category-${team.category.toLowerCase()}`}>
+                            {team.category}
+                          </Badge>
+                        </CardDescription>
+                      </div>
+                    <Link to={`/chat/${team.id}`} onClick={(e) => e.preventDefault()}>
+                        <Button variant="outline" size="sm">
+                          <MessageSquare className="h-4 w-4 mr-2" />
+                          Chat
+                        </Button>
+                      </Link>
                     </div>
-                    <Link to={`/chat/${team.id}`}>
-                      <Button variant="outline" size="sm">
-                        <MessageSquare className="h-4 w-4 mr-2" />
-                        Chat
-                      </Button>
-                    </Link>
-                  </div>
-                </CardHeader>
-                <CardContent>
-                  <p className="text-sm text-muted-foreground line-clamp-2">
-                    {team.description}
-                  </p>
-                </CardContent>
-              </Card>
+                  </CardHeader>
+                  <CardContent>
+                    <p className="text-sm text-muted-foreground line-clamp-2">
+                      {team.description}
+                    </p>
+                  </CardContent>
+                </Card>
+              </Link>
             ))
           )}
         </TabsContent>

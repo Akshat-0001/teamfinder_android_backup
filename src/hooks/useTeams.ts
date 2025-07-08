@@ -1,6 +1,7 @@
 import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query';
 import { supabase } from '@/integrations/supabase/client';
 import { Team, CreateTeamData, TeamApplicant } from '@/types';
+import { useTeamNotifications } from '@/hooks/useTeamNotifications';
 
 export const useTeams = (filters?: {
   category?: string;
@@ -134,21 +135,22 @@ export const useUpdateTeam = () => {
 
 export const useDeleteTeam = () => {
   const queryClient = useQueryClient();
+  const { notifyOnTeamDeletion } = useTeamNotifications();
 
   return useMutation({
     mutationFn: async (teamId: string) => {
-      // Get all accepted members
-      const { data: members } = await supabase
-        .from('team_applicants')
-        .select('user_id')
-        .eq('team_id', teamId)
-        .eq('status', 'accepted');
-      // Get team info
+      // Get team info first
       const { data: team } = await supabase
         .from('teams')
         .select('id, title')
         .eq('id', teamId)
         .single();
+      
+      if (team) {
+        // Notify all team members before deletion
+        await notifyOnTeamDeletion(teamId, team.title);
+      }
+      
       // Delete team
       const { error } = await supabase
         .from('teams')
@@ -165,11 +167,19 @@ export const useDeleteTeam = () => {
 
 export const useApplyToTeam = () => {
   const queryClient = useQueryClient();
+  const { notifyOnApplication } = useTeamNotifications();
 
   return useMutation({
     mutationFn: async (teamId: string) => {
       const { data: { user } } = await supabase.auth.getUser();
       if (!user) throw new Error('Not authenticated');
+
+      // Get user profile for name
+      const { data: profile } = await supabase
+        .from('profiles')
+        .select('full_name')
+        .eq('user_id', user.id)
+        .single();
 
       // Insert application
       const { data: application, error } = await supabase
@@ -182,22 +192,17 @@ export const useApplyToTeam = () => {
         .single();
       if (error) throw error;
 
-      // Fetch team to get owner
+      // Fetch team to get title and notify owner
       const { data: team } = await supabase
         .from('teams')
         .select('id, title, created_by')
         .eq('id', teamId)
         .single();
-      if (team && team.created_by) {
-        // Notify owner
-        // await notifyViaEdge({
-        //   user_id: team.created_by,
-        //   type: 'info',
-        //   title: 'New Team Application',
-        //   message: `${user.user_metadata?.full_name || 'A user'} applied to join your team "${team.title}"`,
-        //   data: { teamId }
-        // });
+      
+      if (team) {
+        await notifyOnApplication(teamId, profile?.full_name || 'Someone', team.title);
       }
+      
       return application;
     },
     onSuccess: () => {
@@ -209,6 +214,7 @@ export const useApplyToTeam = () => {
 
 export const useManageApplication = () => {
   const queryClient = useQueryClient();
+  const { notifyOnAcceptance, notifyOnRejection, notifyOnNewMember } = useTeamNotifications();
 
   return useMutation({
     mutationFn: async ({ 
@@ -227,48 +233,36 @@ export const useManageApplication = () => {
         .single();
       if (error) throw error;
 
-      // Fetch applicant and team
+      // Fetch applicant, team, and user profile
       const { data: applicant } = await supabase
         .from('team_applicants')
         .select('user_id, team_id')
         .eq('id', applicationId)
         .single();
+      
       const { data: team } = await supabase
         .from('teams')
         .select('id, title')
-        .eq('id', applicant.team_id)
+        .eq('id', applicant?.team_id)
         .single();
-      // Notify applicant
+
+      const { data: profile } = await supabase
+        .from('profiles')
+        .select('full_name')
+        .eq('user_id', applicant?.user_id)
+        .single();
+      
       if (applicant && team) {
-        // await notifyViaEdge({
-        //   user_id: applicant.user_id,
-        //   type: status === 'accepted' ? 'success' : 'error',
-        //   title: `Application ${status === 'accepted' ? 'Accepted' : 'Rejected'}`,
-        //   message: `Your application to join "${team.title}" was ${status}.`,
-        //   data: { teamId: team.id }
-        // });
-      }
-      // If accepted, notify all team members (except new member)
-      if (status === 'accepted' && applicant && team) {
-        // Get all accepted members except the new one
-        const { data: members } = await supabase
-          .from('team_applicants')
-          .select('user_id')
-          .eq('team_id', team.id)
-          .eq('status', 'accepted');
-        if (members && Array.isArray(members)) {
-          const notifyIds = members.map(m => m.user_id).filter(id => id !== applicant.user_id);
-          for (const memberId of notifyIds) {
-            // await notifyViaEdge({
-            //   user_id: memberId,
-            //   type: 'info',
-            //   title: 'New Team Member',
-            //   message: `A new member joined your team "${team.title}"!`,
-            //   data: { teamId: team.id }
-            // });
-          }
+        // Notify applicant about status change
+        if (status === 'accepted') {
+          await notifyOnAcceptance(applicant.user_id, team.title);
+          // Also notify existing team members about new member
+          await notifyOnNewMember(team.id, profile?.full_name || 'Someone', team.title);
+        } else {
+          await notifyOnRejection(applicant.user_id, team.title);
         }
       }
+      
       return application;
     },
     onSuccess: () => {
@@ -305,11 +299,26 @@ export const useMyApplications = () => {
 
 export const useLeaveTeam = () => {
   const queryClient = useQueryClient();
+  const { notifyOnLeave } = useTeamNotifications();
 
   return useMutation({
     mutationFn: async (teamId: string) => {
       const { data: { user } } = await supabase.auth.getUser();
       if (!user) throw new Error('Not authenticated');
+      
+      // Get user profile and team info
+      const { data: profile } = await supabase
+        .from('profiles')
+        .select('full_name')
+        .eq('user_id', user.id)
+        .single();
+        
+      const { data: team } = await supabase
+        .from('teams')
+        .select('id, title, created_by')
+        .eq('id', teamId)
+        .single();
+      
       // Remove user from team_applicants
       const { error } = await supabase
         .from('team_applicants')
@@ -318,21 +327,10 @@ export const useLeaveTeam = () => {
         .eq('user_id', user.id)
         .eq('status', 'accepted');
       if (error) throw error;
-      // Get team info
-      const { data: team } = await supabase
-        .from('teams')
-        .select('id, title, created_by')
-        .eq('id', teamId)
-        .single();
-      // Notify owner
-      if (team && team.created_by) {
-        // await notifyViaEdge({
-        //   user_id: team.created_by,
-        //   type: 'warning',
-        //   title: 'Member Left Team',
-        //   message: `${user.user_metadata?.full_name || 'A user'} left your team "${team.title}"`,
-        //   data: { teamId }
-        // });
+      
+      // Notify team owner
+      if (team) {
+        await notifyOnLeave(teamId, profile?.full_name || 'Someone', team.title);
       }
     },
     onSuccess: () => {
@@ -344,11 +342,13 @@ export const useLeaveTeam = () => {
 
 export const useKickMember = () => {
   const queryClient = useQueryClient();
+  const { notifyOnRemoval } = useTeamNotifications();
 
   return useMutation({
     mutationFn: async ({ teamId, userId }: { teamId: string; userId: string }) => {
       const { data: { user: currentUser } } = await supabase.auth.getUser();
       if (!currentUser) throw new Error('Not authenticated');
+      
       // Get team info and check ownership
       const { data: team } = await supabase
         .from('teams')
@@ -356,6 +356,7 @@ export const useKickMember = () => {
         .eq('id', teamId)
         .single();
       if (!team || team.created_by !== currentUser.id) throw new Error('Only the team owner can remove members');
+      
       // Remove member
       const { error } = await supabase
         .from('team_applicants')
@@ -364,6 +365,9 @@ export const useKickMember = () => {
         .eq('user_id', userId)
         .eq('status', 'accepted');
       if (error) throw error;
+      
+      // Notify the removed user
+      await notifyOnRemoval(userId, team.title);
     },
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: ['teams'] });

@@ -23,6 +23,7 @@ import PageTransition from "./components/PageTransition";
 import ProfileSetup from './pages/ProfileSetup';
 import Suggestions from './pages/Suggestions';
 import BugReportPage from './pages/BugReportPage';
+import Notifications from './pages/Notifications';
 
 const queryClient = new QueryClient();
 
@@ -64,6 +65,7 @@ const App = () => (
             <Route path="my-teams" element={<MyTeams />} />
             <Route path="search" element={<Search />} />
             <Route path="settings" element={<Settings />} />
+            <Route path="notifications" element={<Notifications />} />
             <Route path="user/:userId" element={<UserProfile />} />
           </Route>
           <Route path="/chat/:teamId" element={<ProtectedRoute><PageTransition><TeamChat /></PageTransition></ProtectedRoute>} />

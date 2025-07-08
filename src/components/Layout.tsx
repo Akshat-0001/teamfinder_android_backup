@@ -13,36 +13,13 @@ import {
   Bell
 } from 'lucide-react';
 import { Badge } from '@/components/ui/badge';
-import { useEffect, useState } from 'react';
-import { supabase } from '@/integrations/supabase/client';
+import { useNotifications } from '@/hooks/useNotifications';
 
 const Layout = () => {
   const { user, signOut } = useAuth();
   const location = useLocation();
   const navigate = useNavigate();
-  const [unreadCount, setUnreadCount] = useState(0);
-
-  useEffect(() => {
-    if (!user) return;
-    let subscription: any;
-    const fetchUnread = async () => {
-      const { count } = await supabase
-        .from('notifications')
-        .select('*', { count: 'exact', head: true })
-        .eq('user_id', user.id)
-        .eq('is_read', false);
-      setUnreadCount(count || 0);
-    };
-    fetchUnread();
-    // Listen for real-time changes
-    subscription = supabase
-      .channel('notifications-bell-' + user.id)
-      .on('postgres_changes', { event: '*', schema: 'public', table: 'notifications', filter: `user_id=eq.${user.id}` }, fetchUnread)
-      .subscribe();
-    return () => {
-      if (subscription) supabase.removeChannel(subscription);
-    };
-  }, [user]);
+  const { unreadCount } = useNotifications();
 
   const handleSignOut = async () => {
     await signOut();
@@ -77,7 +54,20 @@ const Layout = () => {
           </Link>
 
           <div className="flex items-center space-x-2">
-            {/* Notification Bell Icon - removed */}
+            {/* Notification Bell Icon */}
+            <Link to="/notifications">
+              <Button variant="ghost" size="icon" className="touch-target relative">
+                <Bell className="h-5 w-5" />
+                {unreadCount > 0 && (
+                  <Badge 
+                    variant="destructive" 
+                    className="absolute -top-1 -right-1 h-5 w-5 rounded-full p-0 flex items-center justify-center text-xs"
+                  >
+                    {unreadCount > 99 ? '99+' : unreadCount}
+                  </Badge>
+                )}
+              </Button>
+            </Link>
             {/* Search Icon */}
             <Link to="/search">
               <Button variant="ghost" size="icon" className="touch-target">

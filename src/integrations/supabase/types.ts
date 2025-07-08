@@ -21,7 +21,7 @@ export type Database = {
           description: string
           id: string
           updated_at: string
-          user_id: string | null
+          user_id: string
         }
         Insert: {
           category?: string
@@ -29,7 +29,7 @@ export type Database = {
           description: string
           id?: string
           updated_at?: string
-          user_id?: string | null
+          user_id: string
         }
         Update: {
           category?: string
@@ -37,7 +37,40 @@ export type Database = {
           description?: string
           id?: string
           updated_at?: string
-          user_id?: string | null
+          user_id?: string
+        }
+        Relationships: []
+      }
+      notifications: {
+        Row: {
+          created_at: string
+          id: string
+          is_read: boolean
+          message: string
+          title: string
+          type: string
+          updated_at: string
+          user_id: string
+        }
+        Insert: {
+          created_at?: string
+          id?: string
+          is_read?: boolean
+          message: string
+          title: string
+          type?: string
+          updated_at?: string
+          user_id: string
+        }
+        Update: {
+          created_at?: string
+          id?: string
+          is_read?: boolean
+          message?: string
+          title?: string
+          type?: string
+          updated_at?: string
+          user_id?: string
         }
         Relationships: []
       }

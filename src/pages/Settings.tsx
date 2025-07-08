@@ -4,7 +4,7 @@ import { Button } from '@/components/ui/button';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
 import { Switch } from '@/components/ui/switch';
 import { useNavigate } from 'react-router-dom';
-import { ArrowLeft, Moon, Sun, Settings as SettingsIcon, Palette, Waves, Trees, Sparkles, Lock } from 'lucide-react';
+import { ArrowLeft, Moon, Sun, Settings as SettingsIcon, Palette, Waves, Trees, Sparkles, Lock, Bug, MessageSquare } from 'lucide-react';
 import { useTheme } from 'next-themes';
 import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogTrigger } from '@/components/ui/dialog';
 import { AlertDialog, AlertDialogAction, AlertDialogCancel, AlertDialogContent, AlertDialogDescription, AlertDialogFooter, AlertDialogHeader, AlertDialogTitle, AlertDialogTrigger } from '@/components/ui/alert-dialog';
@@ -12,6 +12,8 @@ import { supabase } from '@/integrations/supabase/client';
 import { Input } from '@/components/ui/input';
 import { Textarea } from '@/components/ui/textarea';
 import { useToast } from '@/hooks/use-toast';
+import BugReportDialog from '@/components/BugReportDialog';
+import SuggestionDialog from '@/components/SuggestionDialog';
 
 const Settings = () => {
   const navigate = useNavigate();
@@ -21,6 +23,7 @@ const Settings = () => {
   const [currentTheme, setCurrentTheme] = useState('system');
   const [showSignOutDialog, setShowSignOutDialog] = useState(false);
   const [showSuggestionDialog, setShowSuggestionDialog] = useState(false);
+  const [showBugReportDialog, setShowBugReportDialog] = useState(false);
   const [showChangePasswordDialog, setShowChangePasswordDialog] = useState(false);
   const { toast } = useToast();
   const [suggestions, setSuggestions] = useState<any[]>([]);
@@ -96,33 +99,6 @@ const Settings = () => {
     }
   };
 
-  const handleSuggestionInput = (e: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement>) => {
-    setSuggestionForm(f => ({ ...f, [e.target.name]: e.target.value }));
-  };
-
-  const handleSuggestionSubmit = async (e: React.FormEvent) => {
-    e.preventDefault();
-    setFormError('');
-    if (!suggestionForm.title.trim() || !suggestionForm.description.trim() || !suggestionForm.category.trim()) {
-      setFormError('All fields are required.');
-      return;
-    }
-    setSubmitting(true);
-    const { error } = await supabase.from('suggestions').insert({
-      user_id: user.id,
-      title: suggestionForm.title.trim(),
-      description: suggestionForm.description.trim(),
-      category: suggestionForm.category.trim(),
-    });
-    if (error) {
-      setFormError(error.message);
-    } else {
-      toast({ title: 'Suggestion submitted!', description: 'Thank you for your feedback.' });
-      setSuggestionForm({ title: '', description: '', category: '' });
-      setShowSuggestionDialog(false);
-    }
-    setSubmitting(false);
-  };
 
   const handleChangePasswordInput = (e: React.ChangeEvent<HTMLInputElement>) => {
     setChangePasswordForm(f => ({ ...f, [e.target.name]: e.target.value }));
@@ -234,16 +210,21 @@ const Settings = () => {
           </CardHeader>
           <CardContent className="space-y-2">
             <div className="flex flex-col gap-2">
-              <Button asChild variant="ghost" className="w-full justify-start">
-                <a href="/settings/suggestions">
-                  <Sparkles className="h-4 w-4 mr-2" />
-                  Suggestions
-                </a>
+              <Button
+                variant="outline"
+                className="w-full justify-start"
+                onClick={() => setShowSuggestionDialog(true)}
+              >
+                <MessageSquare className="h-4 w-4 mr-3" />
+                Share Feedback/Suggestions
               </Button>
-              <Button asChild variant="ghost" className="w-full justify-start">
-                <a href="/settings/bug-report">
-                  <span className="inline-flex items-center"><span className="mr-2"><svg width="16" height="16" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" className="lucide lucide-bug h-4 w-4"><rect width="8" height="14" x="8" y="6" rx="4" /><path d="M19 7v4M5 7v4M12 19v2M12 3V1M17 3l-2.2 2.2M7 3l2.2 2.2" /></svg></span>Report Bug</span>
-                </a>
+              <Button
+                variant="outline"
+                className="w-full justify-start"
+                onClick={() => setShowBugReportDialog(true)}
+              >
+                <Bug className="h-4 w-4 mr-3" />
+                Report Bug
               </Button>
             </div>
           </CardContent>
@@ -446,6 +427,16 @@ const Settings = () => {
           </CardContent>
         </Card>
       </div>
+
+      {/* Dialog Components */}
+      <BugReportDialog 
+        open={showBugReportDialog} 
+        onOpenChange={setShowBugReportDialog} 
+      />
+      <SuggestionDialog 
+        open={showSuggestionDialog} 
+        onOpenChange={setShowSuggestionDialog} 
+      />
     </div>
   );
 };

@@ -224,7 +224,14 @@ const ProfileSetup = () => {
 
               {/* Profile Links */}
               <ProfileLinks
-                profile={{ ...formData }}
+                profile={{
+                  id: '',
+                  user_id: user?.id || '',
+                  email: user?.email || '',
+                  created_at: '',
+                  updated_at: '',
+                  ...formData
+                }}
                 isEditing={true}
                 onLinksChange={(links) => setFormData(prev => ({ ...prev, ...links }))}
               />
