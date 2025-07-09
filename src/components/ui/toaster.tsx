@@ -10,7 +10,7 @@ import {
 
 export function Toaster() {
   const { toasts } = useToast()
-
+  // TODO: Add a loading state to the toaster
   return (
     <ToastProvider>
       {toasts.map(function ({ id, title, description, action, ...props }) {
