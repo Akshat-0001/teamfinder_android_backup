@@ -50,7 +50,9 @@ const Settings = () => {
     { id: 'dark', name: 'Dark', icon: Moon, description: 'Electric Indigo - Sleek and modern' },
     { id: 'theme-ocean', name: 'Ocean Sunset', icon: Waves, description: 'Tropical vibes with warm accents' },
     { id: 'theme-forest', name: 'Forest', icon: Trees, description: 'Natural greens and earth tones' },
-    { id: 'theme-cosmic', name: 'Cosmic', icon: Sparkles, description: 'Deep space with vibrant purples' }
+    { id: 'theme-cosmic', name: 'Cosmic', icon: Sparkles, description: 'Deep space with vibrant purples' },
+    { id: 'theme-sunset', name: 'Sunset', icon: Palette, description: 'Warm, energetic, and modern' },
+    { id: 'theme-aurora', name: 'Aurora', icon: Sparkles, description: 'Cool, dreamy, and modern' },
   ];
 
   useEffect(() => {

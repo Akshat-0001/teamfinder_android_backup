@@ -30,46 +30,35 @@ All colors MUST be HSL.
 
 @layer base {
   :root {
-    /* Light theme - Blue Lagoon */
-    --background: 214 25% 97%; /* #F5F7FA */
-    --foreground: 0 0% 13%; /* #212121 */
-
+    /* Light theme - Blue Lagoon (modernized) */
+    --background: 210 40% 98%; /* #F6FAFF */
+    --foreground: 220 15% 15%; /* #232B36 */
     --card: 0 0% 100%; /* #FFFFFF */
-    --card-foreground: 0 0% 13%;
-
+    --card-foreground: 220 15% 15%;
     --popover: 0 0% 100%;
-    --popover-foreground: 0 0% 13%;
-
-    --primary: 207 82% 51%; /* #1E88E5 */
+    --popover-foreground: 220 15% 15%;
+    --primary: 212 100% 52%; /* #2563eb */
     --primary-foreground: 0 0% 100%;
-
-    --secondary: 185 100% 38%; /* #00ACC1 */
+    --secondary: 187 100% 38%; /* #00bcd4 */
     --secondary-foreground: 0 0% 100%;
-
     --muted: 210 40% 96%;
-    --muted-foreground: 0 0% 38%; /* #616161 */
-
+    --muted-foreground: 220 10% 40%; /* #5A6473 */
     --accent: 231 100% 59%; /* #2979FF */
     --accent-foreground: 0 0% 100%;
-
     --destructive: 4 85% 58%; /* #E53935 */
     --destructive-foreground: 0 0% 100%;
-
-    --border: 0 0% 88%; /* #E0E0E0 */
-    --input: 0 0% 88%;
-    --ring: 207 82% 51%;
-
+    --border: 210 20% 90%; /* #E3EAF3 */
+    --input: 210 20% 90%;
+    --ring: 212 100% 52%;
     --radius: 1rem;
-
-    /* Enhanced gradients and effects */
-    --gradient-primary: linear-gradient(135deg, #1E88E5, #2979FF);
-    --gradient-secondary: linear-gradient(135deg, #00ACC1, #29B6F6);
-    --gradient-accent: linear-gradient(135deg, #2979FF, #536DFE);
-    --glass-bg: rgba(255, 255, 255, 0.1);
-    --shadow-primary: 0 10px 30px -10px rgba(30, 136, 229, 0.3);
-    --shadow-card: 0 4px 20px -4px rgba(0, 0, 0, 0.1);
-    --shadow-glow: 0 0 40px rgba(41, 121, 255, 0.2);
-    --shimmer: linear-gradient(90deg, transparent, rgba(255,255,255,0.4), transparent);
+    --gradient-primary: linear-gradient(135deg, #2563eb, #00bcd4);
+    --gradient-secondary: linear-gradient(135deg, #00bcd4, #43e97b);
+    --gradient-accent: linear-gradient(135deg, #2979FF, #43e97b);
+    --glass-bg: rgba(255, 255, 255, 0.12);
+    --shadow-primary: 0 10px 30px -10px rgba(37, 99, 235, 0.18);
+    --shadow-card: 0 4px 20px -4px rgba(0, 0, 0, 0.08);
+    --shadow-glow: 0 0 40px rgba(41, 121, 255, 0.13);
+    --shimmer: linear-gradient(90deg, transparent, rgba(255,255,255,0.35), transparent);
   }
 
   /* Animation classes */
@@ -94,93 +83,127 @@ All colors MUST be HSL.
   --background: 0 0% 7%; /* #121212 */
   --foreground: 199 18% 91%; /* #ECEFF1 */
 
-    --card: 0 0% 12%; /* #1E1E1E */
-    --card-foreground: 199 18% 91%;
+  --card: 0 0% 12%; /* #1E1E1E */
+  --card-foreground: 199 18% 91%;
 
-    --popover: 0 0% 12%;
-    --popover-foreground: 199 18% 91%;
+  --popover: 0 0% 12%;
+  --popover-foreground: 199 18% 91%;
 
-    --primary: 239 100% 67%; /* #536DFE */
-    --primary-foreground: 0 0% 100%;
+  --primary: 239 100% 67%; /* #536DFE */
+  --primary-foreground: 0 0% 100%;
 
-    --secondary: 188 100% 28%; /* #00838F */
-    --secondary-foreground: 0 0% 100%;
+  --secondary: 188 100% 28%; /* #00838F */
+  --secondary-foreground: 0 0% 100%;
 
-    --muted: 0 0% 17%;
-    --muted-foreground: 200 18% 69%; /* #B0BEC5 */
+  --muted: 0 0% 17%;
+  --muted-foreground: 200 18% 69%; /* #B0BEC5 */
 
-    --accent: 199 89% 58%; /* #29B6F6 */
-    --accent-foreground: 0 0% 100%;
+  --accent: 199 89% 58%; /* #29B6F6 */
+  --accent-foreground: 0 0% 100%;
 
-    --destructive: 343 100% 54%; /* #FF1744 */
-    --destructive-foreground: 0 0% 100%;
+  --destructive: 343 100% 54%; /* #FF1744 */
+  --destructive-foreground: 0 0% 100%;
 
-    --border: 0 0% 17%; /* #2C2C2C */
-    --input: 0 0% 17%;
-    --ring: 239 100% 67%;
+  --border: 0 0% 17%; /* #2C2C2C */
+  --input: 0 0% 17%;
+  --ring: 239 100% 67%;
 
-    /* Enhanced dark gradients and effects */
-    --gradient-primary: linear-gradient(135deg, #536DFE, #29B6F6);
-    --gradient-secondary: linear-gradient(135deg, #00838F, #29B6F6);
-    --gradient-accent: linear-gradient(135deg, #29B6F6, #536DFE);
-    --glass-bg: rgba(255, 255, 255, 0.05);
-    --shadow-primary: 0 10px 30px -10px rgba(83, 109, 254, 0.4);
-    --shadow-card: 0 4px 20px -4px rgba(0, 0, 0, 0.3);
-    --shadow-glow: 0 0 40px rgba(41, 182, 246, 0.3);
-    --shimmer: linear-gradient(90deg, transparent, rgba(255,255,255,0.1), transparent);
-  }
+  /* Enhanced dark gradients and effects */
+  --gradient-primary: linear-gradient(135deg, #536DFE, #29B6F6);
+  --gradient-secondary: linear-gradient(135deg, #00838F, #29B6F6);
+  --gradient-accent: linear-gradient(135deg, #29B6F6, #536DFE);
+  --glass-bg: rgba(255, 255, 255, 0.05);
+  --shadow-primary: 0 10px 30px -10px rgba(83, 109, 254, 0.4);
+  --shadow-card: 0 4px 20px -4px rgba(0, 0, 0, 0.3);
+  --shadow-glow: 0 0 40px rgba(41, 182, 246, 0.3);
+  --shimmer: linear-gradient(90deg, transparent, rgba(255,255,255,0.1), transparent);
+}
 
-  /* Ocean Sunset Theme */
-  .theme-ocean {
-    --background: 195 100% 95%;
-    --foreground: 210 22% 22%;
-    --card: 180 25% 98%;
-    --card-foreground: 210 22% 22%;
-    --primary: 183 100% 32%;
-    --primary-foreground: 0 0% 100%;
-    --secondary: 33 100% 50%;
-    --secondary-foreground: 0 0% 100%;
-    --accent: 320 65% 58%;
-    --accent-foreground: 0 0% 100%;
-    --gradient-primary: linear-gradient(135deg, #006064, #FF8F00);
-    --gradient-secondary: linear-gradient(135deg, #FF8F00, #E91E63);
-    --shadow-primary: 0 10px 30px -10px rgba(0, 96, 100, 0.3);
-  }
+.theme-ocean {
+  /* Ocean Sunset - modernized, more vibrant */
+  --background: 197 100% 97%; /* #E3F8FF */
+  --foreground: 210 22% 22%; /* #2A3A4D */
+  --card: 197 100% 99%; /* #F6FDFF */
+  --card-foreground: 210 22% 22%;
+  --primary: 193 100% 36%; /* #0099B4 */
+  --primary-foreground: 0 0% 100%;
+  --secondary: 33 100% 55%; /* #FFB347 */
+  --secondary-foreground: 0 0% 100%;
+  --accent: 320 65% 58%; /* #E040FB */
+  --accent-foreground: 0 0% 100%;
+  --gradient-primary: linear-gradient(135deg, #0099B4, #FFB347);
+  --gradient-secondary: linear-gradient(135deg, #FFB347, #E040FB);
+  --shadow-primary: 0 10px 30px -10px rgba(0, 153, 180, 0.18);
+}
 
-  /* Forest Theme */
-  .theme-forest {
-    --background: 120 25% 95%;
-    --foreground: 120 25% 15%;
-    --card: 120 20% 98%;
-    --card-foreground: 120 25% 15%;
-    --primary: 120 40% 30%;
-    --primary-foreground: 0 0% 100%;
-    --secondary: 80 60% 50%;
-    --secondary-foreground: 0 0% 100%;
-    --accent: 40 90% 60%;
-    --accent-foreground: 0 0% 0%;
-    --gradient-primary: linear-gradient(135deg, #2E7D32, #689F38);
-    --gradient-secondary: linear-gradient(135deg, #689F38, #FFC107);
-    --shadow-primary: 0 10px 30px -10px rgba(46, 125, 50, 0.3);
-  }
+.theme-forest {
+  /* Forest - modernized, lush and fresh */
+  --background: 120 40% 96%; /* #F1FAF5 */
+  --foreground: 120 25% 18%; /* #2E4633 */
+  --card: 120 30% 99%; /* #F8FCF9 */
+  --card-foreground: 120 25% 18%;
+  --primary: 135 60% 34%; /* #2ECC71 */
+  --primary-foreground: 0 0% 100%;
+  --secondary: 90 60% 50%; /* #B2FF59 */
+  --secondary-foreground: 120 25% 18%;
+  --accent: 40 90% 60%; /* #FFD740 */
+  --accent-foreground: 120 25% 18%;
+  --gradient-primary: linear-gradient(135deg, #2ECC71, #B2FF59);
+  --gradient-secondary: linear-gradient(135deg, #B2FF59, #FFD740);
+  --shadow-primary: 0 10px 30px -10px rgba(46, 204, 113, 0.18);
+}
 
-  /* Cosmic Theme */
-  .theme-cosmic {
-    --background: 260 30% 8%;
-    --foreground: 280 20% 90%;
-    --card: 260 25% 12%;
-    --card-foreground: 280 20% 90%;
-    --primary: 280 100% 70%;
-    --primary-foreground: 0 0% 0%;
-    --secondary: 320 90% 65%;
-    --secondary-foreground: 0 0% 0%;
-    --accent: 200 100% 70%;
-    --accent-foreground: 0 0% 0%;
-    --gradient-primary: linear-gradient(135deg, #9C27B0, #E91E63);
-    --gradient-secondary: linear-gradient(135deg, #E91E63, #00BCD4);
-    --shadow-primary: 0 10px 30px -10px rgba(156, 39, 176, 0.4);
-    --shadow-glow: 0 0 40px rgba(233, 30, 99, 0.3);
-  }
+.theme-cosmic {
+  /* Cosmic - modernized, deep and vibrant */
+  --background: 260 40% 12%; /* #1A1333 */
+  --foreground: 280 20% 92%; /* #E6D6FF */
+  --card: 260 30% 16%; /* #231A3A */
+  --card-foreground: 280 20% 92%;
+  --primary: 280 100% 70%; /* #B388FF */
+  --primary-foreground: 0 0% 0%;
+  --secondary: 320 90% 65%; /* #FF6EC7 */
+  --secondary-foreground: 0 0% 0%;
+  --accent: 200 100% 70%; /* #64B5F6 */
+  --accent-foreground: 0 0% 0%;
+  --gradient-primary: linear-gradient(135deg, #B388FF, #FF6EC7);
+  --gradient-secondary: linear-gradient(135deg, #FF6EC7, #64B5F6);
+  --shadow-primary: 0 10px 30px -10px rgba(179, 136, 255, 0.18);
+  --shadow-glow: 0 0 40px rgba(255, 110, 199, 0.13);
+}
+
+.theme-sunset {
+  /* Sunset - warm, energetic, modern */
+  --background: 24 100% 97%; /* #FFF6F0 */
+  --foreground: 18 30% 20%; /* #6B3F1D */
+  --card: 24 100% 99%; /* #FFF9F4 */
+  --card-foreground: 18 30% 20%;
+  --primary: 14 100% 60%; /* #FF7043 */
+  --primary-foreground: 0 0% 100%;
+  --secondary: 40 100% 60%; /* #FFD740 */
+  --secondary-foreground: 18 30% 20%;
+  --accent: 340 80% 70%; /* #FF80AB */
+  --accent-foreground: 18 30% 20%;
+  --gradient-primary: linear-gradient(135deg, #FF7043, #FFD740);
+  --gradient-secondary: linear-gradient(135deg, #FFD740, #FF80AB);
+  --shadow-primary: 0 10px 30px -10px rgba(255, 112, 67, 0.18);
+}
+
+.theme-aurora {
+  /* Aurora - cool, dreamy, modern */
+  --background: 168 60% 96%; /* #E6FFF7 */
+  --foreground: 220 20% 20%; /* #1A2A33 */
+  --card: 168 60% 99%; /* #F4FFFB */
+  --card-foreground: 220 20% 20%;
+  --primary: 168 80% 45%; /* #1DE9B6 */
+  --primary-foreground: 0 0% 100%;
+  --secondary: 260 80% 70%; /* #7C4DFF */
+  --secondary-foreground: 0 0% 100%;
+  --accent: 290 80% 70%; /* #EA80FC */
+  --accent-foreground: 220 20% 20%;
+  --gradient-primary: linear-gradient(135deg, #1DE9B6, #7C4DFF);
+  --gradient-secondary: linear-gradient(135deg, #7C4DFF, #EA80FC);
+  --shadow-primary: 0 10px 30px -10px rgba(29, 233, 182, 0.18);
+}
 
 @layer base {
   * {
