@@ -56,7 +56,13 @@ const OnboardingCarousel = () => {
           {/* Icon */}
           <div className="flex justify-center mb-12">
             <div className="w-24 h-24 rounded-2xl bg-gradient-to-br from-primary to-secondary p-6 shadow-lg">
-              {currentSlide === 0 && <Search className="w-full h-full text-white" />}
+              {currentSlide === 0 && (
+                <img
+                  src="https://res.cloudinary.com/dmz1x7at4/image/upload/cropped_circle_image-min_xiyyo5.png"
+                  alt="TeamFinder Logo"
+                  className="w-full h-full object-cover rounded-lg"
+                />
+              )}
               {currentSlide === 1 && <Users className="w-full h-full text-white" />}
               {currentSlide === 2 && <MessageCircle className="w-full h-full text-white" />}
             </div>

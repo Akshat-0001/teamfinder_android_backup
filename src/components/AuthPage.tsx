@@ -429,47 +429,7 @@ const AuthPage = () => {
             </form>
           )}
 
-          {/* Forgot Password Form */}
-          {showForgot && (
-            <div className="mt-6 p-4 border rounded-lg bg-muted/20">
-              <h3 className="font-medium mb-3">Reset Password</h3>
-              <form onSubmit={handleForgotPassword} className="space-y-3">
-                <Input
-                  type="email"
-                  placeholder="Enter your email"
-                  value={forgotEmail}
-                  onChange={(e) => setForgotEmail(e.target.value)}
-                  required
-                />
-                <div className="flex gap-2">
-                  <Button
-                    type="submit"
-                    disabled={forgotLoading}
-                    className="flex-1"
-                  >
-                    {forgotLoading ? 'Sending...' : 'Send Reset Link'}
-                  </Button>
-                  <Button
-                    type="button"
-                    variant="outline"
-                    onClick={() => setShowForgot(false)}
-                  >
-                    Cancel
-                  </Button>
-                </div>
-              </form>
-            </div>
-          )}
-
           <div className="text-center space-y-2">
-            {isLogin && !showForgot && (
-              <button
-                onClick={() => setShowForgot(true)}
-                className="text-sm text-primary hover:underline block"
-              >
-                Forgot your password?
-              </button>
-            )}
             <button
               onClick={() => {
                 setIsLogin(!isLogin);

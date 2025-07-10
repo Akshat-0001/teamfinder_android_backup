@@ -50,7 +50,10 @@ export const useNotifications = () => {
         schema: 'public', 
         table: 'notifications', 
         filter: `user_id=eq.${user.id}` 
-      }, fetchNotifications)
+      }, (payload) => {
+        console.log('Real-time notification update:', payload);
+        fetchNotifications();
+      })
       .subscribe();
 
     return () => {
