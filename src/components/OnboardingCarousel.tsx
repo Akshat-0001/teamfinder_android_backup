@@ -2,6 +2,7 @@ import { useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { Button } from '@/components/ui/button';
 import { ChevronLeft, ChevronRight, Users, Search, MessageCircle } from 'lucide-react';
+import { motion, AnimatePresence } from 'framer-motion';
 
 const slides = [
   {
@@ -54,85 +55,156 @@ const OnboardingCarousel = () => {
       <div className="flex-1 flex flex-col justify-center px-6">
         <div className="max-w-md mx-auto w-full">
           {/* Icon */}
-          <div className="flex justify-center mb-12">
-            <div className="w-24 h-24 rounded-2xl bg-gradient-to-br from-primary to-secondary p-6 shadow-lg">
-              {currentSlide === 0 && (
-                <img
-                  src="https://res.cloudinary.com/dmz1x7at4/image/upload/cropped_circle_image-min_xiyyo5.png"
-                  alt="TeamFinder Logo"
-                  className="w-full h-full object-cover rounded-lg"
-                />
-              )}
-              {currentSlide === 1 && <Users className="w-full h-full text-white" />}
-              {currentSlide === 2 && <MessageCircle className="w-full h-full text-white" />}
-            </div>
-          </div>
+          <motion.div 
+            className="flex justify-center mb-12"
+            key={`icon-${currentSlide}`}
+            initial={{ scale: 0.8, opacity: 0, y: 20 }}
+            animate={{ scale: 1, opacity: 1, y: 0 }}
+            transition={{ duration: 0.5, ease: [0.4, 0, 0.2, 1] }}
+          >
+            <motion.div 
+              className="w-24 h-24 rounded-2xl bg-gradient-to-br from-primary to-secondary p-6 shadow-lg"
+              whileHover={{ scale: 1.05 }}
+              whileTap={{ scale: 0.95 }}
+            >
+              <AnimatePresence mode="wait">
+                <motion.div
+                  key={currentSlide}
+                  initial={{ opacity: 0, rotate: -10, scale: 0.8 }}
+                  animate={{ opacity: 1, rotate: 0, scale: 1 }}
+                  exit={{ opacity: 0, rotate: 10, scale: 0.8 }}
+                  transition={{ duration: 0.3 }}
+                  className="w-full h-full flex items-center justify-center"
+                >
+                  {currentSlide === 0 && (
+                    <img
+                      src="https://res.cloudinary.com/dmz1x7at4/image/upload/cropped_circle_image-min_xiyyo5.png"
+                      alt="TeamFinder Logo"
+                      className="w-full h-full object-cover rounded-lg"
+                    />
+                  )}
+                  {currentSlide === 1 && <Users className="w-full h-full text-white" />}
+                  {currentSlide === 2 && <MessageCircle className="w-full h-full text-white" />}
+                </motion.div>
+              </AnimatePresence>
+            </motion.div>
+          </motion.div>
 
           {/* Content */}
-          <div className="text-center space-y-6 mb-12">
-            <h1 className="text-3xl font-bold text-foreground">
-              {slides[currentSlide].title}
-            </h1>
-            <p className="text-lg text-muted-foreground leading-relaxed">
-              {slides[currentSlide].subtitle}
-            </p>
-          </div>
+          <AnimatePresence mode="wait">
+            <motion.div 
+              key={`content-${currentSlide}`}
+              className="text-center space-y-6 mb-12"
+              initial={{ opacity: 0, y: 30 }}
+              animate={{ opacity: 1, y: 0 }}
+              exit={{ opacity: 0, y: -30 }}
+              transition={{ duration: 0.4, ease: [0.4, 0, 0.2, 1] }}
+            >
+              <motion.h1 
+                className="text-3xl font-bold text-foreground"
+                initial={{ opacity: 0, y: 20 }}
+                animate={{ opacity: 1, y: 0 }}
+                transition={{ duration: 0.5, delay: 0.1 }}
+              >
+                {slides[currentSlide].title}
+              </motion.h1>
+              <motion.p 
+                className="text-lg text-muted-foreground leading-relaxed"
+                initial={{ opacity: 0, y: 20 }}
+                animate={{ opacity: 1, y: 0 }}
+                transition={{ duration: 0.5, delay: 0.2 }}
+              >
+                {slides[currentSlide].subtitle}
+              </motion.p>
+            </motion.div>
+          </AnimatePresence>
 
           {/* Progress dots */}
-          <div className="flex justify-center space-x-2 mb-12">
+          <motion.div 
+            className="flex justify-center space-x-2 mb-12"
+            initial={{ opacity: 0, y: 20 }}
+            animate={{ opacity: 1, y: 0 }}
+            transition={{ duration: 0.5, delay: 0.3 }}
+          >
             {slides.map((_, index) => (
-              <button
+              <motion.button
                 key={index}
                 onClick={() => goToSlide(index)}
-                className={`w-3 h-3 rounded-full transition-all duration-200 ${
+                className={`h-3 rounded-full transition-all duration-300 ${
                   index === currentSlide
                     ? 'bg-primary w-8'
-                    : 'bg-muted-foreground/30'
+                    : 'bg-muted-foreground/30 w-3'
                 }`}
+                whileHover={{ scale: 1.1 }}
+                whileTap={{ scale: 0.9 }}
+                layout
               />
             ))}
-          </div>
+          </motion.div>
 
           {/* Navigation */}
-          <div className="flex items-center justify-between">
-            <Button
-              variant="outline"
-              size="lg"
-              onClick={prevSlide}
-              disabled={currentSlide === 0}
-              className="rounded-full w-12 h-12 p-0"
-            >
-              <ChevronLeft className="w-5 h-5" />
-            </Button>
+          <motion.div 
+            className="flex items-center justify-between"
+            initial={{ opacity: 0, y: 20 }}
+            animate={{ opacity: 1, y: 0 }}
+            transition={{ duration: 0.5, delay: 0.4 }}
+          >
+            <motion.div whileHover={{ scale: 1.05 }} whileTap={{ scale: 0.95 }}>
+              <Button
+                variant="outline"
+                size="lg"
+                onClick={prevSlide}
+                disabled={currentSlide === 0}
+                className="rounded-full w-12 h-12 p-0 transition-all duration-200 hover:shadow-lg"
+              >
+                <ChevronLeft className="w-5 h-5" />
+              </Button>
+            </motion.div>
 
             {currentSlide === slides.length - 1 ? (
-              <Button
-                size="lg"
-                onClick={() => navigate('/auth')}
-                className="btn-gradient px-8 py-3 rounded-full"
+              <motion.div 
+                whileHover={{ scale: 1.05 }} 
+                whileTap={{ scale: 0.95 }}
+                initial={{ opacity: 0, scale: 0.8 }}
+                animate={{ opacity: 1, scale: 1 }}
+                transition={{ duration: 0.3 }}
               >
-                Get Started
-              </Button>
+                <Button
+                  size="lg"
+                  onClick={() => navigate('/auth')}
+                  className="btn-gradient px-8 py-3 rounded-full shadow-lg hover:shadow-xl transition-all duration-300"
+                >
+                  Get Started
+                </Button>
+              </motion.div>
             ) : (
-              <Button
-                size="lg"
-                onClick={nextSlide}
-                className="btn-gradient px-8 py-3 rounded-full"
+              <motion.div 
+                whileHover={{ scale: 1.05 }} 
+                whileTap={{ scale: 0.95 }}
+                layout
               >
-                Next
-              </Button>
+                <Button
+                  size="lg"
+                  onClick={nextSlide}
+                  className="btn-gradient px-8 py-3 rounded-full shadow-lg hover:shadow-xl transition-all duration-300"
+                >
+                  Next
+                </Button>
+              </motion.div>
             )}
 
-            <Button
-              variant="outline"
-              size="lg"
-              onClick={nextSlide}
-              disabled={currentSlide === slides.length - 1}
-              className="rounded-full w-12 h-12 p-0"
-            >
-              <ChevronRight className="w-5 h-5" />
-            </Button>
-          </div>
+            <motion.div whileHover={{ scale: 1.05 }} whileTap={{ scale: 0.95 }}>
+              <Button
+                variant="outline"
+                size="lg"
+                onClick={nextSlide}
+                disabled={currentSlide === slides.length - 1}
+                className="rounded-full w-12 h-12 p-0 transition-all duration-200 hover:shadow-lg"
+              >
+                <ChevronRight className="w-5 h-5" />
+              </Button>
+            </motion.div>
+          </motion.div>
         </div>
       </div>
     </div>
