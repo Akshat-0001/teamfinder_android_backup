@@ -12,7 +12,12 @@
           "package_name": "com.buildcore.teamfinder"
         }
       },
-      "oauth_client": [],
+      "oauth_client": [
+        {
+          "client_id": "121079668689-nl2g13lngvnn30els3gu22oj6jgsbaml.apps.googleusercontent.com",
+          "client_type": 3
+        }
+      ],
       "api_key": [
         {
           "current_key": "AIzaSyDL9y67TVNWqzsIHQaBlGGeS9jKIKLMN0E"
@@ -20,7 +25,12 @@
       ],
       "services": {
         "appinvite_service": {
-          "other_platform_oauth_client": []
+          "other_platform_oauth_client": [
+            {
+              "client_id": "121079668689-mhp6gmg1r8pdb41lcmqmfncv4vh3u0ho.apps.googleusercontent.com",
+              "client_type": 3
+            }
+          ]
         }
       }
     }

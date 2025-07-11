@@ -31,13 +31,20 @@ import { supabase } from './integrations/supabase/client';
 const queryClient = new QueryClient();
 
 async function saveDeviceToken(token, platform) {
-  const { data: { user } } = await supabase.auth.getUser();
-  if (!user) return;
-  await supabase.from('device_tokens').upsert({
-    user_id: user.id,
-    token,
-    platform,
-  });
+  const { data: { user }, error: userError } = await supabase.auth.getUser();
+  if (!user) {
+    console.log('No user found, cannot save FCM token');
+    return;
+  }
+  const { error } = await supabase
+    .from('profiles')
+    .update({ fcm_token: token })
+    .eq('user_id', user.id);
+  if (error) {
+    console.error('Error saving FCM token:', error);
+  } else {
+    console.log('FCM token saved to profiles table:', token);
+  }
 }
 
 function usePushNotifications(user) {
@@ -53,8 +60,10 @@ function usePushNotifications(user) {
     PushNotifications.addListener('registration', (token) => {
       console.log('Push registration success, token: ' + token.value);
       if (user && user.id) {
+        console.log('User present at registration, saving token');
         saveDeviceToken(token.value, 'android');
       } else {
+        console.log('User not present at registration, storing pending token');
         setPendingToken(token.value);
       }
     });
@@ -74,6 +83,7 @@ function usePushNotifications(user) {
 
   useEffect(() => {
     if (user && user.id && pendingToken) {
+      console.log('User became available after registration, saving pending token');
       saveDeviceToken(pendingToken, 'android');
       setPendingToken(null);
     }
