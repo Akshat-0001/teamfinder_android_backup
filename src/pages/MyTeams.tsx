@@ -1,12 +1,12 @@
 import { useState } from 'react';
-import { useMyTeams, useDeleteTeam } from '@/hooks/useTeams';
+import { useMyTeams, useDeleteTeam, useManageApplication } from '@/hooks/useTeams';
 import { useMyApplications } from '@/hooks/useTeams';
 import { Button } from '@/components/ui/button';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
 import { Badge } from '@/components/ui/badge';
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
 import { useToast } from '@/hooks/use-toast';
-import { Link } from 'react-router-dom';
+import { Link, useNavigate } from 'react-router-dom';
 import { 
   Users, 
   Calendar, 
@@ -18,12 +18,15 @@ import {
   CheckCircle,
   XCircle
 } from 'lucide-react';
+import ClickableAvatar from '@/components/ClickableAvatar';
 
 const MyTeams = () => {
   const { data: myTeams, isLoading: teamsLoading } = useMyTeams();
   const { data: applications, isLoading: applicationsLoading } = useMyApplications();
   const deleteTeam = useDeleteTeam();
+  const manageApplication = useManageApplication();
   const { toast } = useToast();
+  const navigate = useNavigate();
 
   const handleDeleteTeam = async (teamId: string, teamName: string) => {
     if (window.confirm(`Are you sure you want to delete "${teamName}"? This action cannot be undone.`)) {
@@ -86,6 +89,30 @@ const MyTeams = () => {
   const createdTeams = myTeams?.created || [];
   const joinedTeams = myTeams?.joined || [];
 
+  const handleManageApplicant = async (applicationId: string, status: 'accepted' | 'rejected') => {
+    try {
+      await manageApplication.mutateAsync({ applicationId, status });
+      toast({
+        title: status === 'accepted' ? 'Application Accepted' : 'Application Rejected',
+        description: `The application has been ${status}.`
+      });
+    } catch (error) {
+      toast({
+        title: 'Error',
+        description: 'Failed to update application status. Please try again.',
+        variant: 'destructive'
+      });
+    }
+  };
+
+  // Collect all pending applicants for teams created by the user
+  const pendingApplicants = createdTeams
+    .flatMap(team =>
+      (team.applicants || [])
+        .filter(app => app.status === 'pending')
+        .map(app => ({ ...app, team }))
+    );
+
   return (
     <div className="container mx-auto px-4 py-6 flex-1 flex flex-col">
       <div className="flex items-center justify-between mb-6">
@@ -102,11 +129,70 @@ const MyTeams = () => {
       </div>
 
       <Tabs defaultValue="created" className="space-y-6">
-        <TabsList className="grid w-full grid-cols-3">
+        <TabsList className="grid w-full grid-cols-4">
+          <TabsTrigger value="manageApplicants">
+            Manage Applicants{pendingApplicants.length > 0 && ` (${pendingApplicants.length})`}
+          </TabsTrigger>
           <TabsTrigger value="created">Created ({createdTeams.length})</TabsTrigger>
           <TabsTrigger value="joined">Joined ({joinedTeams.length})</TabsTrigger>
           <TabsTrigger value="applications">Applications ({applications?.length || 0})</TabsTrigger>
         </TabsList>
+
+        <TabsContent value="manageApplicants" className="space-y-4 flex-1 flex flex-col">
+          {pendingApplicants.length === 0 ? (
+            <div className="full-height-content">
+              <Card className="text-center py-12">
+                <CardContent>
+                  <Users className="h-12 w-12 text-muted-foreground mx-auto mb-4" />
+                  <h3 className="text-lg font-semibold mb-2">No pending applicants</h3>
+                  <p className="text-muted-foreground mb-4">
+                    All caught up! No one has applied to your teams yet.
+                  </p>
+                </CardContent>
+              </Card>
+            </div>
+          ) : (
+            pendingApplicants.map((application) => (
+              <Card key={application.id} className="glass-card card-interactive transition-all duration-200 p-6">
+                <CardHeader className="p-0">
+                  <div className="flex items-center gap-4">
+                    <ClickableAvatar profile={application.user} size="md" showName={false} className="hover:text-primary transition-colors" />
+                    <div className="flex-1 flex flex-col sm:flex-row sm:items-center gap-2">
+                      <Link to={`/user/${application.user?.user_id}`} className="font-semibold text-lg hover:underline focus:outline-none">
+                        {application.user?.full_name}
+                      </Link>
+                      <span className="text-base text-muted-foreground">applied to <span className="font-semibold">{application.team.title}</span></span>
+                    </div>
+                    <div className="flex gap-3">
+                      {application.status === 'pending' ? (
+                        <>
+                          <Button size="lg" className="btn-gradient text-base px-6 py-2" onClick={async () => {
+                            await handleManageApplicant(application.id, 'accepted');
+                          }} disabled={manageApplication.isPending}>
+                            Accept
+                          </Button>
+                          <Button size="lg" variant="outline" className="text-destructive hover:text-destructive text-base px-6 py-2" onClick={async () => {
+                            await handleManageApplicant(application.id, 'rejected');
+                          }} disabled={manageApplication.isPending}>
+                            Reject
+                          </Button>
+                        </>
+                      ) : (
+                        <Badge className={getStatusColor(application.status) + ' text-base px-4 py-2'}>
+                          <div className="flex items-center gap-1">
+                            {getStatusIcon(application.status)}
+                            <span className="capitalize">{application.status}</span>
+                          </div>
+                        </Badge>
+                      )}
+                    </div>
+                  </div>
+                  <div className="text-sm text-muted-foreground mt-2 ml-16">{formatDate(application.applied_at)}</div>
+                </CardHeader>
+              </Card>
+            ))
+          )}
+        </TabsContent>
 
         <TabsContent value="created" className="space-y-4 flex-1 flex flex-col">
           {createdTeams.length === 0 ? (
@@ -140,8 +226,8 @@ const MyTeams = () => {
                           </Badge>
                         </CardDescription>
                       </div>
-                    <div className="flex gap-2" onClick={(e) => e.preventDefault()}>
-                        <Button variant="outline" size="sm">
+                    <div className="flex gap-2">
+                        <Button variant="outline" size="sm" onClick={() => navigate(`/teams/${team.id}`)}>
                           <Settings className="h-4 w-4" />
                         </Button>
                         <Button

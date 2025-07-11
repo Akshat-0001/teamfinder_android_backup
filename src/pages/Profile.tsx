@@ -1,4 +1,4 @@
-import { useState, useEffect } from 'react';
+import { useState, useEffect, useMemo } from 'react';
 import { useAuth } from '@/hooks/useAuth';
 import { Button } from '@/components/ui/button';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
@@ -36,6 +36,7 @@ const Profile = () => {
   });
   const [newInterest, setNewInterest] = useState('');
   const [newSkill, setNewSkill] = useState('');
+  const [universitySearch, setUniversitySearch] = useState('');
 
   useEffect(() => {
     if (profile) {
@@ -111,6 +112,13 @@ const Profile = () => {
   const getInitials = (name: string) => {
     return name.split(' ').map(n => n[0]).join('').toUpperCase();
   };
+
+  const filteredUniversities = useMemo(() => {
+    if (!universitySearch) return UNIVERSITIES;
+    return UNIVERSITIES.filter(uni =>
+      uni.toLowerCase().includes(universitySearch.toLowerCase())
+    );
+  }, [universitySearch]);
 
   if (!profile) {
     return (
@@ -195,8 +203,6 @@ const Profile = () => {
             </Avatar>
               <div>
                 <CardTitle>{profile.full_name}</CardTitle>
-                {/* <p className="text-muted-foreground">{profile.email}</p> */}
-                <p className="text-muted-foreground italic">Hidden for privacy</p>
               </div>
             </div>
           </CardHeader>
@@ -239,12 +245,18 @@ const Profile = () => {
 
                   <div>
                     <Label htmlFor="university">University</Label>
+                    <Input
+                      placeholder="Search university..."
+                      value={universitySearch}
+                      onChange={e => setUniversitySearch(e.target.value)}
+                      className="mb-2"
+                    />
                     <Select value={formData.university} onValueChange={(value) => setFormData(prev => ({ ...prev, university: value }))}>
                       <SelectTrigger>
                         <SelectValue placeholder="Select your university" />
                       </SelectTrigger>
                       <SelectContent>
-                        {UNIVERSITIES.map((uni) => (
+                        {filteredUniversities.map((uni) => (
                           <SelectItem key={uni} value={uni}>
                             {uni}
                           </SelectItem>

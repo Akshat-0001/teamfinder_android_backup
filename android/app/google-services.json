@@ -1,0 +1,29 @@
+{
+  "project_info": {
+    "project_number": "121079668689",
+    "project_id": "teamfinder0603",
+    "storage_bucket": "teamfinder0603.firebasestorage.app"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:121079668689:android:28b640c1a97dd53d970af0",
+        "android_client_info": {
+          "package_name": "com.buildcore.teamfinder"
+        }
+      },
+      "oauth_client": [],
+      "api_key": [
+        {
+          "current_key": "AIzaSyDL9y67TVNWqzsIHQaBlGGeS9jKIKLMN0E"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": []
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}

@@ -1,4 +1,4 @@
-import { useState } from 'react';
+import { useState, useMemo } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { useAuth } from '@/hooks/useAuth';
 import { Button } from '@/components/ui/button';
@@ -38,6 +38,14 @@ const ProfileSetup = () => {
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState('');
   const [success, setSuccess] = useState('');
+  const [universitySearch, setUniversitySearch] = useState('');
+
+  const filteredUniversities = useMemo(() => {
+    if (!universitySearch) return UNIVERSITIES;
+    return UNIVERSITIES.filter(uni =>
+      uni.toLowerCase().includes(universitySearch.toLowerCase())
+    );
+  }, [universitySearch]);
 
   const handleSave = async () => {
     setLoading(true);
@@ -132,12 +140,18 @@ const ProfileSetup = () => {
 
               <div>
                 <Label htmlFor="university">University</Label>
+                <Input
+                  placeholder="Search university..."
+                  value={universitySearch}
+                  onChange={e => setUniversitySearch(e.target.value)}
+                  className="mb-2"
+                />
                 <Select value={formData.university} onValueChange={(value) => setFormData(prev => ({ ...prev, university: value }))}>
                   <SelectTrigger>
                     <SelectValue placeholder="Select your university" />
                   </SelectTrigger>
                   <SelectContent>
-                    {UNIVERSITIES.map((uni) => (
+                    {filteredUniversities.map((uni) => (
                       <SelectItem key={uni} value={uni}>
                         {uni}
                       </SelectItem>

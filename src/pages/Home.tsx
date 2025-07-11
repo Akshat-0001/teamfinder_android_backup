@@ -27,46 +27,19 @@ const Home = () => {
   });
 
   // Sort teams based on user preference
-  const getSortedTeams = (teams: any[]) => {
-    if (!sortBy || sortBy === 'default' || !profile) return teams;
-    
-    return [...teams].sort((a, b) => {
-      switch (sortBy) {
-        case 'university':
-          // Show teams from same university first
-          const aHasUniversity = a.creator?.university === profile.university;
-          const bHasUniversity = b.creator?.university === profile.university;
-          if (aHasUniversity && !bHasUniversity) return -1;
-          if (!aHasUniversity && bHasUniversity) return 1;
-          return 0;
-          
-        case 'interests':
-          // Show teams with similar interests first
-          const aCommonInterests = a.creator?.interests?.filter((interest: string) => 
-            profile.interests?.includes(interest)
-          ).length || 0;
-          const bCommonInterests = b.creator?.interests?.filter((interest: string) => 
-            profile.interests?.includes(interest)
-          ).length || 0;
-          return bCommonInterests - aCommonInterests;
-          
-        case 'skills':
-          // Show teams requiring user's skills first
-          const aCommonSkills = a.required_skills?.filter((skill: string) => 
-            profile.skills?.includes(skill)
-          ).length || 0;
-          const bCommonSkills = b.required_skills?.filter((skill: string) => 
-            profile.skills?.includes(skill)
-          ).length || 0;
-          return bCommonSkills - aCommonSkills;
-          
-        default:
-          return 0;
-      }
-    });
+  const getFilteredTeams = (teams: any[]) => {
+    if (!profile) return teams;
+    if (sortBy === 'university') {
+      return teams.filter(team => team.creator?.university === profile.university);
+    }
+    if (sortBy === 'skills') {
+      return teams.filter(team =>
+        team.required_skills?.some((skill: string) => profile.skills?.includes(skill))
+      );
+    }
+    return teams;
   };
-
-  const filteredTeams = getSortedTeams(teams || []);
+  const filteredTeams = getFilteredTeams(teams || []);
 
   const formatDate = (dateString: string) => {
     return new Date(dateString).toLocaleDateString();
@@ -156,7 +129,6 @@ const Home = () => {
             <SelectContent>
               <SelectItem value="default">Default</SelectItem>
               <SelectItem value="university">Same University</SelectItem>
-              <SelectItem value="interests">Similar Interests</SelectItem>
               <SelectItem value="skills">Matching Skills</SelectItem>
             </SelectContent>
           </Select>
@@ -191,17 +163,22 @@ const Home = () => {
                   <div className="flex items-start justify-between">
                     <div className="flex-1">
                       <CardTitle className="text-lg">{team.title}</CardTitle>
-                      <CardDescription className="flex items-center gap-2 mt-1">
-                        {team.creator && (
-                          <ClickableAvatar 
-                            profile={team.creator} 
-                            size="sm" 
-                            showName 
-                            className="hover:text-primary transition-colors"
-                          />
+                      <CardDescription className="flex flex-col gap-0 mt-1">
+                        <div className="flex items-center gap-2">
+                          {team.creator && (
+                            <ClickableAvatar 
+                              profile={team.creator} 
+                              size="sm" 
+                              showName 
+                              className="hover:text-primary transition-colors"
+                            />
+                          )}
+                          <span>•</span>
+                          <span className="text-xs">{formatDate(team.created_at)}</span>
+                        </div>
+                        {team.creator?.university && (
+                          <span className="text-xs text-muted-foreground ml-8">{team.creator.university}</span>
                         )}
-                        <span>•</span>
-                        <span className="text-xs">{formatDate(team.created_at)}</span>
                       </CardDescription>
                     </div>
                     <Badge variant="secondary" className={`category-${team.category.toLowerCase()} badge-premium`}>

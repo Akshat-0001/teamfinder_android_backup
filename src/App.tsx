@@ -24,8 +24,61 @@ import ProfileSetup from './pages/ProfileSetup';
 import Suggestions from './pages/Suggestions';
 import BugReportPage from './pages/BugReportPage';
 import Notifications from './pages/Notifications';
+import { useEffect, useState } from 'react';
+import { PushNotifications } from '@capacitor/push-notifications';
+import { supabase } from './integrations/supabase/client';
 
 const queryClient = new QueryClient();
+
+async function saveDeviceToken(token, platform) {
+  const { data: { user } } = await supabase.auth.getUser();
+  if (!user) return;
+  await supabase.from('device_tokens').upsert({
+    user_id: user.id,
+    token,
+    platform,
+  });
+}
+
+function usePushNotifications(user) {
+  const [pendingToken, setPendingToken] = useState(null);
+
+  useEffect(() => {
+    PushNotifications.requestPermissions().then(result => {
+      if (result.receive === 'granted') {
+        PushNotifications.register();
+      }
+    });
+
+    PushNotifications.addListener('registration', (token) => {
+      console.log('Push registration success, token: ' + token.value);
+      if (user && user.id) {
+        saveDeviceToken(token.value, 'android');
+      } else {
+        setPendingToken(token.value);
+      }
+    });
+
+    PushNotifications.addListener('registrationError', (error) => {
+      console.error('Push registration error: ', error);
+    });
+
+    PushNotifications.addListener('pushNotificationReceived', (notification) => {
+      alert('Push received: ' + JSON.stringify(notification));
+    });
+
+    PushNotifications.addListener('pushNotificationActionPerformed', (notification) => {
+      console.log('Push action performed: ', notification);
+    });
+  }, [user]);
+
+  useEffect(() => {
+    if (user && user.id && pendingToken) {
+      saveDeviceToken(pendingToken, 'android');
+      setPendingToken(null);
+    }
+  }, [user, pendingToken]);
+}
 
 const ProtectedRoute = ({ children }: { children: React.ReactNode }) => {
   const { user, loading } = useAuth();
@@ -43,7 +96,10 @@ const ProtectedRoute = ({ children }: { children: React.ReactNode }) => {
   return <>{children}</>;
 };
 
-const App = () => (
+function App() {
+  const { user } = useAuth();
+  usePushNotifications(user);
+  return (
   <QueryClientProvider client={queryClient}>
     <ThemeProvider attribute="class" defaultTheme="system" enableSystem>
       <TooltipProvider>
@@ -77,5 +133,6 @@ const App = () => (
     </ThemeProvider>
   </QueryClientProvider>
 );
+}
 
 export default App;

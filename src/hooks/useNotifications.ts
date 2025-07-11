@@ -19,26 +19,27 @@ export const useNotifications = () => {
   const [unreadCount, setUnreadCount] = useState(0);
   const [loading, setLoading] = useState(true);
 
+  // Move fetchNotifications to top-level so it can be reused
+  const fetchNotifications = async () => {
+    if (!user) return;
+    const { data, error } = await supabase
+      .from('notifications')
+      .select('*')
+      .eq('user_id', user.id)
+      .order('created_at', { ascending: false });
+    if (error) {
+      console.error('Error fetching notifications:', error);
+    } else {
+      setNotifications(data || []);
+      setUnreadCount(data?.filter(n => !n.is_read).length || 0);
+    }
+    setLoading(false);
+  };
+
   useEffect(() => {
     if (!user) return;
 
     let subscription: any;
-
-    const fetchNotifications = async () => {
-      const { data, error } = await supabase
-        .from('notifications')
-        .select('*')
-        .eq('user_id', user.id)
-        .order('created_at', { ascending: false });
-
-      if (error) {
-        console.error('Error fetching notifications:', error);
-      } else {
-        setNotifications(data || []);
-        setUnreadCount(data?.filter(n => !n.is_read).length || 0);
-      }
-      setLoading(false);
-    };
 
     fetchNotifications();
 
@@ -83,6 +84,8 @@ export const useNotifications = () => {
         prev.map(n => n.id === notificationId ? { ...n, is_read: false } : n)
       );
       setUnreadCount(prev => prev + 1);
+    } else {
+      fetchNotifications();
     }
   };
 
@@ -158,6 +161,8 @@ export const useNotifications = () => {
           setUnreadCount(prev => prev + 1);
         }
       }
+    } else {
+      fetchNotifications();
     }
   };
 
