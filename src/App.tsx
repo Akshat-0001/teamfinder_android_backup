@@ -27,6 +27,7 @@ import Notifications from './pages/Notifications';
 import { useEffect, useState } from 'react';
 import { PushNotifications } from '@capacitor/push-notifications';
 import { supabase } from './integrations/supabase/client';
+import { StatusBar, Style } from '@capacitor/status-bar';
 
 const queryClient = new QueryClient();
 
@@ -109,6 +110,12 @@ const ProtectedRoute = ({ children }: { children: React.ReactNode }) => {
 function App() {
   const { user } = useAuth();
   usePushNotifications(user);
+
+  useEffect(() => {
+    StatusBar.setOverlaysWebView({ overlay: false });
+    StatusBar.setStyle({ style: Style.Dark });
+  }, []);
+
   return (
   <QueryClientProvider client={queryClient}>
     <ThemeProvider attribute="class" defaultTheme="system" enableSystem>
