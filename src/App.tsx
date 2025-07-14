@@ -26,8 +26,16 @@ import BugReportPage from './pages/BugReportPage';
 import Notifications from './pages/Notifications';
 import { useEffect, useState } from 'react';
 import { PushNotifications } from '@capacitor/push-notifications';
+import { LocalNotifications } from '@capacitor/local-notifications';
 import { supabase } from './integrations/supabase/client';
 import { StatusBar, Style } from '@capacitor/status-bar';
+import { useToast } from "@/hooks/use-toast";
+
+// Register the pushNotificationReceived handler at the top level to prevent default popup
+PushNotifications.addListener('pushNotificationReceived', (notification) => {
+  console.log('[DEBUG] pushNotificationReceived handler fired:', notification);
+  // No LocalNotifications.schedule here; in-app notifications are handled by your bell UI
+});
 
 const queryClient = new QueryClient();
 
@@ -49,6 +57,7 @@ async function saveDeviceToken(token, platform) {
 }
 
 function usePushNotifications(user) {
+  const { toast } = useToast();
   const [pendingToken, setPendingToken] = useState(null);
 
   useEffect(() => {
@@ -74,7 +83,12 @@ function usePushNotifications(user) {
     });
 
     PushNotifications.addListener('pushNotificationReceived', (notification) => {
-      alert('Push received: ' + JSON.stringify(notification));
+      // Show a toast in the foreground only
+      toast({
+        title: notification.title || "Notification",
+        description: notification.body || "",
+      });
+      // No LocalNotifications.schedule or alert here
     });
 
     PushNotifications.addListener('pushNotificationActionPerformed', (notification) => {
