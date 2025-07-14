@@ -1,4 +1,4 @@
-import { useState } from 'react';
+import { useState, useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { useForm } from 'react-hook-form';
 import { zodResolver } from '@hookform/resolvers/zod';
@@ -12,6 +12,7 @@ import { Alert, AlertDescription } from '@/components/ui/alert';
 import { Eye, EyeOff, Mail, Lock, User } from 'lucide-react';
 import { toast } from '@/hooks/use-toast';
 import { supabase } from '@/integrations/supabase/client';
+import { signInWithGoogleNative } from '../hooks/useAuth';
 
 const loginSchema = z.object({
   email: z.string().email('Invalid email address'),
@@ -43,7 +44,11 @@ const AuthPage = () => {
   const [forgotSuccess, setForgotSuccess] = useState(false);
   
   const navigate = useNavigate();
-  const { signIn, signUp, signInWithGoogle } = useAuth();
+  const { signIn, signUp, signInWithGoogle, user, profile, loading: authLoading } = useAuth();
+
+  console.log('[AuthPage] Rendered. user:', user);
+
+  // Remove navigation useEffect and debug logs
 
   const loginForm = useForm<LoginForm>({
     resolver: zodResolver(loginSchema)
@@ -141,6 +146,30 @@ const AuthPage = () => {
       console.error('Unexpected error:', err);
     } finally {
       setForgotLoading(false);
+    }
+  };
+
+  const handleGoogleSignInNative = async () => {
+    setLoading(true);
+    setError('');
+    try {
+      const result = await signInWithGoogleNative();
+      setLoading(false);
+      if (result.error) {
+        setError(result.error.message || 'Google sign-in failed');
+      } else {
+        // If new user, go to profile setup, else go to home
+        if (result.isNewUser) {
+          window.location.href = '/profile-setup';
+        } else {
+          window.location.href = '/';
+        }
+      }
+    } catch (err) {
+      setError('An unexpected error occurred');
+      console.error('Unexpected error:', err);
+    } finally {
+      setLoading(false);
     }
   };
 
@@ -403,7 +432,7 @@ const AuthPage = () => {
                 type="button"
                 variant="outline"
                 className="w-full"
-                onClick={handleGoogleSignIn}
+                onClick={handleGoogleSignInNative}
                 disabled={loading}
               >
                 <svg className="mr-2 h-4 w-4" viewBox="0 0 24 24">
@@ -424,7 +453,7 @@ const AuthPage = () => {
                     fill="#EA4335"
                   />
                 </svg>
-                Continue with Google
+                Continue with Google (Native)
               </Button>
             </form>
           )}

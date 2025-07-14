@@ -2,6 +2,48 @@ import { useState, useEffect } from 'react';
 import { User, Session } from '@supabase/supabase-js';
 import { supabase } from '@/integrations/supabase/client';
 import { Profile } from '@/types';
+import { registerPlugin } from '@capacitor/core';
+
+// Add this import at the top if using Capacitor v5+
+// import { GoogleAuthPlugin } from 'path-to-generated-plugin';
+
+const GoogleAuthPlugin = registerPlugin('GoogleAuthPlugin');
+
+const isAndroid = typeof window !== 'undefined' && (window as any).Capacitor?.getPlatform?.() === 'android';
+
+export async function signInWithGoogleNative() {
+  try {
+    const result = await GoogleAuthPlugin.signInWithGoogle();
+    const { idToken, email, name } = result;
+    // Use the idToken to sign in with Supabase
+    const { data, error } = await supabase.auth.signInWithIdToken({
+      provider: 'google',
+      token: idToken,
+    });
+    if (error) {
+      return { error };
+    }
+    // Check if user profile exists in your DB
+    let isNewUser = false;
+    if (data.user) {
+      const { data: profile, error: profileError } = await supabase
+        .from('profiles')
+        .select('id')
+        .eq('id', data.user.id)
+        .single();
+      isNewUser = !!profileError || !profile;
+    }
+    return {
+      user: data.user,
+      session: data.session,
+      name,
+      email,
+      isNewUser,
+    };
+  } catch (err) {
+    return { error: err };
+  }
+}
 
 export const useAuth = () => {
   const [user, setUser] = useState<User | null>(null);
@@ -78,15 +120,16 @@ export const useAuth = () => {
   };
 
   const signInWithGoogle = async () => {
+    if (isAndroid) {
+      return await signInWithGoogleNative();
+    }
     const redirectUrl = `${window.location.origin}/home`;
-    
     const { data, error } = await supabase.auth.signInWithOAuth({
       provider: 'google',
       options: {
         redirectTo: redirectUrl
       }
     });
-    
     return { data, error };
   };
 

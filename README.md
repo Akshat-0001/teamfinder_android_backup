@@ -149,6 +149,33 @@ npx cap open android
 
 ---
 
+## Android Native Google Auth (Credential Manager)
+
+- This app uses a native Capacitor plugin for Google sign-in on Android, using the Credential Manager bottomsheet UI.
+- You must set your Google Web Client ID in `GoogleAuthPlugin.java` (`<YOUR_WEB_CLIENT_ID>` placeholder).
+- Make sure your Android app is registered in the Google Cloud Console and the correct client IDs are in `google-services.json`.
+- The plugin is auto-registered in `MainActivity.java`.
+- On Android, the sign-in flow will use the native bottomsheet and return the ID token to the web layer, which is then used to authenticate with Supabase.
+
+---
+
+## Local Capacitor Plugin: GoogleAuthPlugin
+
+This project uses a custom Capacitor plugin for Google sign-in on Android, implemented as a local plugin in the `plugins/google-auth-plugin` directory. If you need to update or debug the native sign-in, edit the Java code in `plugins/google-auth-plugin/android/src/main/java/com/buildcore/googleauth/GoogleAuthPlugin.java`.
+
+To install or update the plugin:
+1. Run `npm install ./plugins/google-auth-plugin`
+2. Run `npx cap sync android`
+3. Rebuild your Android project in Android Studio.
+
+In JS, use:
+```js
+import { registerPlugin } from '@capacitor/core';
+const GoogleAuthPlugin = registerPlugin('GoogleAuthPlugin');
+```
+
+---
+
 ## Developer Notes & Contribution
 
 - **Code Style**: Uses ESLint, Prettier, and TypeScript strict mode.

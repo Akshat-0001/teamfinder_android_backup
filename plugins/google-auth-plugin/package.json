@@ -1,0 +1,11 @@
+{
+  "name": "google-auth-plugin",
+  "version": "0.0.1",
+  "main": "dist/esm/index.js",
+  "types": "dist/esm/index.d.ts",
+  "capacitor": {
+    "android": {
+      "src": "android"
+    }
+  }
+} 

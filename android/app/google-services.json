@@ -14,8 +14,12 @@
       },
       "oauth_client": [
         {
-          "client_id": "121079668689-nl2g13lngvnn30els3gu22oj6jgsbaml.apps.googleusercontent.com",
-          "client_type": 3
+          "client_id": "121079668689-sjkbiihktgq9gun1ds9da4h154v4g39c.apps.googleusercontent.com",
+          "client_type": 1,
+          "android_info": {
+            "package_name": "com.buildcore.teamfinder",
+            "certificate_hash": "a344970edb1778383ac567d0dff00d457206e2be"
+          }
         }
       ],
       "api_key": [

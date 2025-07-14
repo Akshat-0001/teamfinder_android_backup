@@ -112,7 +112,8 @@ function App() {
   usePushNotifications(user);
 
   useEffect(() => {
-    StatusBar.setOverlaysWebView({ overlay: false });
+    StatusBar.setOverlaysWebView({ overlay: true });
+    StatusBar.setBackgroundColor({ color: '#00000000' });
     StatusBar.setStyle({ style: Style.Dark });
   }, []);
 
@@ -126,7 +127,10 @@ function App() {
         <Routes>
           <Route path="/" element={<SplashScreen />} />
           <Route path="/onboarding" element={<OnboardingCarousel />} />
-          <Route path="/auth" element={<AuthPage />} />
+          <Route
+            path="/auth"
+            element={user ? <Navigate to="/home" replace /> : <AuthPage />}
+          />
           <Route path="/settings/suggestions" element={<Suggestions />} />
           <Route path="/settings/bug-report" element={<BugReportPage />} />
           <Route path="/profile-setup" element={<ProfileSetup />} />
