@@ -10,12 +10,13 @@ import { Badge } from '@/components/ui/badge';
 import { Avatar, AvatarFallback, AvatarImage } from '@/components/ui/avatar';
 import { useToast } from '@/hooks/use-toast';
 import { User, Edit, Save, X } from 'lucide-react';
-import { COMMON_SKILLS, UNIVERSITIES } from '@/types';
+import { COMMON_SKILLS, UNIVERSITIES, COMMON_ROLES } from '@/types';
 import ProfileAvatars from '@/components/ProfileAvatars';
 import ProfileLinks from '@/components/ProfileLinks';
+import { TypeaheadSelect } from '@/components/ui/TypeaheadSelect';
 
 const Profile = () => {
-  const { user, profile, updateProfile } = useAuth();
+  const { user, profile, updateProfile, loading } = useAuth();
   const { toast } = useToast();
   const [isEditing, setIsEditing] = useState(false);
   const [formData, setFormData] = useState({
@@ -33,9 +34,11 @@ const Profile = () => {
     codingame_url: '',
     portfolio_url: '',
     gender: '',
+    roles: [] as string[],
   });
   const [newInterest, setNewInterest] = useState('');
   const [newSkill, setNewSkill] = useState('');
+  const [newRole, setNewRole] = useState('');
   const [universitySearch, setUniversitySearch] = useState('');
 
   useEffect(() => {
@@ -55,13 +58,15 @@ const Profile = () => {
         codingame_url: profile.codingame_url || '',
         portfolio_url: profile.portfolio_url || '',
         gender: profile.gender || '',
+        roles: profile.roles || [],
       });
     }
   }, [profile]);
 
   const handleSave = async () => {
     try {
-      await updateProfile(formData);
+      const updates = { ...formData, avatar_url: formData.avatar_url ? formData.avatar_url : null };
+      await updateProfile(updates);
       setIsEditing(false);
       toast({
         title: "Profile Updated",
@@ -120,32 +125,17 @@ const Profile = () => {
     );
   }, [universitySearch]);
 
-  if (!profile) {
-    return (
-      <div className="container mx-auto px-4 py-6">
-        <div className="animate-pulse">
-          <Card>
-            <CardHeader>
-              <div className="h-6 bg-muted rounded w-1/4"></div>
-            </CardHeader>
-            <CardContent>
-              <div className="space-y-4">
-                <div className="h-4 bg-muted rounded"></div>
-                <div className="h-4 bg-muted rounded w-3/4"></div>
-              </div>
-            </CardContent>
-          </Card>
-        </div>
-      </div>
-    );
-  }
-
   return (
     <div className="container mx-auto px-4 py-6 flex-1 flex flex-col">
       <div className="max-w-2xl mx-auto">
         {/* Header */}
         <div className="flex items-center justify-between mb-6">
-          <h1 className="text-2xl font-bold">Profile</h1>
+          <h1 className="text-2xl font-bold flex items-center gap-2">
+            Profile
+            {loading && profile && (
+              <span className="ml-2 animate-spin rounded-full h-4 w-4 border-2 border-primary border-t-transparent"></span>
+            )}
+          </h1>
           <Button
             variant={isEditing ? "outline" : "default"}
             onClick={() => {
@@ -153,20 +143,21 @@ const Profile = () => {
                 setIsEditing(false);
                 // Reset form data
                 setFormData({
-                  full_name: profile.full_name || '',
-                  university: profile.university || '',
-                  bio: profile.bio || '',
-                  interests: profile.interests || [],
-                  skills: profile.skills || [],
-                  avatar_url: profile.avatar_url || '',
-                  github_url: profile.github_url || '',
-                  linkedin_url: profile.linkedin_url || '',
-                  leetcode_url: profile.leetcode_url || '',
-                  codeforces_url: profile.codeforces_url || '',
-                  geeksforgeeks_url: profile.geeksforgeeks_url || '',
-                  codingame_url: profile.codingame_url || '',
-                  portfolio_url: profile.portfolio_url || '',
-                  gender: profile.gender || '',
+                  full_name: profile?.full_name || '',
+                  university: profile?.university || '',
+                  bio: profile?.bio || '',
+                  interests: profile?.interests || [],
+                  skills: profile?.skills || [],
+                  avatar_url: profile?.avatar_url || '',
+                  github_url: profile?.github_url || '',
+                  linkedin_url: profile?.linkedin_url || '',
+                  leetcode_url: profile?.leetcode_url || '',
+                  codeforces_url: profile?.codeforces_url || '',
+                  geeksforgeeks_url: profile?.geeksforgeeks_url || '',
+                  codingame_url: profile?.codingame_url || '',
+                  portfolio_url: profile?.portfolio_url || '',
+                  gender: profile?.gender || '',
+                  roles: profile?.roles || [],
                 });
               } else {
                 setIsEditing(true);
@@ -191,23 +182,29 @@ const Profile = () => {
           <CardHeader>
             <div className="flex items-center space-x-4">
             <Avatar className="w-20 h-20">
-              {profile.avatar_url ? (
-                <div className="w-full h-full flex items-center justify-center text-2xl bg-gradient-to-br from-primary to-secondary rounded-full">
-                  {profile.avatar_url}
-                </div>
+                {profile?.avatar_url ? (
+                  <AvatarImage src={`/avatars/${profile.avatar_url}`} alt="Avatar" />
               ) : (
                 <AvatarFallback className="bg-primary text-primary-foreground">
-                  {getInitials(profile.full_name)}
+                    {getInitials(profile?.full_name || formData.full_name)}
                 </AvatarFallback>
               )}
             </Avatar>
               <div>
-                <CardTitle>{profile.full_name}</CardTitle>
+                <CardTitle>{profile?.full_name || formData.full_name || 'Profile'}</CardTitle>
               </div>
             </div>
           </CardHeader>
           <CardContent className="space-y-6">
-            {isEditing ? (
+            {!user && !profile ? (
+              // Show loading skeleton only if not authenticated and no cached profile
+              <div className="space-y-4 animate-pulse">
+                <div className="h-4 bg-muted rounded w-1/2"></div>
+                <div className="h-4 bg-muted rounded w-1/3"></div>
+                <div className="h-4 bg-muted rounded w-2/3"></div>
+                <div className="h-4 bg-muted rounded w-1/4"></div>
+              </div>
+            ) : isEditing ? (
               <>
                 {/* Edit Form */}
                 <div className="space-y-4">
@@ -225,9 +222,7 @@ const Profile = () => {
                     <div className="flex items-center gap-4">
                       <Avatar className="w-20 h-20">
                         {formData.avatar_url ? (
-                          <div className="w-full h-full flex items-center justify-center text-2xl bg-gradient-to-br from-primary to-secondary rounded-full">
-                            {formData.avatar_url}
-                          </div>
+                          <AvatarImage src={`/avatars/${formData.avatar_url}`} alt="Avatar" />
                         ) : (
                           <AvatarFallback className="bg-primary text-primary-foreground">
                             {getInitials(formData.full_name)}
@@ -245,24 +240,12 @@ const Profile = () => {
 
                   <div>
                     <Label htmlFor="university">University</Label>
-                    <Input
-                      placeholder="Search university..."
-                      value={universitySearch}
-                      onChange={e => setUniversitySearch(e.target.value)}
-                      className="mb-2"
+                    <TypeaheadSelect
+                      options={UNIVERSITIES}
+                      value={formData.university}
+                      onValueChange={university => setFormData(prev => ({ ...prev, university: university as string }))}
+                      placeholder="Select your university"
                     />
-                    <Select value={formData.university} onValueChange={(value) => setFormData(prev => ({ ...prev, university: value }))}>
-                      <SelectTrigger>
-                        <SelectValue placeholder="Select your university" />
-                      </SelectTrigger>
-                      <SelectContent>
-                        {filteredUniversities.map((uni) => (
-                          <SelectItem key={uni} value={uni}>
-                            {uni}
-                          </SelectItem>
-                        ))}
-                      </SelectContent>
-                    </Select>
                   </div>
 
                   <div>
@@ -277,26 +260,27 @@ const Profile = () => {
                   </div>
 
                   <div>
+                    <Label>Roles (up to 3)</Label>
+                    <TypeaheadSelect
+                      options={COMMON_ROLES.filter(role => !formData.roles.includes(role))}
+                      value={formData.roles}
+                      onValueChange={roles => setFormData(prev => ({ ...prev, roles: roles as string[] }))}
+                      placeholder="Add a role"
+                      multiSelect
+                      maxSelect={3}
+                    />
+                  </div>
+
+                  <div>
                     <Label>Skills</Label>
-                    <Select onValueChange={addSkill}>
-                      <SelectTrigger>
-                        <SelectValue placeholder="Add a skill" />
-                      </SelectTrigger>
-                      <SelectContent>
-                        {COMMON_SKILLS.filter(skill => !formData.skills.includes(skill)).map((skill) => (
-                          <SelectItem key={skill} value={skill}>
-                            {skill}
-                          </SelectItem>
-                        ))}
-                      </SelectContent>
-                    </Select>
-                    <div className="flex flex-wrap gap-2 mt-2">
-                      {formData.skills.map((skill) => (
-                        <Badge key={skill} variant="secondary" className="cursor-pointer" onClick={() => removeSkill(skill)}>
-                          {skill} <X className="h-3 w-3 ml-1" />
-                        </Badge>
-                      ))}
-                    </div>
+                    <TypeaheadSelect
+                      options={COMMON_SKILLS.filter(skill => !formData.skills.includes(skill))}
+                      value={formData.skills}
+                      onValueChange={skills => setFormData(prev => ({ ...prev, skills: skills as string[] }))}
+                      placeholder="Add a skill"
+                      multiSelect
+                      maxSelect={99}
+                    />
                   </div>
 
                   <div>
@@ -366,6 +350,17 @@ const Profile = () => {
                   <div>
                     <h3 className="font-semibold mb-2">Bio</h3>
                     <p className="text-muted-foreground">{profile.bio}</p>
+                  </div>
+                )}
+
+                {profile.roles && profile.roles.length > 0 && (
+                  <div className="mt-4">
+                    <h3 className="font-semibold mb-2">Roles</h3>
+                    <div className="flex flex-wrap gap-2">
+                      {profile.roles.map(role => (
+                        <Badge key={role} variant="secondary">{role}</Badge>
+                      ))}
+                    </div>
                   </div>
                 )}
 

@@ -48,11 +48,9 @@ const Settings = () => {
   const themes = [
     { id: 'light', name: 'Light', icon: Sun, description: 'Blue Lagoon - Clean and bright' },
     { id: 'dark', name: 'Dark', icon: Moon, description: 'Electric Indigo - Sleek and modern' },
-    { id: 'theme-ocean', name: 'Ocean Sunset', icon: Waves, description: 'Tropical vibes with warm accents' },
     { id: 'theme-forest', name: 'Forest', icon: Trees, description: 'Natural greens and earth tones' },
-    { id: 'theme-cosmic', name: 'Cosmic', icon: Sparkles, description: 'Deep space with vibrant purples' },
     { id: 'theme-sunset', name: 'Sunset', icon: Palette, description: 'Warm, energetic, and modern' },
-    { id: 'theme-aurora', name: 'Aurora', icon: Sparkles, description: 'Cool, dreamy, and modern' },
+    { id: 'theme-amoled', name: 'Amoled', icon: Moon, description: 'True black, battery-saving, ultra-premium' }
   ];
 
   useEffect(() => {
@@ -77,13 +75,11 @@ const Settings = () => {
   const handleThemeChange = (themeId: string) => {
     setCurrentTheme(themeId);
     setTheme(themeId);
-    
     // Apply custom theme classes
     document.documentElement.className = document.documentElement.className
       .replace(/theme-\w+/g, '')
       .replace(/\s+/g, ' ')
       .trim();
-    
     if (themeId.startsWith('theme-')) {
       document.documentElement.classList.add(themeId);
     }

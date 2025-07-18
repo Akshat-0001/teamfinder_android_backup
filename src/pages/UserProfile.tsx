@@ -3,7 +3,7 @@ import { useParams, useNavigate } from 'react-router-dom';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
 import { Badge } from '@/components/ui/badge';
-import { Avatar, AvatarFallback } from '@/components/ui/avatar';
+import { Avatar, AvatarFallback, AvatarImage } from '@/components/ui/avatar';
 import { supabase } from '@/integrations/supabase/client';
 import { Profile } from '@/types';
 import { ArrowLeft, Mail } from 'lucide-react';
@@ -95,9 +95,7 @@ const UserProfile = () => {
           <div className="flex items-center space-x-4">
             <Avatar className="w-20 h-20">
               {profile.avatar_url ? (
-                <div className="w-full h-full flex items-center justify-center text-2xl bg-gradient-to-br from-primary to-secondary rounded-full">
-                  {profile.avatar_url}
-                </div>
+                <AvatarImage src={`/avatars/${profile.avatar_url}`} alt="Avatar" />
               ) : (
                 <AvatarFallback className="bg-primary text-primary-foreground text-lg">
                   {getInitials(profile.full_name)}
@@ -122,6 +120,17 @@ const UserProfile = () => {
             <div>
               <h3 className="font-semibold mb-2">Bio</h3>
               <p className="text-muted-foreground">{profile.bio}</p>
+            </div>
+          )}
+
+          {profile.roles && profile.roles.length > 0 && (
+            <div className="mt-4">
+              <h3 className="font-semibold mb-2">Roles</h3>
+              <div className="flex flex-wrap gap-2">
+                {profile.roles.map(role => (
+                  <Badge key={role} variant="secondary">{role}</Badge>
+                ))}
+              </div>
             </div>
           )}
 

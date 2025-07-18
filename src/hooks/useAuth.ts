@@ -45,10 +45,20 @@ export async function signInWithGoogleNative() {
   }
 }
 
+const PROFILE_CACHE_KEY = 'teamfinder_profile_cache';
+
 export const useAuth = () => {
   const [user, setUser] = useState<User | null>(null);
   const [session, setSession] = useState<Session | null>(null);
-  const [profile, setProfile] = useState<Profile | null>(null);
+  // Load cached profile immediately
+  const [profile, setProfile] = useState<Profile | null>(() => {
+    try {
+      const cached = localStorage.getItem(PROFILE_CACHE_KEY);
+      return cached ? JSON.parse(cached) : null;
+    } catch {
+      return null;
+    }
+  });
   const [loading, setLoading] = useState(true);
 
   useEffect(() => {
@@ -68,16 +78,19 @@ export const useAuth = () => {
                 .select('*')
                 .eq('user_id', session.user.id)
                 .single();
-              
               setProfile(profileData);
+              // Cache profile
+              if (profileData) {
+                localStorage.setItem(PROFILE_CACHE_KEY, JSON.stringify(profileData));
+              }
             } catch (error) {
               console.error('Error fetching profile:', error);
             }
           }, 0);
         } else {
           setProfile(null);
+          localStorage.removeItem(PROFILE_CACHE_KEY);
         }
-        
         setLoading(false);
       }
     );
@@ -135,6 +148,8 @@ export const useAuth = () => {
 
   const signOut = async () => {
     const { error } = await supabase.auth.signOut();
+    // Clear cached profile on sign out
+    localStorage.removeItem(PROFILE_CACHE_KEY);
     return { error };
   };
 
@@ -150,6 +165,8 @@ export const useAuth = () => {
 
     if (data) {
       setProfile(data);
+      // Update cache
+      localStorage.setItem(PROFILE_CACHE_KEY, JSON.stringify(data));
     }
 
     return { data, error };

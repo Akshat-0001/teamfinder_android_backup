@@ -13,10 +13,20 @@ export interface Notification {
   updated_at: string;
 }
 
+const NOTIFICATIONS_CACHE_KEY = 'teamfinder_notifications_cache';
+
 export const useNotifications = () => {
   const { user } = useAuth();
-  const [notifications, setNotifications] = useState<Notification[]>([]);
-  const [unreadCount, setUnreadCount] = useState(0);
+  // Load cached notifications immediately
+  const [notifications, setNotifications] = useState<Notification[]>(() => {
+    try {
+      const cached = localStorage.getItem(NOTIFICATIONS_CACHE_KEY);
+      return cached ? JSON.parse(cached) : [];
+    } catch {
+      return [];
+    }
+  });
+  const [unreadCount, setUnreadCount] = useState(() => notifications.filter(n => !n.is_read).length);
   const [loading, setLoading] = useState(true);
 
   // Move fetchNotifications to top-level so it can be reused
@@ -32,6 +42,8 @@ export const useNotifications = () => {
     } else {
       setNotifications(data || []);
       setUnreadCount(data?.filter(n => !n.is_read).length || 0);
+      // Cache notifications
+      localStorage.setItem(NOTIFICATIONS_CACHE_KEY, JSON.stringify(data || []));
     }
     setLoading(false);
   };
@@ -66,9 +78,12 @@ export const useNotifications = () => {
     if (!user) return;
 
     // Optimistic update
-    setNotifications(prev => 
-      prev.map(n => n.id === notificationId ? { ...n, is_read: true } : n)
-    );
+    setNotifications(prev => {
+      const updated = prev.map(n => n.id === notificationId ? { ...n, is_read: true } : n);
+      // Update cache
+      localStorage.setItem(NOTIFICATIONS_CACHE_KEY, JSON.stringify(updated));
+      return updated;
+    });
     setUnreadCount(prev => Math.max(0, prev - 1));
 
     const { error } = await supabase
@@ -80,13 +95,15 @@ export const useNotifications = () => {
     if (error) {
       console.error('Error marking notification as read:', error);
       // Revert optimistic update on error
-      setNotifications(prev => 
-        prev.map(n => n.id === notificationId ? { ...n, is_read: false } : n)
-      );
+      setNotifications(prev => {
+        const reverted = prev.map(n => n.id === notificationId ? { ...n, is_read: false } : n);
+        localStorage.setItem(NOTIFICATIONS_CACHE_KEY, JSON.stringify(reverted));
+        return reverted;
+      });
       setUnreadCount(prev => prev + 1);
-    } else {
-      fetchNotifications();
     }
+    // Always refetch to ensure badge is in sync
+    fetchNotifications();
   };
 
   const markAllAsRead = async () => {
@@ -94,7 +111,11 @@ export const useNotifications = () => {
 
     // Optimistic update
     const unreadNotifications = notifications.filter(n => !n.is_read);
-    setNotifications(prev => prev.map(n => ({ ...n, is_read: true })));
+    setNotifications(prev => {
+      const updated = prev.map(n => ({ ...n, is_read: true }));
+      localStorage.setItem(NOTIFICATIONS_CACHE_KEY, JSON.stringify(updated));
+      return updated;
+    });
     setUnreadCount(0);
 
     const { error } = await supabase
@@ -106,11 +127,15 @@ export const useNotifications = () => {
     if (error) {
       console.error('Error marking all notifications as read:', error);
       // Revert optimistic update on error
-      setNotifications(prev => 
-        prev.map(n => unreadNotifications.find(u => u.id === n.id) ? { ...n, is_read: false } : n)
-      );
+      setNotifications(prev => {
+        const reverted = prev.map(n => unreadNotifications.find(u => u.id === n.id) ? { ...n, is_read: false } : n);
+        localStorage.setItem(NOTIFICATIONS_CACHE_KEY, JSON.stringify(reverted));
+        return reverted;
+      });
       setUnreadCount(unreadNotifications.length);
     }
+    // Always refetch to ensure badge is in sync
+    fetchNotifications();
   };
 
   const clearAll = async () => {
@@ -120,6 +145,7 @@ export const useNotifications = () => {
     const previousNotifications = [...notifications];
     setNotifications([]);
     setUnreadCount(0);
+    localStorage.setItem(NOTIFICATIONS_CACHE_KEY, JSON.stringify([]));
 
     const { error } = await supabase
       .from('notifications')
@@ -131,7 +157,10 @@ export const useNotifications = () => {
       // Revert optimistic update on error
       setNotifications(previousNotifications);
       setUnreadCount(previousNotifications.filter(n => !n.is_read).length);
+      localStorage.setItem(NOTIFICATIONS_CACHE_KEY, JSON.stringify(previousNotifications));
     }
+    // Always refetch to ensure badge is in sync
+    fetchNotifications();
   };
 
   const dismissNotification = async (notificationId: string) => {
@@ -139,7 +168,11 @@ export const useNotifications = () => {
 
     // Optimistic update
     const notificationToRemove = notifications.find(n => n.id === notificationId);
-    setNotifications(prev => prev.filter(n => n.id !== notificationId));
+    setNotifications(prev => {
+      const updated = prev.filter(n => n.id !== notificationId);
+      localStorage.setItem(NOTIFICATIONS_CACHE_KEY, JSON.stringify(updated));
+      return updated;
+    });
     if (notificationToRemove && !notificationToRemove.is_read) {
       setUnreadCount(prev => Math.max(0, prev - 1));
     }
@@ -154,9 +187,13 @@ export const useNotifications = () => {
       console.error('Error dismissing notification:', error);
       // Revert optimistic update on error
       if (notificationToRemove) {
-        setNotifications(prev => [...prev, notificationToRemove].sort((a, b) => 
-          new Date(b.created_at).getTime() - new Date(a.created_at).getTime()
-        ));
+        setNotifications(prev => {
+          const reverted = [...prev, notificationToRemove].sort((a, b) => 
+            new Date(b.created_at).getTime() - new Date(a.created_at).getTime()
+          );
+          localStorage.setItem(NOTIFICATIONS_CACHE_KEY, JSON.stringify(reverted));
+          return reverted;
+        });
         if (!notificationToRemove.is_read) {
           setUnreadCount(prev => prev + 1);
         }

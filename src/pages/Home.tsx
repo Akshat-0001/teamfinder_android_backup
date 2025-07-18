@@ -11,6 +11,7 @@ import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@
 import { Link } from 'react-router-dom';
 import { Plus, Search, Users, Calendar, ArrowUpDown } from 'lucide-react';
 import { TEAM_CATEGORIES } from '@/types';
+import { TypeaheadSelect } from '@/components/ui/TypeaheadSelect';
 
 const Home = () => {
   const { user, profile } = useAuth();
@@ -108,22 +109,16 @@ const Home = () => {
         </div>
         
         <div className="flex gap-4">
-          <Select value={category} onValueChange={(value) => setCategory(value === 'all' ? '' : value)}>
-            <SelectTrigger className="flex-1">
-              <SelectValue placeholder="All categories" />
-            </SelectTrigger>
-            <SelectContent>
-              <SelectItem value="all">All categories</SelectItem>
-              {TEAM_CATEGORIES.map((cat) => (
-                <SelectItem key={cat} value={cat}>
-                  {cat}
-                </SelectItem>
-              ))}
-            </SelectContent>
-          </Select>
+          <TypeaheadSelect
+            options={TEAM_CATEGORIES}
+            value={category}
+            onValueChange={val => setCategory(val as string)}
+            placeholder="All categories"
+            className="flex-[2] min-w-[220px]"
+          />
           
           <Select value={sortBy} onValueChange={setSortBy}>
-            <SelectTrigger className="flex-1">
+            <SelectTrigger className="flex-[1] max-w-[160px]">
               <SelectValue placeholder="Sort by" />
             </SelectTrigger>
             <SelectContent>

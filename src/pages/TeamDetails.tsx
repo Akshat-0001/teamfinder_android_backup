@@ -21,6 +21,7 @@ import {
   UserPlus,
   Trash2
 } from 'lucide-react';
+import { AlertDialog, AlertDialogTrigger, AlertDialogContent, AlertDialogHeader, AlertDialogTitle, AlertDialogDescription, AlertDialogFooter, AlertDialogCancel, AlertDialogAction } from '@/components/ui/alert-dialog';
 
 const TeamDetails = () => {
   const { id } = useParams<{ id: string }>();
@@ -212,9 +213,7 @@ const TeamDetails = () => {
                           team.creator.avatar_url.startsWith('http') || team.creator.avatar_url.startsWith('data:') ? (
                             <AvatarImage src={team.creator.avatar_url} />
                           ) : (
-                            <div className="w-full h-full flex items-center justify-center text-2xl bg-gradient-to-br from-primary to-secondary rounded-full">
-                              {team.creator.avatar_url}
-                            </div>
+                            <AvatarImage src={`/avatars/${team.creator.avatar_url}`} />
                           )
                         ) : (
                           <AvatarFallback className="bg-primary text-primary-foreground">
@@ -241,9 +240,7 @@ const TeamDetails = () => {
                             application.user.avatar_url.startsWith('http') || application.user.avatar_url.startsWith('data:') ? (
                               <AvatarImage src={application.user.avatar_url} />
                             ) : (
-                              <div className="w-full h-full flex items-center justify-center text-2xl bg-gradient-to-br from-primary to-secondary rounded-full">
-                                {application.user.avatar_url}
-                              </div>
+                              <AvatarImage src={`/avatars/${application.user.avatar_url}`} />
                             )
                           ) : (
                             <AvatarFallback className="bg-secondary text-secondary-foreground">
@@ -261,14 +258,33 @@ const TeamDetails = () => {
                         </p>
                       </div>
                       <Badge variant="secondary">Member</Badge>
-                      {isCreator && application.user_id !== user?.id && (
+                      <AlertDialog>
+                        <AlertDialogTrigger asChild>
                         <Button
                           size="icon"
-                          variant="ghost"
+                            variant="outline"
                           className="text-destructive hover:bg-destructive/10 ml-2"
                           title="Remove Member"
+                            disabled={kickMember.isPending}
+                          >
+                            {kickMember.isPending ? (
+                              <div className="animate-spin rounded-full h-4 w-4 border-2 border-destructive border-t-transparent" />
+                            ) : (
+                              <Trash2 className="h-4 w-4" />
+                            )}
+                          </Button>
+                        </AlertDialogTrigger>
+                        <AlertDialogContent>
+                          <AlertDialogHeader>
+                            <AlertDialogTitle>Remove Member</AlertDialogTitle>
+                            <AlertDialogDescription>
+                              Are you sure you want to remove {application.user?.full_name || 'this member'} from the team? This action cannot be undone.
+                            </AlertDialogDescription>
+                          </AlertDialogHeader>
+                          <AlertDialogFooter>
+                            <AlertDialogCancel>Cancel</AlertDialogCancel>
+                            <AlertDialogAction
                           onClick={async () => {
-                            if (!window.confirm(`Remove ${application.user?.full_name || 'this member'} from the team?`)) return;
                             try {
                               await kickMember.mutateAsync({ teamId: team.id, userId: application.user_id });
                               toast({
@@ -285,13 +301,11 @@ const TeamDetails = () => {
                           }}
                           disabled={kickMember.isPending}
                         >
-                          {kickMember.isPending ? (
-                            <div className="animate-spin rounded-full h-4 w-4 border-2 border-destructive border-t-transparent" />
-                          ) : (
-                            <Trash2 className="h-4 w-4" />
-                          )}
-                        </Button>
-                      )}
+                              Remove
+                            </AlertDialogAction>
+                          </AlertDialogFooter>
+                        </AlertDialogContent>
+                      </AlertDialog>
                     </div>
                   ))}
 
@@ -323,9 +337,7 @@ const TeamDetails = () => {
                               application.user.avatar_url.startsWith('http') || application.user.avatar_url.startsWith('data:') ? (
                                 <AvatarImage src={application.user.avatar_url} />
                               ) : (
-                                <div className="w-full h-full flex items-center justify-center text-2xl bg-gradient-to-br from-primary to-secondary rounded-full">
-                                  {application.user.avatar_url}
-                                </div>
+                                <AvatarImage src={`/avatars/${application.user.avatar_url}`} />
                               )
                             ) : (
                               <AvatarFallback className="bg-muted">
@@ -423,8 +435,28 @@ const TeamDetails = () => {
                             Team Chat
                           </Button>
                         </Link>
+                        <AlertDialog>
+                          <AlertDialogTrigger asChild>
                         <Button
                           className="w-full btn-gradient-secondary"
+                              disabled={leaveTeam.isPending}
+                            >
+                              {leaveTeam.isPending ? (
+                                <div className="animate-spin rounded-full h-4 w-4 border-2 border-white border-t-transparent mr-2" />
+                              ) : null}
+                              Leave Team
+                            </Button>
+                          </AlertDialogTrigger>
+                          <AlertDialogContent>
+                            <AlertDialogHeader>
+                              <AlertDialogTitle>Leave Team</AlertDialogTitle>
+                              <AlertDialogDescription>
+                                Are you sure you want to leave this team? You will lose access to team chat and resources.
+                              </AlertDialogDescription>
+                            </AlertDialogHeader>
+                            <AlertDialogFooter>
+                              <AlertDialogCancel>Cancel</AlertDialogCancel>
+                              <AlertDialogAction
                           onClick={async () => {
                             try {
                               await leaveTeam.mutateAsync(team.id);
@@ -443,11 +475,11 @@ const TeamDetails = () => {
                           }}
                           disabled={leaveTeam.isPending}
                         >
-                          {leaveTeam.isPending ? (
-                            <div className="animate-spin rounded-full h-4 w-4 border-2 border-white border-t-transparent mr-2" />
-                          ) : null}
-                          Leave Team
-                        </Button>
+                                Leave
+                              </AlertDialogAction>
+                            </AlertDialogFooter>
+                          </AlertDialogContent>
+                        </AlertDialog>
                       </>
                     )}
                   </div>

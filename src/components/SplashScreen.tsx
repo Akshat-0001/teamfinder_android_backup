@@ -35,8 +35,10 @@ const SplashScreen = () => {
           animate={{ y: 0 }}
           transition={{ duration: 1, ease: [0.4, 0, 0.2, 1] }}
         >
-          <motion.div 
-            className="w-24 h-24 mx-auto rounded-2xl bg-white/20 backdrop-blur-lg border border-white/30 flex items-center justify-center"
+          <motion.img
+            src="https://res.cloudinary.com/dmz1x7at4/image/upload/cropped_circle_image-min_xiyyo5.png"
+            alt="TeamFinder Logo"
+            className="w-24 h-24 mx-auto object-cover"
             animate={{ 
               scale: [1, 1.1, 1],
               rotate: [0, 5, -5, 0] 
@@ -46,25 +48,7 @@ const SplashScreen = () => {
               repeat: Infinity, 
               ease: "easeInOut" 
             }}
-          >
-            <img
-              src="https://res.cloudinary.com/dmz1x7at4/image/upload/cropped_circle_image-min_xiyyo5.png"
-              alt="TeamFinder Logo"
-              className="w-12 h-12 rounded-lg object-cover"
-            />
-          </motion.div>
-          <motion.div 
-            className="absolute -inset-4 bg-white/20 rounded-full blur-xl"
-            animate={{ 
-              scale: [1, 1.2, 1],
-              opacity: [0.5, 0.8, 0.5] 
-            }}
-            transition={{ 
-              duration: 2, 
-              repeat: Infinity, 
-              ease: "easeInOut" 
-            }}
-          ></motion.div>
+          />
         </motion.div>
         
         <motion.div 

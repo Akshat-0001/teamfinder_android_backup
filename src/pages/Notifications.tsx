@@ -11,7 +11,7 @@ const Notifications = () => {
   const { notifications, unreadCount, loading, markAsRead, markAllAsRead, clearAll, dismissNotification } = useNotifications();
   const [swipedNotifications, setSwipedNotifications] = useState<Set<string>>(new Set());
 
-  if (loading) {
+  if (loading && notifications.length === 0) {
     return (
       <div className="mobile-container bg-background">
         <div className="container mx-auto px-4 py-6 max-w-lg">
@@ -85,14 +85,12 @@ const Notifications = () => {
           {/* Page Title */}
           <div className="flex items-center justify-between mb-6">
             <div className="flex items-center space-x-2">
-              <div className="w-8 h-8 rounded-lg overflow-hidden">
-                <img
-                  src="https://res.cloudinary.com/dmz1x7at4/image/upload/cropped_circle_image-min_xiyyo5.png"
-                  alt="TeamFinder Logo"
-                  className="w-full h-full object-cover"
-                />
-              </div>
-              <h1 className="text-2xl font-bold text-foreground">Notifications</h1>
+              <h1 className="text-2xl font-bold text-foreground flex items-center gap-2">
+                Notifications
+                {loading && notifications.length > 0 && (
+                  <span className="ml-2 animate-spin rounded-full h-4 w-4 border-2 border-primary border-t-transparent"></span>
+                )}
+              </h1>
             </div>
             {unreadCount > 0 && (
               <Badge variant="secondary" className="text-xs">

@@ -1,5 +1,5 @@
 import { Link } from 'react-router-dom';
-import { Avatar, AvatarFallback } from '@/components/ui/avatar';
+import { Avatar, AvatarFallback, AvatarImage } from '@/components/ui/avatar';
 import { Profile } from '@/types';
 
 interface ClickableAvatarProps {
@@ -29,9 +29,7 @@ const ClickableAvatar: React.FC<ClickableAvatarProps> = ({
     <div className={`flex items-center gap-2 ${className}`}>
       <Avatar className={sizeClasses[size]}>
         {profile.avatar_url ? (
-          <div className="w-full h-full flex items-center justify-center text-xl bg-gradient-to-br from-primary to-secondary rounded-full">
-            {profile.avatar_url}
-          </div>
+          <AvatarImage src={`/avatars/${profile.avatar_url}`} alt="Avatar" />
         ) : (
           <AvatarFallback className="bg-primary text-primary-foreground">
             {getInitials(profile.full_name)}

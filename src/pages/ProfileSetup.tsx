@@ -8,11 +8,13 @@ import { Label } from '@/components/ui/label';
 import { Textarea } from '@/components/ui/textarea';
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
 import { Badge } from '@/components/ui/badge';
-import { Avatar, AvatarFallback } from '@/components/ui/avatar';
+import { Avatar, AvatarFallback, AvatarImage } from '@/components/ui/avatar';
 import { Save } from 'lucide-react';
-import { COMMON_SKILLS, UNIVERSITIES } from '@/types';
+import { COMMON_SKILLS, UNIVERSITIES, COMMON_ROLES } from '@/types';
 import ProfileAvatars from '@/components/ProfileAvatars';
 import ProfileLinks from '@/components/ProfileLinks';
+import { X } from 'lucide-react';
+import { TypeaheadSelect } from '@/components/ui/TypeaheadSelect';
 
 const ProfileSetup = () => {
   const { user, updateProfile } = useAuth();
@@ -32,6 +34,7 @@ const ProfileSetup = () => {
     codingame_url: '',
     portfolio_url: '',
     gender: '',
+    roles: [] as string[],
   });
   const [newInterest, setNewInterest] = useState('');
   const [newSkill, setNewSkill] = useState('');
@@ -39,6 +42,7 @@ const ProfileSetup = () => {
   const [error, setError] = useState('');
   const [success, setSuccess] = useState('');
   const [universitySearch, setUniversitySearch] = useState('');
+  const [newRole, setNewRole] = useState('');
 
   const filteredUniversities = useMemo(() => {
     if (!universitySearch) return UNIVERSITIES;
@@ -52,7 +56,8 @@ const ProfileSetup = () => {
     setError('');
     setSuccess('');
     try {
-      await updateProfile(formData);
+      const updates = { ...formData, avatar_url: formData.avatar_url ? formData.avatar_url : null };
+      await updateProfile(updates);
       setSuccess('Profile setup complete! Redirecting...');
       setTimeout(() => navigate('/home'), 1200);
     } catch (err) {
@@ -112,9 +117,7 @@ const ProfileSetup = () => {
               <div className="flex items-center gap-4">
                 <Avatar className="w-20 h-20">
                   {formData.avatar_url ? (
-                    <div className="w-full h-full flex items-center justify-center text-2xl bg-gradient-to-br from-primary to-secondary rounded-full">
-                      {formData.avatar_url}
-                    </div>
+                    <AvatarImage src={`/avatars/${formData.avatar_url}`} alt="Avatar" />
                   ) : (
                     <AvatarFallback className="bg-primary text-primary-foreground">
                       {getInitials(formData.full_name)}
@@ -140,24 +143,12 @@ const ProfileSetup = () => {
 
               <div>
                 <Label htmlFor="university">University</Label>
-                <Input
-                  placeholder="Search university..."
-                  value={universitySearch}
-                  onChange={e => setUniversitySearch(e.target.value)}
-                  className="mb-2"
+                <TypeaheadSelect
+                  options={UNIVERSITIES}
+                  value={formData.university}
+                  onValueChange={university => setFormData(prev => ({ ...prev, university: university as string }))}
+                  placeholder="Select your university"
                 />
-                <Select value={formData.university} onValueChange={(value) => setFormData(prev => ({ ...prev, university: value }))}>
-                  <SelectTrigger>
-                    <SelectValue placeholder="Select your university" />
-                  </SelectTrigger>
-                  <SelectContent>
-                    {filteredUniversities.map((uni) => (
-                      <SelectItem key={uni} value={uni}>
-                        {uni}
-                      </SelectItem>
-                    ))}
-                  </SelectContent>
-                </Select>
               </div>
 
               <div>
@@ -172,26 +163,26 @@ const ProfileSetup = () => {
               </div>
 
               <div>
+                <Label>Roles (up to 3)</Label>
+                <TypeaheadSelect
+                  options={COMMON_ROLES.filter(role => !formData.roles.includes(role))}
+                  value={formData.roles}
+                  onValueChange={roles => setFormData(prev => ({ ...prev, roles: roles as string[] }))}
+                  placeholder="Add a role"
+                  multiSelect
+                  maxSelect={3}
+                />
+              </div>
+              <div>
                 <Label>Skills</Label>
-                <Select onValueChange={addSkill}>
-                  <SelectTrigger>
-                    <SelectValue placeholder="Add a skill" />
-                  </SelectTrigger>
-                  <SelectContent>
-                    {COMMON_SKILLS.filter(skill => !formData.skills.includes(skill)).map((skill) => (
-                      <SelectItem key={skill} value={skill}>
-                        {skill}
-                      </SelectItem>
-                    ))}
-                  </SelectContent>
-                </Select>
-                <div className="flex flex-wrap gap-2 mt-2">
-                  {formData.skills.map((skill) => (
-                    <Badge key={skill} variant="secondary" className="cursor-pointer" onClick={() => removeSkill(skill)}>
-                      {skill}
-                    </Badge>
-                  ))}
-                </div>
+                <TypeaheadSelect
+                  options={COMMON_SKILLS.filter(skill => !formData.skills.includes(skill))}
+                  value={formData.skills}
+                  onValueChange={skills => setFormData(prev => ({ ...prev, skills: skills as string[] }))}
+                  placeholder="Add a skill"
+                  multiSelect
+                  maxSelect={99}
+                />
               </div>
 
               <div>

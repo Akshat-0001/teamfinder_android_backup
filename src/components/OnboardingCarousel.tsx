@@ -62,32 +62,26 @@ const OnboardingCarousel = () => {
             animate={{ scale: 1, opacity: 1, y: 0 }}
             transition={{ duration: 0.5, ease: [0.4, 0, 0.2, 1] }}
           >
-            <motion.div 
-              className="w-24 h-24 rounded-2xl bg-gradient-to-br from-primary to-secondary p-6 shadow-lg"
-              whileHover={{ scale: 1.05 }}
-              whileTap={{ scale: 0.95 }}
-            >
-              <AnimatePresence mode="wait">
-                <motion.div
-                  key={currentSlide}
-                  initial={{ opacity: 0, rotate: -10, scale: 0.8 }}
-                  animate={{ opacity: 1, rotate: 0, scale: 1 }}
-                  exit={{ opacity: 0, rotate: 10, scale: 0.8 }}
-                  transition={{ duration: 0.3 }}
-                  className="w-full h-full flex items-center justify-center"
-                >
-                  {currentSlide === 0 && (
-                    <img
-                      src="https://res.cloudinary.com/dmz1x7at4/image/upload/cropped_circle_image-min_xiyyo5.png"
-                      alt="TeamFinder Logo"
-                      className="w-full h-full object-cover rounded-lg"
-                    />
-                  )}
-                  {currentSlide === 1 && <Users className="w-full h-full text-white" />}
-                  {currentSlide === 2 && <MessageCircle className="w-full h-full text-white" />}
-                </motion.div>
-              </AnimatePresence>
-            </motion.div>
+            <AnimatePresence mode="wait">
+              <motion.div
+                key={currentSlide}
+                initial={{ opacity: 0, rotate: -10, scale: 0.8 }}
+                animate={{ opacity: 1, rotate: 0, scale: 1 }}
+                exit={{ opacity: 0, rotate: 10, scale: 0.8 }}
+                transition={{ duration: 0.3 }}
+                className="w-24 h-24 flex items-center justify-center"
+              >
+                {currentSlide === 0 && (
+                  <img
+                    src="https://res.cloudinary.com/dmz1x7at4/image/upload/cropped_circle_image-min_xiyyo5.png"
+                    alt="TeamFinder Logo"
+                    className="w-full h-full object-cover"
+                  />
+                )}
+                {currentSlide === 1 && <Users className="w-full h-full text-white" />}
+                {currentSlide === 2 && <MessageCircle className="w-full h-full text-white" />}
+              </motion.div>
+            </AnimatePresence>
           </motion.div>
 
           {/* Content */}
