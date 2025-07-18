@@ -1,40 +1,39 @@
-# TeamFinder: Team Collaboration & Project Hub
+# CrewUp: Team Finder & Collaboration Hub
 
 ## Overview & Purpose
 
-**TeamFinder** is a modern, full-featured team collaboration platform designed to help students, professionals, and enthusiasts find, create, and manage project teams. Whether for hackathons, research, startups, or study groups, TeamFinder streamlines the process of team formation, communication, and project management, all in one place.
+**CrewUp** is the next-generation platform for discovering, building, and collaborating with teams—whether for hackathons, projects, study groups, startups, or professional gigs. CrewUp empowers students, professionals, and creators to find the right people, form dynamic teams, and unlock new opportunities, all in one seamless app.
 
 ---
 
 ## Key Features & User Flows
 
-- **User Authentication**: Secure sign-up/sign-in (email/password & Google OAuth) with profile onboarding.
-- **Profile Management**: Rich user profiles with skills, interests, university, social/coding links, and avatars.
-- **Team Discovery & Search**: Browse, search, and filter teams by category, skills, and more.
-- **Team Creation & Management**: Create teams, set requirements, manage members, and handle applications.
-- **Application Workflow**: Apply to teams, review/join/leave teams, and manage applications (accept/reject).
-- **Team Chat**: Real-time group chat for each team, with message search and member tagging.
-- **Notifications**: In-app notifications for invites, application status, team events, and more.
-- **Bug Reporting & Suggestions**: Built-in forms for users to report bugs and suggest features.
-- **Settings & Customization**: Theme switching (light/dark/custom), password/email change, and more.
-- **Mobile-Ready & PWA**: Responsive UI, installable as a PWA, and deployable as a native Android app via Capacitor.
+- **Smart Team Discovery:** Search, filter, and browse teams by category, skills, interests, and more.
+- **Effortless Team Creation:** Create teams, set requirements, manage members, and handle applications with ease.
+- **Rich User Profiles:** Showcase your skills, roles, interests, university, and social/coding links with beautiful avatars.
+- **Instant Collaboration:** Real-time team chat, notifications, and project management tools.
+- **Opportunity Board:** Post and browse not just teams, but also events, gigs, study groups, and more.
+- **Customizable Themes:** Choose from light, dark, AMOLED, and vibrant custom themes to match your style.
+- **Mobile-Ready & PWA:** Fully responsive, installable as a PWA, and deployable as a native Android app via Capacitor.
+- **Secure & Modern Auth:** Email/password, Google OAuth, and robust profile onboarding.
+- **Feedback & Support:** Built-in bug reporting and suggestion forms.
 
 ---
 
 ## Technology Stack
 
-- **Frontend**: React 18, TypeScript, Vite, shadcn-ui, Tailwind CSS
-- **State/Data**: React Query, custom hooks
-- **Backend/DB**: [Supabase](https://supabase.com/) (Postgres, Auth, Realtime, Storage)
-- **Mobile/Native**: Capacitor (Android integration)
-- **Other**: ESLint, PostCSS, Zod, Lucide Icons, date-fns, and more
+- **Frontend:** React 18, TypeScript, Vite, shadcn-ui, Tailwind CSS
+- **State/Data:** React Query, custom hooks
+- **Backend/DB:** [Supabase](https://supabase.com/) (Postgres, Auth, Realtime, Storage)
+- **Mobile/Native:** Capacitor (Android integration)
+- **Other:** ESLint, PostCSS, Zod, Lucide Icons, date-fns, and more
 
 ---
 
 ## Folder Structure & Code Organization
 
 ```
-teamfind-connect-hub/
+crewup/
 ├── android/                # Native Android project (Capacitor)
 ├── public/                 # Static assets (favicons, avatars, etc.)
 ├── src/
@@ -68,7 +67,7 @@ teamfind-connect-hub/
 ### 2. Clone the Repository
 ```sh
 git clone <YOUR_GIT_URL>
-cd teamfind-connect-hub
+cd crewup
 ```
 
 ### 3. Install Dependencies
@@ -178,11 +177,11 @@ const GoogleAuthPlugin = registerPlugin('GoogleAuthPlugin');
 
 ## Developer Notes & Contribution
 
-- **Code Style**: Uses ESLint, Prettier, and TypeScript strict mode.
-- **UI**: Built with shadcn-ui and Tailwind CSS for rapid, accessible design.
-- **Testing**: (Add your preferred testing setup here if any)
-- **Contributions**: PRs and issues are welcome! Please open an issue for major changes first.
-- **Extending**: Add new pages in `src/pages/`, new hooks in `src/hooks/`, and new UI in `src/components/`.
+- **Code Style:** Uses ESLint, Prettier, and TypeScript strict mode.
+- **UI:** Built with shadcn-ui and Tailwind CSS for rapid, accessible design.
+- **Testing:** (Add your preferred testing setup here if any)
+- **Contributions:** PRs and issues are welcome! Please open an issue for major changes first.
+- **Extending:** Add new pages in `src/pages/`, new hooks in `src/hooks/`, and new UI in `src/components/`.
 
 ---
 
@@ -204,5 +203,5 @@ This project is open source. See [LICENSE](./LICENSE) for details.
 ---
 
 ## Credits
-- Built with ❤️ by the TeamFinder contributors.
+- Built with ❤️ by the CrewUp contributors.
 - Powered by [Supabase](https://supabase.com/), [React](https://react.dev/), [Vite](https://vitejs.dev/), and [Capacitor](https://capacitorjs.com/).
