@@ -11,10 +11,10 @@
     "preview": "vite preview"
   },
   "dependencies": {
-    "@capacitor/android": "^7.4.1",
+    "@capacitor/android": "^7.0.1",
     "@capacitor/app": "^7.0.1",
-    "@capacitor/cli": "^7.4.1",
-    "@capacitor/core": "^7.4.1",
+    "@capacitor/cli": "^7.0.1",
+    "@capacitor/core": "^7.0.1",
     "@capacitor/keyboard": "^7.0.1",
     "@capacitor/local-notifications": "^7.0.1",
     "@capacitor/push-notifications": "file:plugins/capacitor-push-notifications",

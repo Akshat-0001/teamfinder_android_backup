@@ -5,9 +5,10 @@ import './index.css'
 // Capacitor keyboard resize fix for Android
 import { Keyboard, KeyboardResize } from '@capacitor/keyboard';
 import { StatusBar, Style } from '@capacitor/status-bar';
+import { Capacitor } from '@capacitor/core';
 // import { EdgeToEdge } from '@capacitor/edge-to-edge';
 
-if (typeof window !== 'undefined' && (window as any).Capacitor) {
+if (Capacitor.isNativePlatform && Capacitor.isNativePlatform()) {
   // Wait for the app to be fully loaded, then force overlaysWebView to true
   setTimeout(() => {
     StatusBar.setOverlaysWebView({ overlay: true });

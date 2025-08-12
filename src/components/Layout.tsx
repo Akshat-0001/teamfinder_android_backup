@@ -9,7 +9,7 @@ import {
   User, 
   Settings, 
   LogOut,
-  MessageSquare,
+  Users,
   Search,
   Bell
 } from 'lucide-react';
@@ -44,6 +44,7 @@ const Layout = () => {
         animate={{ y: 0, opacity: 1 }}
         transition={{ duration: 0.4, ease: [0.4, 0, 0.2, 1] }}
       >
+        {/* Only .mobile-header should have safe area top padding. Do not add padding-top elsewhere. */}
         <div className="container mx-auto px-4 h-16 flex items-center justify-between">
           <motion.div
             whileHover={{ scale: 1.02 }}
@@ -150,7 +151,7 @@ const Layout = () => {
                     isActive('/my-teams') ? 'text-primary' : 'text-muted-foreground'
                   }`}
                 >
-                  <MessageSquare className="h-5 w-5" />
+                  <Users className="h-5 w-5 mx-auto" />
                   <span className="text-xs">My Teams</span>
                   {isActive('/my-teams') && (
                     <motion.div

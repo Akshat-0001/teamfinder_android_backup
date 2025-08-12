@@ -1,4 +1,4 @@
-import { useState, useMemo } from 'react';
+import { useState, useMemo, useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { useAuth } from '@/hooks/useAuth';
 import { Button } from '@/components/ui/button';
@@ -43,6 +43,12 @@ const ProfileSetup = () => {
   const [success, setSuccess] = useState('');
   const [universitySearch, setUniversitySearch] = useState('');
   const [newRole, setNewRole] = useState('');
+
+  useEffect(() => {
+    if (user && !user.email_confirmed_at) {
+      navigate('/verify-email', { replace: true });
+    }
+  }, [user, navigate]);
 
   const filteredUniversities = useMemo(() => {
     if (!universitySearch) return UNIVERSITIES;

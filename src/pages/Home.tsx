@@ -27,6 +27,20 @@ const Home = () => {
     category: category || undefined
   });
 
+  useEffect(() => {
+    console.debug('[Home] TEAM_CATEGORIES:', TEAM_CATEGORIES);
+    console.debug('[Home] Selected category:', category);
+  }, [category]);
+
+  useEffect(() => {
+    if (teams) {
+      console.debug('[Home] Teams returned:', teams);
+      if (teams.length === 0) {
+        console.warn('[Home] No teams found for category:', category);
+      }
+    }
+  }, [teams, category]);
+
   // Sort teams based on user preference
   const getFilteredTeams = (teams: any[]) => {
     if (!profile) return teams;
@@ -108,30 +122,36 @@ const Home = () => {
           />
         </div>
         
-        <div className="flex gap-4">
-          <TypeaheadSelect
-            options={TEAM_CATEGORIES}
-            value={category}
-            onValueChange={val => setCategory(val as string)}
-            placeholder="All categories"
-            className="flex-[2] min-w-[220px]"
-          />
-          
+        <div className="flex gap-4 items-center justify-between w-full">
+          <Select value={category || 'all'} onValueChange={val => {
+            console.debug('[Home] Category changed to:', val);
+            setCategory(val === 'all' ? '' : val);
+          }}>
+            <SelectTrigger className="min-w-[180px] max-w-[220px] w-[200px] text-center mx-0">
+              <SelectValue placeholder="All categories" />
+            </SelectTrigger>
+            <SelectContent>
+              <SelectItem value="all">All categories</SelectItem>
+              {TEAM_CATEGORIES.map(cat => (
+                <SelectItem key={cat} value={cat}>{cat}</SelectItem>
+              ))}
+            </SelectContent>
+          </Select>
           <Select value={sortBy} onValueChange={setSortBy}>
             <SelectTrigger className="flex-[1] max-w-[160px]">
               <SelectValue placeholder="Sort by" />
             </SelectTrigger>
             <SelectContent>
-              <SelectItem value="default">Default</SelectItem>
-              <SelectItem value="university">Same University</SelectItem>
-              <SelectItem value="skills">Matching Skills</SelectItem>
+              <SelectItem value="recent">Most Recent</SelectItem>
+              <SelectItem value="popular">Most Popular</SelectItem>
+              <SelectItem value="ending">Ending Soon</SelectItem>
             </SelectContent>
           </Select>
         </div>
       </div>
 
       {/* Teams Grid */}
-      <div className="space-y-4">
+      <div className="flex flex-col space-y-4">
         {filteredTeams.length === 0 ? (
           <Card className="text-center py-12">
             <CardContent>
@@ -161,11 +181,13 @@ const Home = () => {
                       <CardDescription className="flex flex-col gap-0 mt-1">
                         <div className="flex items-center gap-2">
                           {team.creator && (
+                            // Fix: Render ClickableAvatar as a non-link to avoid <a> inside <a>
                             <ClickableAvatar 
                               profile={team.creator} 
                               size="sm" 
                               showName 
                               className="hover:text-primary transition-colors"
+                              asChild // pass a prop to render as a span or div instead of a Link
                             />
                           )}
                           <span>•</span>

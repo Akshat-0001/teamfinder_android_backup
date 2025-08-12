@@ -3,7 +3,7 @@ import { Toaster as Sonner } from "@/components/ui/sonner";
 import { TooltipProvider } from "@/components/ui/tooltip";
 import { ThemeProvider } from "next-themes";
 import { QueryClient, QueryClientProvider } from "@tanstack/react-query";
-import { BrowserRouter, Routes, Route, Navigate } from "react-router-dom";
+import { BrowserRouter, Routes, Route, Navigate, useNavigate } from "react-router-dom";
 import { useAuth } from "@/hooks/useAuth";
 import SplashScreen from "./components/SplashScreen";
 import OnboardingCarousel from "./components/OnboardingCarousel";
@@ -30,12 +30,18 @@ import { LocalNotifications } from '@capacitor/local-notifications';
 import { supabase } from './integrations/supabase/client';
 import { StatusBar, Style } from '@capacitor/status-bar';
 import { useToast } from "@/hooks/use-toast";
+import VerifyEmail from './pages/VerifyEmail';
+import { App as CapacitorApp } from '@capacitor/app';
+import AuthGate from './components/AuthGate';
+import { Capacitor } from '@capacitor/core';
 
 // Register the pushNotificationReceived handler at the top level to prevent default popup
+if (Capacitor.isNativePlatform && Capacitor.isNativePlatform()) {
 PushNotifications.addListener('pushNotificationReceived', (notification) => {
   console.log('[DEBUG] pushNotificationReceived handler fired:', notification);
   // No LocalNotifications.schedule here; in-app notifications are handled by your bell UI
 });
+}
 
 const queryClient = new QueryClient();
 
@@ -61,6 +67,7 @@ function usePushNotifications(user) {
   const [pendingToken, setPendingToken] = useState(null);
 
   useEffect(() => {
+    if (!(Capacitor.isNativePlatform && Capacitor.isNativePlatform())) return;
     PushNotifications.requestPermissions().then(result => {
       if (result.receive === 'granted') {
         PushNotifications.register();
@@ -121,14 +128,109 @@ const ProtectedRoute = ({ children }: { children: React.ReactNode }) => {
   return <>{children}</>;
 };
 
+// Deep link handler component
+function DeepLinkHandler() {
+  const navigate = useNavigate();
+
+  useEffect(() => {
+    // Handle deep links when app is already running
+    const handleDeepLink = ({ url }: { url: string }) => {
+      console.log('[DEBUG] Deep link received:', url);
+      console.log('[DEBUG] Current location before navigation:', window.location.href);
+      
+      if (url.startsWith('teamfinder://auth/callback')) {
+        console.log('[DEBUG] Auth callback deep link detected');
+        
+        // Extract everything after the callback part
+        const suffix = url.replace('teamfinder://auth/callback', '');
+        console.log('[DEBUG] URL suffix:', suffix);
+        
+        // Check if this is an email verification or password reset
+        if (suffix.includes('type=recovery')) {
+          // Password reset link
+          console.log('[DEBUG] Password reset link detected');
+          const targetPath = '/auth/reset-password' + suffix;
+          console.log('[DEBUG] Navigating to password reset:', targetPath);
+          navigate(targetPath, { replace: true });
+        } else if (suffix.includes('type=signup') || suffix.includes('access_token=')) {
+          // Email verification link
+          console.log('[DEBUG] Email verification link detected');
+          const targetPath = '/verify-email' + suffix;
+          console.log('[DEBUG] Navigating to email verification:', targetPath);
+          navigate(targetPath, { replace: true });
+        } else {
+          // Default fallback - try to determine from context
+          console.log('[DEBUG] Unknown auth callback type, defaulting to password reset');
+          const targetPath = '/auth/reset-password' + suffix;
+          console.log('[DEBUG] Navigating to:', targetPath);
+          navigate(targetPath, { replace: true });
+        }
+        
+        // Log after navigation
+        setTimeout(() => {
+          console.log('[DEBUG] Location after navigation:', window.location.href);
+        }, 100);
+      }
+    };
+
+    // Handle deep links when app is opened via deep link
+    const checkLaunchUrl = async () => {
+      try {
+        const { url } = await CapacitorApp.getLaunchUrl();
+        if (url) {
+          console.log('[DEBUG] Launch URL found:', url);
+          handleDeepLink({ url });
+        } else {
+          console.log('[DEBUG] No launch URL found');
+        }
+      } catch (error) {
+        console.log('[DEBUG] Error checking launch URL:', error);
+      }
+    };
+
+    // Check for launch URL on component mount
+    checkLaunchUrl();
+
+    // Listen for deep links when app is already running
+    const listener = CapacitorApp.addListener('appUrlOpen', handleDeepLink);
+
+    return () => {
+      listener.remove();
+    };
+  }, [navigate]);
+
+  return null;
+}
+
 function App() {
   const { user } = useAuth();
   usePushNotifications(user);
 
   useEffect(() => {
-    StatusBar.setOverlaysWebView({ overlay: true });
-    StatusBar.setBackgroundColor({ color: '#00000000' });
-    StatusBar.setStyle({ style: Style.Dark });
+    if (!(Capacitor.isNativePlatform && Capacitor.isNativePlatform())) return;
+    
+    // Configure status bar properly for mobile
+    const configureStatusBar = async () => {
+      try {
+        // Don't overlay the webview - this causes the overlap issue
+        await StatusBar.setOverlaysWebView({ overlay: false });
+        
+        // Set transparent background
+        await StatusBar.setBackgroundColor({ color: '#00000000' });
+        
+        // Set dark style for better visibility
+        await StatusBar.setStyle({ style: Style.Dark });
+        
+        // Set status bar height to account for safe areas
+        await StatusBar.setPadding({ top: 0, left: 0, right: 0, bottom: 0 });
+        
+        console.log('[DEBUG] Status bar configured successfully');
+      } catch (error) {
+        console.error('[DEBUG] Status bar configuration error:', error);
+      }
+    };
+    
+    configureStatusBar();
   }, []);
 
   return (
@@ -138,32 +240,36 @@ function App() {
         <Toaster />
         <Sonner />
         <BrowserRouter>
-        <Routes>
-          <Route path="/" element={<SplashScreen />} />
-          <Route path="/onboarding" element={<OnboardingCarousel />} />
-          <Route
-            path="/auth"
-            element={user ? <Navigate to="/home" replace /> : <AuthPage />}
-          />
-          <Route path="/settings/suggestions" element={<Suggestions />} />
-          <Route path="/settings/bug-report" element={<BugReportPage />} />
-          <Route path="/profile-setup" element={<ProfileSetup />} />
-          <Route path="/" element={<ProtectedRoute><Layout /></ProtectedRoute>}>
-            <Route path="home" element={<Home />} />
-            <Route path="profile" element={<Profile />} />
-            <Route path="teams/create" element={<CreateTeam />} />
-            <Route path="teams/:id" element={<TeamDetails />} />
-            <Route path="my-teams" element={<MyTeams />} />
-            <Route path="search" element={<Search />} />
-            <Route path="settings" element={<Settings />} />
-            <Route path="notifications" element={<Notifications />} />
-            <Route path="user/:userId" element={<UserProfile />} />
-          </Route>
-          <Route path="/chat/:teamId" element={<ProtectedRoute><PageTransition><TeamChat /></PageTransition></ProtectedRoute>} />
-          <Route path="/auth/reset-password" element={<ResetPassword />} />
-          <Route path="*" element={<Navigate to="/" replace />} />
-        </Routes>
-      </BrowserRouter>
+          <DeepLinkHandler />
+          <Routes>
+            <Route path="/" element={<SplashScreen />} />
+            <Route path="/onboarding" element={<OnboardingCarousel />} />
+            <Route
+              path="/auth"
+              element={user ? <Navigate to="/home" replace /> : <AuthPage />}
+            />
+            <Route path="/settings/suggestions" element={<Suggestions />} />
+            <Route path="/settings/bug-report" element={<BugReportPage />} />
+            <Route path="/profile-setup" element={<ProfileSetup />} />
+            <Route path="/verify-email" element={<VerifyEmail />} />
+            <Route element={<AuthGate />}>
+              <Route path="/" element={<ProtectedRoute><Layout /></ProtectedRoute>}>
+                <Route path="home" element={<Home />} />
+                <Route path="profile" element={<Profile />} />
+                <Route path="teams/create" element={<CreateTeam />} />
+                <Route path="teams/:id" element={<TeamDetails />} />
+                <Route path="my-teams" element={<MyTeams />} />
+                <Route path="search" element={<Search />} />
+                <Route path="settings" element={<Settings />} />
+                <Route path="notifications" element={<Notifications />} />
+                <Route path="user/:userId" element={<UserProfile />} />
+              </Route>
+              <Route path="/chat/:teamId" element={<ProtectedRoute><PageTransition><TeamChat /></PageTransition></ProtectedRoute>} />
+            </Route>
+            <Route path="/auth/reset-password" element={<ResetPassword />} />
+            <Route path="*" element={<Navigate to="/" replace />} />
+          </Routes>
+        </BrowserRouter>
       </TooltipProvider>
     </ThemeProvider>
   </QueryClientProvider>

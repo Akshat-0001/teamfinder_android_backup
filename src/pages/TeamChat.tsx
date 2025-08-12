@@ -21,6 +21,7 @@ const TeamChat = () => {
   const [newMessage, setNewMessage] = useState('');
   const messagesEndRef = useRef<HTMLDivElement>(null);
   const [searchQuery, setSearchQuery] = useState('');
+  const inputRef = useRef<HTMLInputElement>(null);
   
   // Use mobile hook for keyboard handling
   useMobile();
@@ -53,7 +54,7 @@ const TeamChat = () => {
 
   useEffect(() => {
     scrollToBottom();
-  }, [messages]);
+  }, [messages.length]); // Always scroll when messages change
 
   const handleSendMessage = (e: React.FormEvent) => {
     e.preventDefault();
@@ -61,6 +62,10 @@ const TeamChat = () => {
 
     sendMessage(newMessage.trim());
     setNewMessage('');
+    // Keep input focused after sending
+    setTimeout(() => {
+      inputRef.current?.focus();
+    }, 0);
   };
 
   const formatTime = (dateString: string) => {
@@ -297,26 +302,22 @@ const TeamChat = () => {
 
       {/* Message Input - Fixed position to handle keyboard */}
       <div className="bg-card/90 backdrop-blur-lg border-t border-border/50 px-4 pt-3 pb-2" style={{ position: 'relative' }}>
-        <form onSubmit={handleSendMessage} className="flex gap-2">
+        <form onSubmit={handleSendMessage} className="flex items-center gap-2 mt-4">
           <Input
+            ref={inputRef}
             value={newMessage}
-            onChange={(e) => setNewMessage(e.target.value)}
+            onChange={e => setNewMessage(e.target.value)}
             placeholder="Type a message..."
+            autoComplete="off"
             className="flex-1"
             disabled={isSending}
-            autoFocus
             inputMode="text"
           />
-          <Button
-            type="submit"
-            size="icon"
-            disabled={!newMessage.trim() || isSending}
-            className="btn-gradient"
-          >
+          <Button type="submit" className="btn-gradient" disabled={isSending || !newMessage.trim()}>
             {isSending ? (
               <div className="animate-spin rounded-full h-4 w-4 border-2 border-white border-t-transparent" />
             ) : (
-              <Send className="h-4 w-4" />
+              <Send className="h-5 w-5" />
             )}
           </Button>
         </form>

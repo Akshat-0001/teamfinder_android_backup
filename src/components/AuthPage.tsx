@@ -48,7 +48,15 @@ const AuthPage = () => {
 
   console.log('[AuthPage] Rendered. user:', user);
 
-  // Remove navigation useEffect and debug logs
+  useEffect(() => {
+    if (!authLoading && user && user.email_confirmed_at) {
+      if (!profile || !profile.university) {
+        navigate('/profile-setup');
+      } else {
+        navigate('/home');
+      }
+    }
+  }, [user, profile, authLoading, navigate]);
 
   const loginForm = useForm<LoginForm>({
     resolver: zodResolver(loginSchema)
@@ -72,7 +80,7 @@ const AuthPage = () => {
           title: "Welcome back!",
           description: "Successfully signed in to your account."
         });
-        navigate('/home');
+        // No need to navigate here; useEffect will handle it
       }
     } catch (err) {
       setError('An unexpected error occurred');
@@ -113,7 +121,7 @@ const AuthPage = () => {
           title: "Account created!",
           description: "Please check your email to verify your account."
         });
-        navigate('/profile-setup');
+        navigate('/verify-email', { state: { email: data.email } });
       }
     } catch (err) {
       setError('An unexpected error occurred');
@@ -453,7 +461,7 @@ const AuthPage = () => {
                     fill="#EA4335"
                   />
                 </svg>
-                Continue with Google (Native)
+                Continue with Google
               </Button>
             </form>
           )}

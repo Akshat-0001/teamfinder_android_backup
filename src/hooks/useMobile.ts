@@ -2,12 +2,14 @@ import { useEffect } from 'react';
 import { useNavigate, useLocation } from 'react-router-dom';
 import { App } from '@capacitor/app';
 import { Keyboard } from '@capacitor/keyboard';
+import { Capacitor } from '@capacitor/core';
 
 export const useMobile = () => {
   const navigate = useNavigate();
   const location = useLocation();
 
   useEffect(() => {
+    if (!(Capacitor.isNativePlatform && Capacitor.isNativePlatform())) return;
     // Handle Android back button
     const handleBackButton = () => {
       if (location.pathname === '/home' || location.pathname === '/') {

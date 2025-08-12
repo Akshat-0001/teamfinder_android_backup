@@ -7,13 +7,15 @@ interface ClickableAvatarProps {
   size?: 'sm' | 'md' | 'lg';
   showName?: boolean;
   className?: string;
+  asChild?: boolean;
 }
 
 const ClickableAvatar: React.FC<ClickableAvatarProps> = ({ 
   profile, 
   size = 'md', 
   showName = false,
-  className = '' 
+  className = '',
+  asChild = false
 }) => {
   const getInitials = (name: string) => {
     return name.split(' ').map(n => n[0]).join('').toUpperCase();
@@ -44,6 +46,11 @@ const ClickableAvatar: React.FC<ClickableAvatarProps> = ({
     </div>
   );
 
+  if (asChild) {
+    return (
+      <span className={`hover:opacity-80 transition-opacity cursor-pointer ${className}`}>{content}</span>
+    );
+  }
   return (
     <Link 
       to={`/user/${profile.user_id}`}

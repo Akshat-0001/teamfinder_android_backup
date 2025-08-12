@@ -3,6 +3,7 @@ import { User, Session } from '@supabase/supabase-js';
 import { supabase } from '@/integrations/supabase/client';
 import { Profile } from '@/types';
 import { registerPlugin } from '@capacitor/core';
+import { Capacitor } from '@capacitor/core';
 
 // Add this import at the top if using Capacitor v5+
 // import { GoogleAuthPlugin } from 'path-to-generated-plugin';
@@ -13,16 +14,31 @@ const isAndroid = typeof window !== 'undefined' && (window as any).Capacitor?.ge
 
 export async function signInWithGoogleNative() {
   try {
+    console.log('[DEBUG] Starting Google Sign-in...');
+    
+    // Revert: Remove platform check so this always runs as before
     const result = await GoogleAuthPlugin.signInWithGoogle();
+    console.log('[DEBUG] Google plugin result:', result);
+    
     const { idToken, email, name } = result;
+    console.log('[DEBUG] Got ID token, email, name:', { idToken: !!idToken, email, name });
+    
     // Use the idToken to sign in with Supabase
+    console.log('[DEBUG] Calling Supabase signInWithIdToken...');
     const { data, error } = await supabase.auth.signInWithIdToken({
       provider: 'google',
       token: idToken,
     });
+    
+    console.log('[DEBUG] Supabase response:', { data: !!data, error });
+    
     if (error) {
+      console.error('[DEBUG] Supabase error:', error);
       return { error };
     }
+    
+    console.log('[DEBUG] Sign-in successful, checking profile...');
+    
     // Check if user profile exists in your DB
     let isNewUser = false;
     if (data.user) {
@@ -32,7 +48,10 @@ export async function signInWithGoogleNative() {
         .eq('id', data.user.id)
         .single();
       isNewUser = !!profileError || !profile;
+      console.log('[DEBUG] Profile check result:', { profile: !!profile, isNewUser });
     }
+    
+    console.log('[DEBUG] Google Sign-in completed successfully');
     return {
       user: data.user,
       session: data.session,
@@ -41,6 +60,7 @@ export async function signInWithGoogleNative() {
       isNewUser,
     };
   } catch (err) {
+    console.error('[DEBUG] Google Sign-in error:', err);
     return { error: err };
   }
 }
@@ -62,6 +82,24 @@ export const useAuth = () => {
   const [loading, setLoading] = useState(true);
 
   useEffect(() => {
+    // Test network connectivity to Supabase
+    const testNetwork = async () => {
+      try {
+        console.log('[DEBUG] Testing network connectivity to Supabase...');
+        const response = await fetch('https://kfusideciciedpmtfune.supabase.co/rest/v1/', {
+          method: 'HEAD',
+          headers: {
+            'apikey': 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImtmdXNpZGVjaWNpZWRwbXRmdW5lIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NTE2NDQzNzEsImV4cCI6MjA2NzIyMDM3MX0.GY1hpuiPl3Uyk7gIFQsHbt27CTtpa569ss-k5xvo35w'
+          }
+        });
+        console.log('[DEBUG] Network test result:', response.status, response.ok);
+      } catch (error) {
+        console.error('[DEBUG] Network test failed:', error);
+      }
+    };
+    
+    testNetwork();
+    
     // Set up auth state listener
     const { data: { subscription } } = supabase.auth.onAuthStateChange(
       (event, session) => {
@@ -107,7 +145,11 @@ export const useAuth = () => {
   }, []);
 
   const signUp = async (email: string, password: string, fullName: string) => {
-    const redirectUrl = `${window.location.origin}/`;
+    // Use deep link for mobile, web origin for web
+    const isCapacitor = typeof window !== 'undefined' && (window as any).Capacitor;
+    const redirectUrl = isCapacitor
+      ? 'teamfinder://auth/callback'
+      : `${window.location.origin}/`;
     
     const { data, error } = await supabase.auth.signUp({
       email,
